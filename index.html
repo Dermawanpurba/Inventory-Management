@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Monitoring ERP</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: { 900: '#0B1120', 800: '#111827', 700: '#1F2937' },
+                        brand: { blue: '#3b82f6', cyan: '#06b6d4', green: '#10b981', red: '#ef4444', yellow: '#f59e0b', purple: '#a855f7' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0B1120; color: #f3f4f6; }
+        .nav-active { border-bottom: 2px solid #06b6d4; color: #fff; font-weight: 500; }
+        .glass-panel { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(31, 41, 55, 1); }
+        .hide { display: none !important; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #111827; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
+
+        /* --- Custom UI Searchable Dropdown (Dark Mode) --- */
+        .ts-control {
+            background-color: #0B1120 !important;
+            border: 1px solid #1F2937 !important;
+            color: #fff !important;
+            border-radius: 0.375rem !important;
+            padding: 0.5rem 0.75rem !important;
+            min-height: 42px;
+        }
+        .ts-control input { color: #fff !important; }
+        .ts-dropdown {
+            background-color: #111827 !important;
+            border: 1px solid #1F2937 !important;
+            color: #fff !important;
+            border-radius: 0.375rem !important;
+        }
+        .ts-dropdown .option { padding: 8px 12px; }
+        .ts-dropdown .option:hover, .ts-dropdown .option.active {
+            background-color: #1F2937 !important;
+            color: #06b6d4 !important;
+        }
+        .ts-wrapper.single .ts-control:after { border-color: #9ca3af transparent transparent transparent !important; }
+    </style>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+    <div id="loadingOverlay" class="fixed inset-0 bg-dark-900 bg-opacity-90 z-50 flex flex-col justify-center items-center hide">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-brand-cyan mb-4"></div>
+        <p class="text-brand-cyan font-medium animate-pulse" id="loadingText">Menghubungkan ke Server...</p>
+    </div>
+
+    <div id="app" class="min-h-screen flex flex-col">
+        
+        <header class="glass-panel sticky top-0 z-40 px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center text-brand-cyan text-xl font-bold tracking-wider">
+                    <span class="mr-2 border-2 border-brand-cyan rounded-full p-1">
+                        <i data-lucide="waves" class="w-5 h-5"></i>
+                    </span>
+                    WAREHOUSE<span class="text-white ml-1">MONITORING</span>
+                </div>
+                
+                <nav class="hidden md:flex space-x-6 text-sm text-gray-400">
+                    <a href="#" onclick="router('dashboard')" id="nav-dashboard" class="nav-active pb-1 hover:text-white transition">Dashboard</a>
+                    <a href="#" onclick="router('tracking')" id="nav-tracking" class="pb-1 hover:text-white transition">Tracking</a>
+                    <a href="#" onclick="router('stock')" id="nav-stock" class="pb-1 hover:text-white transition">Stock</a>
+                    <a href="#" onclick="router('master')" id="nav-master" class="pb-1 hover:text-white transition">Master Data</a>
+                </nav>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center text-xs text-brand-green bg-green-900 bg-opacity-30 px-3 py-1.5 rounded-full border border-green-800">
+                    <div class="w-2 h-2 bg-brand-green rounded-full mr-2 animate-pulse"></div>
+                    <span>LIVE API CONNECTED</span>
+                </div>
+                
+                <div id="authSection" class="flex items-center space-x-3"></div>
+            </div>
+        </header>
+
+        <main class="flex-grow p-6">
+            
+            <section id="view-dashboard" class="space-y-6">
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white mb-1">Dashboard Data</h1>
+                        <p class="text-sm text-gray-400">Monitoring logistik suku cadang dan pelumas alat berat secara real-time.</p>
+                    </div>
+                    <button onclick="downloadPDF()" class="bg-brand-cyan hover:bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition">
+                        <i data-lucide="file-down" class="w-4 h-4 mr-2"></i> Cetak Laporan PDF
+                    </button>
+                </div>
+
+                <div class="glass-panel rounded-xl p-5 w-full">
+                    <div class="flex justify-between items-center mb-4 text-sm font-medium">
+                        <div class="flex items-center text-brand-blue"><i data-lucide="trending-up" class="w-4 h-4 mr-2"></i> Trend Pengeluaran (Count)</div>
+                    </div>
+                    <div class="h-64 w-full relative"><canvas id="chartSparepart"></canvas></div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-panel rounded-xl p-5">
+                        <div class="flex items-center text-brand-green mb-4 text-sm font-medium">
+                            <i data-lucide="droplet" class="w-4 h-4 mr-2"></i> Trend Pengeluaran Oli (Ltr)
+                        </div>
+                        <div class="h-64 relative"><canvas id="chartOil"></canvas></div>
+                    </div>
+                    <div class="glass-panel rounded-xl p-5">
+                        <div class="flex items-center text-brand-yellow mb-4 text-sm font-medium">
+                            <i data-lucide="layout-grid" class="w-4 h-4 mr-2"></i> Pengeluaran by Dept
+                        </div>
+                        <div class="h-64 relative"><canvas id="chartDept"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <div class="flex items-center text-brand-cyan mb-4 text-lg font-medium">
+                        <i data-lucide="building-2" class="w-5 h-5 mr-2"></i> Ringkasan Departemen
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="deptSummaryCards"></div>
+                </div>
+
+                <div class="mt-8 glass-panel rounded-xl p-5" id="pdfTargetArea">
+                    <div class="flex items-center text-brand-yellow text-lg font-medium mb-6">
+                        <i data-lucide="alert-circle" class="w-5 h-5 mr-2"></i> Analisis & Rekomendasi Stok
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-400">
+                            <thead class="text-xs text-gray-500 bg-dark-800 border-b border-dark-700 uppercase">
+                                <tr>
+                                    <th class="px-4 py-3 font-medium">PART NUMBER</th>
+                                    <th class="px-4 py-3 font-medium">ITEM NAME / TYPE</th>
+                                    <th class="px-4 py-3 font-medium text-center">STATUS</th>
+                                    <th class="px-4 py-3 font-medium text-center">ANALISIS (STOK VS MIN)</th>
+                                    <th class="px-4 py-3 font-medium">RECOMMENDATION ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stockAnalysisTableBody" class="divide-y divide-dark-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-tracking" class="space-y-6 hide">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Tracking Transaksi</h2>
+                        <p class="text-sm text-gray-400">Catat barang Masuk (IN) dan Keluar (OUT).</p>
+                    </div>
+                    <div class="flex space-x-3 admin-only hide">
+                        <button onclick="openModal('modalTxIn')" class="bg-brand-green hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                            <i data-lucide="arrow-down-left" class="w-4 h-4 mr-2"></i> Barang Masuk (IN)
+                        </button>
+                        <button onclick="openModal('modalTxOut')" class="bg-brand-blue hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                            <i data-lucide="arrow-up-right" class="w-4 h-4 mr-2"></i> Barang Keluar (OUT)
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="glass-panel rounded-xl p-5 overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-400">
+                        <thead class="text-xs text-gray-500 bg-dark-800 border-b border-dark-700 uppercase">
+                            <tr>
+                                <th class="px-4 py-3">Tanggal</th>
+                                <th class="px-4 py-3">Tipe</th>
+                                <th class="px-4 py-3">Item</th>
+                                <th class="px-4 py-3 text-center">Qty</th>
+                                <th class="px-4 py-3">Alokasi / Info Tambahan</th>
+                                <th class="px-4 py-3">Petugas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="txTableBody" class="divide-y divide-dark-700"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="view-stock" class="space-y-6 hide">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-white">Master Stok</h2>
+                    <button onclick="openModal('modalStock')" class="bg-brand-green hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center admin-only hide">
+                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Tambah Item
+                    </button>
+                </div>
+                
+                <div class="glass-panel rounded-xl p-5 overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-400">
+                        <thead class="text-xs text-gray-500 bg-dark-800 border-b border-dark-700 uppercase">
+                            <tr>
+                                <th class="px-4 py-3">Part Number</th>
+                                <th class="px-4 py-3">Nama Item</th>
+                                <th class="px-4 py-3">Kategori</th>
+                                <th class="px-4 py-3">Lokasi Gudang</th>
+                                <th class="px-4 py-3 text-center">Stok Saat Ini</th>
+                                <th class="px-4 py-3 text-center">Min Stok</th>
+                                <th class="px-4 py-3 text-right admin-only hide">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stockTableBody" class="divide-y divide-dark-700"></tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <section id="view-master" class="space-y-6 hide">
+                <h2 class="text-2xl font-bold text-white">Master Data (Unit & Dept)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-panel rounded-xl p-5">
+                        <h3 class="text-lg font-medium text-white mb-4">Departemen</h3>
+                        <ul id="deptList" class="space-y-2 text-sm text-gray-300"></ul>
+                    </div>
+                    <div class="glass-panel rounded-xl p-5">
+                        <h3 class="text-lg font-medium text-white mb-4">Daftar Unit Operasional</h3>
+                        <ul id="unitList" class="space-y-2 text-sm text-gray-300"></ul>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="mt-auto border-t border-dark-700 py-4">
+            <div style="text-align:center; font-size:12px; margin:20px 0; color:#888;">
+                develop by : dermawan.prb@gmail.com | <a href="https://www.linkedin.com/in/dermawan-purba-5b69241a9" target="_blank" style="color:#888; text-decoration:none;">LinkedIn</a>
+            </div>
+        </footer>
+    </div>
+
+    <div id="modalLogin" class="fixed inset-0 bg-dark-900 bg-opacity-95 z-50 flex justify-center items-center hide">
+        <div class="glass-panel p-8 rounded-2xl w-full max-w-md border border-dark-700 shadow-2xl">
+            <div class="text-center mb-8">
+                <i data-lucide="shield-check" class="w-12 h-12 text-brand-cyan mx-auto mb-3"></i>
+                <h2 class="text-2xl font-bold text-white">Admin Login</h2>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">USERNAME</label>
+                    <input type="text" id="logUser" required class="w-full bg-dark-900 border border-dark-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand-cyan">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">PASSWORD</label>
+                    <input type="password" id="logPass" required class="w-full bg-dark-900 border border-dark-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand-cyan">
+                </div>
+                <button type="submit" class="w-full bg-brand-cyan hover:bg-cyan-600 text-white font-medium py-2.5 rounded-lg transition mt-4">Masuk ke Sistem</button>
+                <button type="button" onclick="closeModal('modalLogin')" class="w-full text-gray-500 hover:text-white text-sm mt-4">Batal</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalTxIn" class="fixed inset-0 bg-dark-900 bg-opacity-80 z-50 flex justify-center items-center hide">
+        <div class="glass-panel p-6 rounded-xl w-full max-w-lg border-t-4 border-t-brand-green">
+            <div class="flex items-center mb-4 text-white">
+                <i data-lucide="arrow-down-left" class="w-5 h-5 mr-2 text-brand-green"></i>
+                <h3 class="text-lg font-bold">Form Barang Masuk (IN)</h3>
+            </div>
+            <form id="formTxIn" onsubmit="saveTransaction(event, 'IN')" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Ketik & Pilih Item (Search)</label>
+                    <select id="txInPart" required placeholder="Ketik nama / part number..."></select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Tanggal Masuk</label>
+                        <input type="date" id="txInDate" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Jumlah (Qty)</label>
+                        <input type="number" id="txInQty" min="1" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Nama Vendor</label>
+                        <input type="text" id="txInVendor" class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white" placeholder="PT Vendor X">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">No. PO (Purchase Order)</label>
+                        <input type="text" id="txInPO" class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white" placeholder="PO/2026/03/...">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Penempatan Lokasi Gudang Baru</label>
+                    <input type="text" id="txInLoc" class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white" placeholder="Rak A1 / Section B">
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeModal('modalTxIn')" class="px-4 py-2 text-gray-400 hover:text-white">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-green rounded text-white font-medium">Simpan Stok Masuk</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalTxOut" class="fixed inset-0 bg-dark-900 bg-opacity-80 z-50 flex justify-center items-center hide">
+        <div class="glass-panel p-6 rounded-xl w-full max-w-lg border-t-4 border-t-brand-blue">
+            <div class="flex items-center mb-4 text-white">
+                <i data-lucide="arrow-up-right" class="w-5 h-5 mr-2 text-brand-blue"></i>
+                <h3 class="text-lg font-bold">Form Barang Keluar (OUT)</h3>
+            </div>
+            <form id="formTxOut" onsubmit="saveTransaction(event, 'OUT')" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Ketik & Pilih Item (Search)</label>
+                    <select id="txOutPart" required placeholder="Ketik nama / part number..."></select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Tanggal Keluar</label>
+                        <input type="date" id="txOutDate" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Jumlah Dikeluarkan (Qty)</label>
+                        <input type="number" id="txOutQty" min="1" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Tujuan Departemen</label>
+                        <select id="txOutDept" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Alokasi Unit Alat</label>
+                        <select id="txOutUnit" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white"></select>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeModal('modalTxOut')" class="px-4 py-2 text-gray-400 hover:text-white">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-blue rounded text-white font-medium">Proses Pengeluaran</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalStock" class="fixed inset-0 bg-dark-900 bg-opacity-80 z-50 flex justify-center items-center hide">
+        <div class="glass-panel p-6 rounded-xl w-full max-w-lg">
+            <h3 class="text-lg font-bold text-white mb-4">Data Item</h3>
+            <form id="formStock" onsubmit="saveStock(event)" class="space-y-4">
+                <input type="hidden" id="stkId">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Part Number</label>
+                        <input type="text" id="stkPartNo" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Kategori</label>
+                        <select id="stkType" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white">
+                            <option value="FILTER">FILTER</option>
+                            <option value="GET">GET</option>
+                            <option value="SPAREPART">SPAREPART</option>
+                            <option value="LUBRICATE">LUBRICATE</option>
+                            <option value="CONSUMABLE">CONSUMABLE</option>
+                            <option value="TYRE">TYRE</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Nama Item / Deskripsi</label>
+                    <input type="text" id="stkName" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Lokasi Gudang (Default)</label>
+                    <input type="text" id="stkLocation" class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white" placeholder="Contoh: RAK 01">
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Satuan</label>
+                        <input type="text" id="stkUnit" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white" placeholder="Pcs/Ltr">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Stok Awal</label>
+                        <input type="number" id="stkCurrent" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Min Stok</label>
+                        <input type="number" id="stkMin" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeModal('modalStock')" class="px-4 py-2 text-gray-400 hover:text-white">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-green rounded text-white font-medium">Simpan Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // MENGHUBUNGKAN KE DEPLOYMENT APPS SCRIPT ANDA
+        const API_URL = "https://script.google.com/macros/s/AKfycbzyaOMGl1LyYBtgj3L0kqFCiTYqpUt1wgstyTe1JLo03HXoPBpE5fyVpZ4osHusoGgStw/exec"; 
+        
+        let currentUser = null;
+        let appData = { parts: [], txs: [], depts: [], units: [] };
+        let charts = {};
+        
+        // Instance untuk Tom Select
+        let selectSearchIn, selectSearchOut;
+
+        async function fetchAPI(action, payload = {}) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: action, data: payload })
+                });
+                return await response.json();
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                return { success: false, message: "Gagal terhubung ke server." };
+            }
+        }
+
+        window.onload = () => {
+            document.getElementById('txInDate').valueAsDate = new Date();
+            document.getElementById('txOutDate').valueAsDate = new Date();
+            checkSession();
+            loadMasterData();
+        };
+
+        function showLoading(show, text="Memproses Data...") {
+            const overlay = document.getElementById('loadingOverlay');
+            document.getElementById('loadingText').innerText = text;
+            show ? overlay.classList.remove('hide') : overlay.classList.add('hide');
+        }
+
+        function notif(icon, title, text="") {
+            Swal.fire({ icon: icon, title: title, text: text, background: '#1F2937', color: '#fff', confirmButtonColor: '#06b6d4' });
+        }
+
+        function router(viewId) {
+            ['view-dashboard', 'view-tracking', 'view-stock', 'view-master'].forEach(id => {
+                document.getElementById(id).classList.add('hide');
+                document.getElementById('nav-' + id.split('-')[1]).classList.remove('nav-active');
+            });
+            document.getElementById('view-' + viewId).classList.remove('hide');
+            document.getElementById('nav-' + viewId).classList.add('nav-active');
+            if (viewId === 'dashboard') renderDashboard();
+        }
+
+        function checkSession() {
+            const saved = localStorage.getItem('erp_session');
+            if (saved) { currentUser = JSON.parse(saved); applyRoleAccess(); } 
+            else { renderAuthBtn(false); }
+        }
+
+        function renderAuthBtn(isLoggedIn) {
+            const div = document.getElementById('authSection');
+            if (isLoggedIn) {
+                div.innerHTML = `
+                    <div class="text-right mr-3 hidden md:block">
+                        <div class="text-xs font-bold text-white">${currentUser.nama}</div>
+                        <div class="text-[10px] ${currentUser.role==='SuperAdmin'?'text-brand-purple':'text-brand-cyan'}">${currentUser.role}</div>
+                    </div>
+                    <button onclick="logout()" class="p-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-gray-300 transition">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                `;
+            } else {
+                div.innerHTML = `<button onclick="openModal('modalLogin')" class="px-4 py-1.5 bg-brand-cyan hover:bg-cyan-600 rounded-lg text-white text-sm font-medium transition flex items-center"><i data-lucide="lock" class="w-4 h-4 mr-1.5"></i> Login</button>`;
+            }
+            lucide.createIcons();
+        }
+
+        function applyRoleAccess() {
+            renderAuthBtn(true);
+            const adminEls = document.querySelectorAll('.admin-only');
+            const superAdminEls = document.querySelectorAll('.superadmin-only');
+            
+            if (currentUser && (currentUser.role === 'Admin' || currentUser.role === 'SuperAdmin')) {
+                adminEls.forEach(el => el.classList.remove('hide'));
+            } else {
+                adminEls.forEach(el => el.classList.add('hide'));
+            }
+            if (currentUser && currentUser.role === 'SuperAdmin') {
+                superAdminEls.forEach(el => el.classList.remove('hide'));
+            } else {
+                superAdminEls.forEach(el => el.classList.add('hide'));
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            showLoading(true, "Verifikasi Akun...");
+            const res = await fetchAPI('login', { username: document.getElementById('logUser').value, password: document.getElementById('logPass').value });
+            showLoading(false);
+
+            if(res.success) {
+                currentUser = res.user;
+                localStorage.setItem('erp_session', JSON.stringify(currentUser));
+                closeModal('modalLogin'); applyRoleAccess(); renderTables(); notif('success', 'Login Berhasil');
+            } else { notif('error', 'Gagal', res.message); }
+        }
+
+        function logout() {
+            localStorage.removeItem('erp_session'); currentUser = null;
+            applyRoleAccess(); router('dashboard'); renderTables(); notif('info', 'Anda telah logout');
+        }
+
+        async function loadMasterData() {
+            showLoading(true, "Sinkronisasi Database...");
+            const res = await fetchAPI('getAllData');
+            showLoading(false);
+
+            if(res.success) {
+                const normalizedIn = (res.data.txsIn || []).map(t => ({...t, type: 'IN'}));
+                const normalizedOut = (res.data.txsOut || []).map(t => ({...t, type: 'OUT'}));
+                
+                const combinedTxs = [...normalizedIn, ...normalizedOut].sort((a, b) => {
+                    const dateA = new Date(a.timestamp || a.date).getTime();
+                    const dateB = new Date(b.timestamp || b.date).getTime();
+                    return dateA - dateB; 
+                });
+
+                appData = {
+                    parts: res.data.parts || [],
+                    depts: res.data.depts || [],
+                    units: res.data.units || [],
+                    txs: combinedTxs
+                };
+                
+                populateSelects(); renderTables(); renderDashboard();
+            } else {
+                notif('error', 'Gagal Sinkronisasi', res.message);
+            }
+        }
+
+        async function saveTransaction(e, type) {
+            e.preventDefault();
+            let data = {};
+            if(type === 'IN') {
+                data = { type: 'IN', part_id: document.getElementById('txInPart').value, date: document.getElementById('txInDate').value, qty: parseInt(document.getElementById('txInQty').value), vendor: document.getElementById('txInVendor').value, no_po: document.getElementById('txInPO').value, lokasi_gudang: document.getElementById('txInLoc').value, user: currentUser.username };
+            } else {
+                data = { type: 'OUT', part_id: document.getElementById('txOutPart').value, date: document.getElementById('txOutDate').value, qty: parseInt(document.getElementById('txOutQty').value), dept_id: document.getElementById('txOutDept').value, unit_id: document.getElementById('txOutUnit').value, user: currentUser.username };
+            }
+
+            showLoading(true, "Menyimpan Transaksi...");
+            const res = await fetchAPI('addTransaction', data);
+            
+            if(res.success) {
+                await loadMasterData();
+                closeModal(type === 'IN' ? 'modalTxIn' : 'modalTxOut');
+                notif('success', 'Transaksi Berhasil Ditambahkan');
+                
+                // Reset Form & Clear Tom Select Search
+                document.getElementById(type === 'IN' ? 'formTxIn' : 'formTxOut').reset();
+                if(type === 'IN' && selectSearchIn) selectSearchIn.clear();
+                if(type === 'OUT' && selectSearchOut) selectSearchOut.clear();
+                
+            } else {
+                showLoading(false); notif('error', 'Gagal', res.message);
+            }
+        }
+
+        async function saveStock(e) {
+            e.preventDefault();
+            const data = { id: document.getElementById('stkId').value, part_number: document.getElementById('stkPartNo').value, item_name: document.getElementById('stkName').value, type: document.getElementById('stkType').value, lokasi_gudang: document.getElementById('stkLocation').value, unit: document.getElementById('stkUnit').value, stock_current: parseInt(document.getElementById('stkCurrent').value), stock_min: parseInt(document.getElementById('stkMin').value) };
+            showLoading(true, "Menyimpan Item...");
+            const res = await fetchAPI('saveStockItem', data);
+            if(res.success) { await loadMasterData(); closeModal('modalStock'); notif('success', 'Master Item Diperbarui'); document.getElementById('formStock').reset(); } 
+            else { showLoading(false); notif('error', 'Gagal', res.message); }
+        }
+
+        function deleteStock(id) {
+            Swal.fire({ title: 'Hapus Item Permanen?', text: "Data tidak bisa dikembalikan!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#374151', confirmButtonText: 'Ya, Hapus!', background: '#1F2937', color: '#fff' })
+            .then(async (result) => {
+                if (result.isConfirmed) {
+                    showLoading(true, "Menghapus...");
+                    const res = await fetchAPI('deleteStockItem', { id: id });
+                    if(res.success) { await loadMasterData(); notif('success', 'Terhapus', res.message); } 
+                    else { showLoading(false); notif('error', 'Gagal', res.message); }
+                }
+            })
+        }
+
+        function editStock(id) {
+            const p = appData.parts.find(x => x.id === id);
+            if(p) {
+                document.getElementById('stkId').value = p.id; document.getElementById('stkPartNo').value = p.part_number; document.getElementById('stkName').value = p.item_name; document.getElementById('stkType').value = p.type; document.getElementById('stkLocation').value = p.lokasi_gudang || ''; document.getElementById('stkUnit').value = p.unit; document.getElementById('stkCurrent').value = p.stock_current; document.getElementById('stkMin').value = p.stock_min;
+                openModal('modalStock');
+            }
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hide'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hide'); }
+
+        function populateSelects() {
+            // Hancurkan instance lama jika ada sebelum mengisi ulang opsi
+            if(selectSearchIn) selectSearchIn.destroy();
+            if(selectSearchOut) selectSearchOut.destroy();
+
+            const partOptions = `<option value="">Ketik untuk mencari part...</option>` + 
+                appData.parts.map(p => `<option value="${p.id}">[${p.type}] ${p.part_number} - ${p.item_name} (Stok: ${p.stock_current})</option>`).join('');
+            
+            document.getElementById('txInPart').innerHTML = partOptions; 
+            document.getElementById('txOutPart').innerHTML = partOptions;
+
+            // Inisialisasi Tom Select untuk mode pencarian
+            selectSearchIn = new TomSelect("#txInPart",{ create: false, maxOptions: null });
+            selectSearchOut = new TomSelect("#txOutPart",{ create: false, maxOptions: null });
+
+            document.getElementById('txOutDept').innerHTML = appData.depts.map(d => `<option value="${d.id}">${d.nama_dept}</option>`).join('');
+            document.getElementById('txOutUnit').innerHTML = appData.units.map(u => `<option value="${u.id}">${u.nama_unit}</option>`).join('');
+            document.getElementById('deptList').innerHTML = appData.depts.map(d => `<li class="border-b border-dark-700 pb-2">${d.nama_dept}</li>`).join('');
+            document.getElementById('unitList').innerHTML = appData.units.map(u => `<li class="border-b border-dark-700 pb-2">${u.nama_unit}</li>`).join('');
+        }
+
+        function renderTables() {
+            document.getElementById('stockTableBody').innerHTML = appData.parts.map(p => {
+                const typeColors = { 'FILTER': 'bg-purple-900 text-purple-300', 'GET': 'bg-yellow-900 text-yellow-300', 'SPAREPART': 'bg-blue-900 text-brand-blue', 'LUBRICATE': 'bg-green-900 text-brand-green', 'CONSUMABLE': 'bg-gray-700 text-gray-300', 'TYRE': 'bg-red-900 text-brand-red' };
+                const badgeColor = typeColors[p.type] || 'bg-gray-700 text-gray-300';
+                return `
+                <tr class="hover:bg-dark-800 transition border-b border-dark-700">
+                    <td class="px-4 py-3 font-medium text-white">${p.part_number}</td>
+                    <td class="px-4 py-3">${p.item_name}</td>
+                    <td class="px-4 py-3"><span class="px-2 py-1 rounded text-[10px] font-bold tracking-wider ${badgeColor}">${p.type}</span></td>
+                    <td class="px-4 py-3 text-xs text-brand-cyan">${p.lokasi_gudang || '-'}</td>
+                    <td class="px-4 py-3 text-center text-white font-bold">${p.stock_current} ${p.unit}</td>
+                    <td class="px-4 py-3 text-center">${p.stock_min}</td>
+                    <td class="px-4 py-3 text-right">
+                        <button onclick="editStock('${p.id}')" class="text-brand-cyan hover:text-cyan-300 mr-3 admin-only ${currentUser && (currentUser.role=='Admin' || currentUser.role=='SuperAdmin') ? '' : 'hide'}"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                        <button onclick="deleteStock('${p.id}')" class="text-brand-red hover:text-red-400 superadmin-only ${currentUser && currentUser.role=='SuperAdmin' ? '' : 'hide'}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            document.getElementById('txTableBody').innerHTML = appData.txs.slice().reverse().map(t => {
+                const part = appData.parts.find(p => p.id === t.part_id) || {};
+                const isOut = t.type === 'OUT';
+                let infoTambahan = isOut 
+                    ? `<span class="text-brand-yellow">Dept:</span> ${appData.depts.find(d => d.id === t.dept_id)?.nama_dept || '-'} | <span class="text-brand-yellow">Unit:</span> ${appData.units.find(u => u.id === t.unit_id)?.nama_unit || '-'}`
+                    : `<span class="text-brand-cyan">Vendor:</span> ${t.vendor || '-'} | <span class="text-brand-cyan">PO:</span> ${t.no_po || '-'} <br><span class="text-[10px] text-gray-500">Masuk Gudang: ${t.lokasi_gudang || '-'}</span>`;
+
+                return `
+                <tr class="hover:bg-dark-800 transition border-b border-dark-700">
+                    <td class="px-4 py-3 text-xs whitespace-nowrap">${new Date(t.date).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'})}</td>
+                    <td class="px-4 py-3"><span class="px-2 py-1 rounded text-[10px] font-bold ${isOut?'bg-red-900 text-brand-red':'bg-green-900 text-brand-green'}">${t.type}</span></td>
+                    <td class="px-4 py-3 font-medium text-gray-300">${part.part_number || '?'} <br><span class="text-xs text-gray-500 font-normal">${part.item_name || '?'}</span></td>
+                    <td class="px-4 py-3 text-center font-bold text-white text-lg">${isOut ? '-' : '+'}${t.qty}</td>
+                    <td class="px-4 py-3 text-xs leading-relaxed">${infoTambahan}</td>
+                    <td class="px-4 py-3 text-xs text-brand-purple">${t.user_id || t.user || '?'}</td>
+                </tr>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function renderDashboard() {
+            const analysisBody = document.getElementById('stockAnalysisTableBody');
+            let analysisHTML = '';
+            appData.parts.forEach(p => {
+                let status = 'AMAN', stClass = 'text-green-500', action = 'STOK MENCUKUPI';
+                if (p.stock_current == 0) { status = 'HABIS (PART)'; stClass = 'text-brand-red font-bold'; action = 'SEGERA BUAT PURCHASE ORDER (PO).'; } 
+                else if (p.stock_current <= p.stock_min) { status = 'KRITIS (PART)'; stClass = 'text-brand-yellow font-bold'; action = 'DISARANKAN UNTUK SEGERA RESTOCK.'; }
+
+                if(status !== 'AMAN') {
+                    analysisHTML += `<tr class="hover:bg-dark-800"><td class="px-4 py-3 font-medium text-white">${p.part_number}</td><td class="px-4 py-3">${p.item_name} <span class="text-[10px] ml-2 text-brand-cyan">(${p.type})</span></td><td class="px-4 py-3 border border-dark-700 bg-dark-900 text-center"><span class="${stClass}">${status}</span></td><td class="px-4 py-3 text-center text-white font-bold">${p.stock_current} / ${p.stock_min}</td><td class="px-4 py-3 text-xs text-gray-300">${action}</td></tr>`;
+                }
+            });
+            analysisBody.innerHTML = analysisHTML;
+
+            document.getElementById('deptSummaryCards').innerHTML = appData.depts.map(d => {
+                const deptTxs = appData.txs.filter(t => t.dept_id === d.id && t.type === 'OUT');
+                const formatLastDate = (ds) => ds ? new Date(ds).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'}).toUpperCase() : '-';
+                const lastPart = deptTxs.filter(t => appData.parts.find(p => p.id==t.part_id)?.type !== 'LUBRICATE').pop()?.date;
+                const lastOil = deptTxs.filter(t => appData.parts.find(p => p.id==t.part_id)?.type === 'LUBRICATE').pop()?.date;
+                return `<div class="glass-panel p-4 rounded-xl border-l-4 border-l-brand-cyan hover:bg-dark-800 transition"><h4 class="text-white font-bold mb-3">${d.nama_dept}</h4><div class="flex justify-between text-xs text-gray-400 mb-1"><span>SPAREPART (LAIN)</span> <span class="text-brand-blue">${formatLastDate(lastPart)}</span></div><div class="flex justify-between text-xs text-gray-400"><span>LUBRICATE (OLI)</span> <span class="text-brand-green">${formatLastDate(lastOil)}</span></div></div>`;
+            }).join('');
+            initCharts();
+        }
+
+        function initCharts() {
+            Chart.defaults.color = '#9ca3af'; Chart.defaults.borderColor = '#374151';
+            const last7Days = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(); d.setDate(d.getDate() - i);
+                last7Days.push({ raw: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, display: d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }).toUpperCase() });
+            }
+            const labels7Days = last7Days.map(d => d.display);
+            const dataSparepart = new Array(7).fill(0); const dataOli = new Array(7).fill(0);
+
+            appData.txs.forEach(t => {
+                if (t.type !== 'OUT') return;
+                const txDate = new Date(t.date);
+                const txDateStr = `${txDate.getFullYear()}-${String(txDate.getMonth() + 1).padStart(2, '0')}-${String(txDate.getDate()).padStart(2, '0')}`;
+                const dayIndex = last7Days.findIndex(d => d.raw === txDateStr);
+                if (dayIndex !== -1) {
+                    const part = appData.parts.find(p => p.id === t.part_id);
+                    if (part) { part.type === 'LUBRICATE' ? dataOli[dayIndex] += t.qty : dataSparepart[dayIndex] += 1; }
+                }
+            });
+
+            const labelsDept = appData.depts.map(d => d.nama_dept); const dataDept = new Array(appData.depts.length).fill(0);
+            appData.txs.forEach(t => {
+                if (t.type !== 'OUT') return;
+                const part = appData.parts.find(p => p.id === t.part_id);
+                if (part && part.type !== 'LUBRICATE') {
+                    const deptIndex = appData.depts.findIndex(d => d.id === t.dept_id);
+                    if (deptIndex !== -1) dataDept[deptIndex] += t.qty;
+                }
+            });
+
+            if(charts.c1) charts.c1.destroy();
+            charts.c1 = new Chart(document.getElementById('chartSparepart').getContext('2d'), { type: 'line', data: { labels: labels7Days, datasets: [{ label: 'Total Transaksi', data: dataSparepart, borderColor: '#06b6d4', backgroundColor: 'rgba(6, 182, 212, 0.1)', tension: 0.4, fill: true, borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#fff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+
+            if(charts.c2) charts.c2.destroy();
+            charts.c2 = new Chart(document.getElementById('chartOil').getContext('2d'), { type: 'bar', data: { labels: labels7Days, datasets: [{ label: 'Volume Keluar (Ltr)', data: dataOli, backgroundColor: '#10b981', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+
+            if(charts.c3) charts.c3.destroy();
+            const deptColors = ['#3b82f6', '#f59e0b', '#ef4444', '#a855f7', '#06b6d4', '#10b981'];
+            charts.c3 = new Chart(document.getElementById('chartDept').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: labelsDept, datasets: [{ label: 'Pengeluaran', data: dataDept, backgroundColor: labelsDept.map((_, i) => deptColors[i % deptColors.length]), borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('pdfTargetArea');
+            notif('info', 'Menyiapkan PDF...', 'Harap tunggu sesaat.');
+            html2pdf().set({ margin: 0.5, filename: `Laporan_Stok_${new Date().getTime()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#111827' }, jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' } }).from(element).save().then(() => Swal.close());
+        }
+    </script>
+</body>
+</html>
