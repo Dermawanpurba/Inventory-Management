@@ -492,11 +492,12 @@
                 let foundUser = null;
 
                 if (users) {
-                    Object.keys(users).forEach(id => {
-                        if (users[id].username === userInp && users[id].password === passInp) {
-                            foundUser = users[id];
-                        }
-                    });
+                    // Cari user dengan mencocokkan username dan password secara case-sensitive
+                    const userList = Object.values(users);
+                    foundUser = userList.find(u => 
+                        String(u.username).trim() === userInp.trim() && 
+                        String(u.password).trim() === passInp.trim()
+                    );
                 }
 
                 showLoading(false);
@@ -661,10 +662,14 @@
                     updates[`units/${fixFirebaseKey(rawId)}`] = cleanObj;
                 });
 
+                // TAMBAHKAN AKUN DEFAULT KE MIGRASI
+                updates['users/admin'] = { id: 'U01', username: 'admin', password: 'warehouse123', nama: 'Administrator', role: 'Admin' };
+                updates['users/superadmin'] = { id: 'U00', username: 'superadmin', password: 'super123', nama: 'Super Admin', role: 'SuperAdmin' };
+
                 await fbRoot.update(updates);
 
                 showLoading(false);
-                Swal.fire({ icon: 'success', title: 'Migrasi Sukses!', text: 'Data tersinkron ke Firebase.', background: '#1F2937', color: '#fff' });
+                Swal.fire({ icon: 'success', title: 'Migrasi & Akun Siap!', text: 'Data & Akun Login sudah pindah ke Firebase.', background: '#1F2937', color: '#fff' });
             } catch (error) {
                 showLoading(false);
                 console.error("Firebase Update Error:", error);
