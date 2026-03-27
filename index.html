@@ -481,13 +481,38 @@
         }
 
         async function handleLogin(e) {
-            e.preventDefault(); showLoading(true, "Verifikasi Akun...");
-            const res = await fetchAPI('login', { username: document.getElementById('logUser').value, password: document.getElementById('logPass').value });
-            showLoading(false);
-            if(res.success) { 
-                currentUser = res.user; localStorage.setItem('erp_session', JSON.stringify(currentUser)); 
-                closeModal('modalLogin'); applyRoleAccess(); renderStockTable(); renderTrackingTable(); notif('success', 'Login Berhasil'); 
-            } else { notif('error', 'Gagal', res.message); }
+            e.preventDefault(); 
+            showLoading(true, "Verifikasi Akun via Cloud...");
+            const userInp = document.getElementById('logUser').value;
+            const passInp = document.getElementById('logPass').value;
+
+            try {
+                const snapshot = await fbRoot.child('users').once('value');
+                const users = snapshot.val();
+                let foundUser = null;
+
+                if (users) {
+                    Object.keys(users).forEach(id => {
+                        if (users[id].username === userInp && users[id].password === passInp) {
+                            foundUser = users[id];
+                        }
+                    });
+                }
+
+                showLoading(false);
+                if (foundUser) {
+                    currentUser = foundUser;
+                    localStorage.setItem('erp_session', JSON.stringify(currentUser));
+                    closeModal('modalLogin');
+                    applyRoleAccess();
+                    notif('success', 'Login Berhasil (Cloud Auth)');
+                } else {
+                    notif('error', 'Gagal', 'Username atau Password salah!');
+                }
+            } catch (err) {
+                showLoading(false);
+                notif('error', 'Error Auth', err.message);
+            }
         }
 
         function logout() { 
@@ -529,35 +554,44 @@
             if (isFirebaseListening) return;
             isFirebaseListening = true;
 
+            // Listener Master Parts
             fbRoot.child('parts').on('value', (snapshot) => {
                 if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    Object.keys(data).forEach(id => {
-                        const idx = appData.parts.findIndex(p => p.id === id);
-                        if (idx > -1) { appData.parts[idx] = { ...appData.parts[idx], ...data[id] }; }
-                        else { appData.parts.push(data[id]); }
-                    });
+                    appData.parts = Object.values(snapshot.val());
                     renderStockTable();
                     renderDashboard();
                 }
             });
 
-            fbRoot.child('txsIn').on('child_added', (snapshot) => {
-                const tx = { ...snapshot.val(), type: 'IN' };
-                if (!appData.txs.some(t => t.id === tx.id)) {
-                    appData.txs.unshift(tx);
-                    renderTrackingTable();
+            // Listener Master Departments
+            fbRoot.child('depts').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    appData.depts = Object.values(snapshot.val());
+                    populateSelects();
                 }
             });
 
-            fbRoot.child('txsOut').on('child_added', (snapshot) => {
-                const tx = { ...snapshot.val(), type: 'OUT' };
-                if (!appData.txs.some(t => t.id === tx.id)) {
-                    appData.txs.unshift(tx);
-                    renderTrackingTable();
-                    renderDashboard();
+            // Listener Master Units
+            fbRoot.child('units').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    appData.units = Object.values(snapshot.val());
+                    populateSelects();
                 }
             });
+
+            // Listener Transaksi (Child Added & Removed untuk real-time sync)
+            const handleTxUpdate = () => {
+                fbRoot.once('value', (snap) => {
+                    const data = snap.val();
+                    const normalizedIn = Object.values(data.txsIn || {}).map(t => ({...t, type: 'IN'}));
+                    const normalizedOut = Object.values(data.txsOut || {}).map(t => ({...t, type: 'OUT'}));
+                    appData.txs = [...normalizedIn, ...normalizedOut].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    renderTrackingTable();
+                });
+            };
+
+            fbRoot.child('txsIn').on('value', handleTxUpdate);
+            fbRoot.child('txsOut').on('value', handleTxUpdate);
         }
 
         async function migrateAllToFirebase() {
@@ -605,6 +639,26 @@
                         }
                     });
                     updates[`${node}/${fixFirebaseKey(rawTxId)}`] = cleanTx;
+                });
+
+                // MIGRASI DEPARTMENTS
+                appData.depts.forEach(d => {
+                    let rawId = d.id || ("D" + Date.now());
+                    let cleanObj = {};
+                    Object.keys(d).forEach(k => {
+                        if (k && k.trim() !== "" && d[k] !== undefined && d[k] !== null) cleanObj[k] = d[k];
+                    });
+                    updates[`depts/${fixFirebaseKey(rawId)}`] = cleanObj;
+                });
+
+                // MIGRASI UNITS
+                appData.units.forEach(u => {
+                    let rawId = u.id || ("U" + Date.now());
+                    let cleanObj = {};
+                    Object.keys(u).forEach(k => {
+                        if (k && k.trim() !== "" && u[k] !== undefined && u[k] !== null) cleanObj[k] = u[k];
+                    });
+                    updates[`units/${fixFirebaseKey(rawId)}`] = cleanObj;
                 });
 
                 await fbRoot.update(updates);
@@ -827,65 +881,148 @@
         }
 
         async function saveTransaction(e, type) {
-            e.preventDefault(); let data = {};
-            if(type === 'IN') data = { type: 'IN', part_id: document.getElementById('txInPart').value, date: document.getElementById('txInDate').value, qty: parseInt(document.getElementById('txInQty').value), vendor: document.getElementById('txInVendor').value, no_po: document.getElementById('txInPO').value, lokasi_gudang: document.getElementById('txInLoc').value, user: currentUser.username };
-            else data = { type: 'OUT', part_id: document.getElementById('txOutPart').value, date: document.getElementById('txOutDate').value, qty: parseInt(document.getElementById('txOutQty').value), dept_id: document.getElementById('txOutDept').value, unit_id: document.getElementById('txOutUnit').value, user: currentUser.username };
-            showLoading(true, "Menyimpan...");
-            const res = await fetchAPI('addTransaction', data);
-            if(res.success) { await loadMasterData(); closeModal(type === 'IN' ? 'modalTxIn' : 'modalTxOut'); notif('success', 'Transaksi Berhasil Ditambahkan'); document.getElementById(type === 'IN' ? 'formTxIn' : 'formTxOut').reset(); if(type === 'IN' && selectSearchIn) selectSearchIn.clear(); if(type === 'OUT' && selectSearchOut) selectSearchOut.clear(); txCurrentPage = 1; } else { showLoading(false); notif('error', 'Gagal', res.message); }
+            e.preventDefault();
+            const partId = type === 'IN' ? document.getElementById('txInPart').value : document.getElementById('txOutPart').value;
+            const qty = parseInt(type === 'IN' ? document.getElementById('txInQty').value : document.getElementById('txOutQty').value);
+            const txId = (type === 'IN' ? 'TIN' : 'TOU') + Date.now();
+            const isoDate = new Date().toISOString();
+
+            showLoading(true, "Memproses Cloud Transaction...");
+
+            try {
+                // 1. Ambil data part untuk cek stok & nama
+                const partRef = fbRoot.child('parts').child(partId);
+                const partSnap = await partRef.once('value');
+                if (!partSnap.exists()) throw new Error("Item tidak ditemukan!");
+                
+                const partData = partSnap.val();
+                let newStock = parseInt(partData.stock_current);
+
+                if (type === 'OUT') {
+                    if (newStock < qty) throw new Error("Stok tidak mencukupi!");
+                    newStock -= qty;
+                } else {
+                    newStock += qty;
+                }
+
+                // 2. Siapkan Objek Transaksi
+                let txData = {
+                    id: txId, part_id: partId, qty: qty, date: type === 'IN' ? document.getElementById('txInDate').value : document.getElementById('txOutDate').value,
+                    type: type, user: currentUser.username, timestamp: isoDate,
+                    part_number: partData.part_number, item_name: partData.item_name
+                };
+
+                if (type === 'IN') {
+                    txData.vendor = document.getElementById('txInVendor').value;
+                    txData.no_po = document.getElementById('txInPO').value;
+                    txData.lokasi_gudang = document.getElementById('txInLoc').value;
+                } else {
+                    txData.dept_id = document.getElementById('txOutDept').value;
+                    txData.unit_id = document.getElementById('txOutUnit').value;
+                }
+
+                // 3. Update Firebase (Atomic Multi-Path Update)
+                let updates = {};
+                updates[`parts/${partId}/stock_current`] = newStock;
+                if (type === 'IN' && txData.lokasi_gudang) updates[`parts/${partId}/lokasi_gudang`] = txData.lokasi_gudang;
+                updates[`${type === 'IN' ? 'txsIn' : 'txsOut'}/${txId}`] = txData;
+
+                await fbRoot.update(updates);
+
+                showLoading(false);
+                closeModal(type === 'IN' ? 'modalTxIn' : 'modalTxOut');
+                notif('success', 'Berhasil', 'Data tersimpan langsung ke Cloud.');
+                document.getElementById(type === 'IN' ? 'formTxIn' : 'formTxOut').reset();
+                if(selectSearchIn) selectSearchIn.clear(); if(selectSearchOut) selectSearchOut.clear();
+            } catch (err) {
+                showLoading(false);
+                notif('error', 'Gagal Transaksi', err.message);
+            }
         }
 
         async function saveStock(e) {
-            e.preventDefault(); 
-            const data = { 
-                mode: document.getElementById('stkMode').value,
-                id: document.getElementById('stkId').value, 
-                part_number: document.getElementById('stkPartNo').value, 
-                item_name: document.getElementById('stkName').value, 
-                type: document.getElementById('stkType').value, 
-                lokasi_gudang: document.getElementById('stkLocation').value, 
-                unit: document.getElementById('stkUnit').value, 
-                stock_current: parseInt(document.getElementById('stkCurrent').value), 
-                stock_min: parseInt(document.getElementById('stkMin').value) 
+            e.preventDefault();
+            const id = document.getElementById('stkId').value.trim().replace(/[\.\#\$\/\[\]\s]/g, "_");
+            const data = {
+                id: id,
+                part_number: document.getElementById('stkPartNo').value,
+                item_name: document.getElementById('stkName').value,
+                type: document.getElementById('stkType').value,
+                lokasi_gudang: document.getElementById('stkLocation').value,
+                unit: document.getElementById('stkUnit').value,
+                stock_current: parseInt(document.getElementById('stkCurrent').value),
+                stock_min: parseInt(document.getElementById('stkMin').value)
             };
-            showLoading(true, "Menyimpan..."); 
-            const res = await fetchAPI('saveStockItem', data);
-            if(res.success) { await loadMasterData(); closeModal('modalStock'); notif('success', 'Tersimpan'); document.getElementById('formStock').reset(); stkCurrentPage = 1;} 
-            else { showLoading(false); notif('error', 'Gagal', res.message); }
+
+            showLoading(true, "Saving to Cloud...");
+            try {
+                await fbRoot.child('parts').child(id).set(data);
+                showLoading(false);
+                closeModal('modalStock');
+                notif('success', 'Master Item Tersimpan');
+                document.getElementById('formStock').reset();
+                stkCurrentPage = 1;
+            } catch (err) {
+                showLoading(false);
+                notif('error', 'Gagal Simpan Cloud', err.message);
+            }
         }
 
         function deleteStock(id) {
-            Swal.fire({ title: 'Hapus Permanen?', text: "Data tidak bisa dikembalikan!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#374151', confirmButtonText: 'Hapus', background: '#1F2937', color: '#fff' })
+            Swal.fire({ title: 'Hapus Item Master?', text: "Data di Cloud akan dihapus permanen!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', background: '#1F2937', color: '#fff' })
             .then(async (result) => {
-                if (result.isConfirmed) { showLoading(true, "Menghapus..."); const res = await fetchAPI('deleteStockItem', { id: id }); if(res.success) { await loadMasterData(); notif('success', 'Terhapus', res.message); } else { showLoading(false); notif('error', 'Gagal', res.message); } }
+                if (result.isConfirmed) {
+                    showLoading(true, "Deleting from Cloud...");
+                    try {
+                        await fbRoot.child('parts').child(id).remove();
+                        showLoading(false);
+                        notif('success', 'Item Terhapus dari Cloud');
+                    } catch (err) {
+                        showLoading(false);
+                        notif('error', 'Gagal Hapus Cloud', err.message);
+                    }
+                }
             })
         }
 
-        function deleteTx(id, type, part_id, qty) {
-            Swal.fire({ 
-                title: 'Hapus Transaksi?', 
-                text: "Stok akan otomatis disesuaikan kembali (Revert).", 
+        async function deleteTx(id, type, part_id, qty) {
+            const result = await Swal.fire({ 
+                title: 'Hapus & Revert Stok?', 
+                text: "Stok di Cloud akan dikembalikan otomatis.", 
                 icon: 'warning', 
                 showCancelButton: true, 
-                confirmButtonColor: '#ef4444', 
-                cancelButtonColor: '#374151', 
-                confirmButtonText: 'Ya, Hapus!', 
+                confirmButtonColor: '#ef4444',
                 background: '#1F2937', 
                 color: '#fff' 
-            }).then(async (result) => {
-                if (result.isConfirmed) { 
-                    showLoading(true, "Menghapus & Update Stok..."); 
-                    const res = await fetchAPI('deleteTransaction', { id: id, type: type, part_id: part_id, qty: qty }); 
-                    if(res.success) { 
-                        appData.txs = appData.txs.filter(x => x.id !== id);
-                        await loadMasterData(); 
-                        notif('success', 'Berhasil', res.message); 
-                    } else { 
-                        showLoading(false); 
-                        notif('error', 'Gagal', res.message); 
-                    } 
-                }
             });
+
+            if (!result.isConfirmed) return;
+
+            showLoading(true, "Reverting Cloud Data...");
+            try {
+                const partRef = fbRoot.child('parts').child(part_id);
+                const partSnap = await partRef.once('value');
+                
+                if (partSnap.exists()) {
+                    let currentStock = parseInt(partSnap.val().stock_current);
+                    let revertedStock = type === 'IN' ? currentStock - qty : currentStock + qty;
+                    
+                    let updates = {};
+                    updates[`parts/${part_id}/stock_current`] = revertedStock;
+                    updates[`${type === 'IN' ? 'txsIn' : 'txsOut'}/${id}`] = null;
+                    
+                    await fbRoot.update(updates);
+                    appData.txs = appData.txs.filter(x => x.id !== id);
+                    renderTrackingTable();
+                    notif('success', 'Transaksi Dibatalkan', 'Stok telah diperbarui di Cloud.');
+                } else {
+                    throw new Error("Item master tidak ditemukan untuk revert stok.");
+                }
+                showLoading(false);
+            } catch (err) {
+                showLoading(false);
+                notif('error', 'Gagal Revert', err.message);
+            }
         }
 
         function editStock(id) {
