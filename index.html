@@ -21,7 +21,6 @@
     </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 
@@ -40,18 +39,45 @@
         .ts-dropdown { background-color: #111827 !important; border: 1px solid #1F2937 !important; color: #fff !important; border-radius: 0.375rem !important; }
         .ts-dropdown .option { padding: 8px 12px; }
         .ts-dropdown .option:hover, .ts-dropdown .option.active { background-color: #1F2937 !important; color: #06b6d4 !important; }
+        
+        @keyframes progress-indeterminate {
+            0% { transform: translateX(-100%); width: 30%; }
+            50% { width: 50%; }
+            100% { transform: translateX(400%); width: 30%; }
+        }
+        .animate-progress { animation: progress-indeterminate 1.5s ease-in-out infinite; }
     </style>
 
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body class="antialiased overflow-x-hidden">
 
-    <div id="loadingOverlay" class="fixed inset-0 bg-dark-900 bg-opacity-90 z-50 flex flex-col justify-center items-center hide">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-brand-cyan mb-4"></div>
-        <p class="text-brand-cyan font-medium animate-pulse" id="loadingText">Memproses Data...</p>
+    <div id="loadingOverlay" class="fixed inset-0 bg-dark-900/80 backdrop-blur-sm z-[9999] flex justify-center items-center hide transition-all duration-300">
+        <div class="bg-dark-800/95 border border-dark-700 shadow-2xl rounded-2xl p-8 flex flex-col items-center max-w-sm w-11/12 text-center relative overflow-hidden">
+            <div class="absolute -top-10 -left-10 w-32 h-32 bg-brand-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-brand-blue/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="relative w-20 h-20 mb-5">
+                <div class="absolute inset-0 border-4 border-dark-700 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-transparent border-t-brand-cyan border-r-brand-blue rounded-full animate-spin duration-1000"></div>
+                <div class="absolute inset-3 bg-dark-900 rounded-full flex items-center justify-center shadow-inner">
+                    <i data-lucide="server" class="w-6 h-6 text-brand-cyan animate-pulse"></i>
+                </div>
+            </div>
+            
+            <h3 class="text-lg font-bold text-white mb-1 tracking-wide">Mohon Tunggu</h3>
+            <p class="text-sm text-brand-cyan font-medium animate-pulse" id="loadingText">Memproses Data...</p>
+            
+            <div class="w-full h-1.5 bg-dark-900 rounded-full mt-6 overflow-hidden relative border border-dark-700">
+                <div class="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-brand-cyan to-brand-blue rounded-full animate-progress shadow-[0_0_10px_rgba(6,182,212,0.5)]"></div>
+            </div>
+        </div>
     </div>
 
     <div id="app" class="min-h-screen flex flex-col">
@@ -150,6 +176,9 @@
                         <p class="text-sm text-gray-400">Catat dan lacak riwayat in/out barang.</p>
                     </div>
                     <div class="flex space-x-3 admin-only hide">
+                        <button onclick="syncManualTransactions()" class="bg-brand-yellow hover:bg-yellow-600 text-dark-900 px-4 py-2 rounded-lg text-sm font-bold flex items-center shadow-lg transition superadmin-only hide">
+                            <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i> Sync Manual Sheet
+                        </button>
                         <button onclick="openModal('modalTxIn')" class="bg-brand-green hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
                             <i data-lucide="arrow-down-left" class="w-4 h-4 mr-2"></i> Barang Masuk (IN)
                         </button>
@@ -177,6 +206,7 @@
                                     <th class="px-4 py-3 text-center">Qty</th>
                                     <th class="px-4 py-3 w-1/3">Alokasi / Info Tambahan</th>
                                     <th class="px-4 py-3">Petugas</th>
+                                    <th class="px-4 py-3 text-right superadmin-only hide">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="txTableBody" class="divide-y divide-dark-700"></tbody>
@@ -193,7 +223,7 @@
             <section id="view-stock" class="space-y-6 hide">
                 <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                     <h2 class="text-2xl font-bold text-white">Master Stok</h2>
-                    <button onclick="openModal('modalStock')" class="bg-brand-green hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center admin-only hide">
+                    <button onclick="document.getElementById('formStock').reset(); document.getElementById('stkMode').value='NEW'; document.getElementById('stkId').readOnly=false; document.getElementById('stkId').classList.remove('opacity-50'); openModal('modalStock');" class="bg-brand-green hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center admin-only hide">
                         <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Tambah Item
                     </button>
                 </div>
@@ -231,7 +261,17 @@
             </section>
             
             <section id="view-master" class="space-y-6 hide">
-                <h2 class="text-2xl font-bold text-white">Master Data (Unit & Dept)</h2>
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-white">Master Data & Pengaturan</h2>
+                    <div class="flex space-x-3">
+                        <button onclick="openModal('modalUser')" class="bg-brand-purple hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center transition shadow-lg superadmin-only hide">
+                            <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i> Tambah User
+                        </button>
+                        <button onclick="migrateAllToFirebase()" class="bg-brand-red hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center transition shadow-lg animate-pulse admin-only hide">
+                            <i data-lucide="cloud-lightning" class="w-4 h-4 mr-2"></i> MIGRASIKAN DATA KE CLOUD
+                        </button>
+                    </div>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="glass-panel rounded-xl p-5">
                         <h3 class="text-lg font-medium text-white mb-4">Departemen</h3>
@@ -300,8 +340,9 @@
         <div class="glass-panel p-6 rounded-xl w-full max-w-lg">
             <h3 class="text-lg font-bold text-white mb-4">Master Item</h3>
             <form id="formStock" onsubmit="saveStock(event)" class="space-y-4">
-                <input type="hidden" id="stkId">
+                <input type="hidden" id="stkMode" value="NEW">
                 <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-xs text-brand-yellow font-bold mb-1">ID Item (A0001)</label><input type="text" id="stkId" required class="w-full bg-dark-900 border border-brand-yellow/50 rounded p-2 text-white font-bold uppercase" placeholder="Contoh: A6182"></div>
                     <div><label class="block text-xs text-gray-400 mb-1">Part Number</label><input type="text" id="stkPartNo" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white"></div>
                     <div><label class="block text-xs text-gray-400 mb-1">Kategori</label><select id="stkType" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white"><option value="FILTER">FILTER</option><option value="GET">GET</option><option value="SPAREPART">SPAREPART</option><option value="LUBRICATE">LUBRICATE</option><option value="CONSUMABLE">CONSUMABLE</option><option value="TYRE">TYRE</option></select></div>
                 </div>
@@ -317,28 +358,51 @@
         </div>
     </div>
 
+    <div id="modalUser" class="fixed inset-0 bg-dark-900 bg-opacity-80 z-50 flex justify-center items-center hide">
+        <div class="glass-panel p-6 rounded-xl w-full max-w-sm border-t-4 border-t-brand-purple">
+            <div class="flex items-center mb-4 text-white"><i data-lucide="user-plus" class="w-5 h-5 mr-2 text-brand-purple"></i><h3 class="text-lg font-bold">Tambah User Baru</h3></div>
+            <form id="formAddUser" onsubmit="handleAddUser(event)" class="space-y-4">
+                <div><label class="block text-xs text-gray-400 mb-1">Username</label><input type="text" id="usrUsername" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white"></div>
+                <div><label class="block text-xs text-gray-400 mb-1">Password</label><input type="password" id="usrPassword" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white"></div>
+                <div><label class="block text-xs text-gray-400 mb-1">Nama Lengkap</label><input type="text" id="usrNama" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white"></div>
+                <div><label class="block text-xs text-gray-400 mb-1">Role</label><select id="usrRole" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white"><option value="Admin">Admin (Gudang)</option><option value="SuperAdmin">Super Admin</option></select></div>
+                <div class="flex justify-end space-x-3 mt-6"><button type="button" onclick="closeModal('modalUser')" class="px-4 py-2 text-gray-400">Batal</button><button type="submit" class="px-4 py-2 bg-brand-purple rounded text-white font-medium">Simpan</button></div>
+            </form>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
+
+        // 1. FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyfvwSnamOx06PI9CehFjifKg00uBEKoE",
+            authDomain: "gen-lang-client-0064579309.firebaseapp.com",
+            databaseURL: "https://gen-lang-client-0064579309-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "gen-lang-client-0064579309",
+            storageBucket: "gen-lang-client-0064579309.appspot.com",
+            messagingSenderId: "649461053263",
+            appId: "1:649461053263:web:3d53d8628245b189c8b73a"
+        };
+
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
+        const fbRoot = db.ref('bss_warehouse_data');
 
         // MENGHUBUNGKAN KE DEPLOYMENT APPS SCRIPT ANDA
         const API_URL = "https://script.google.com/macros/s/AKfycbzyaOMGl1LyYBtgj3L0kqFCiTYqpUt1wgstyTe1JLo03HXoPBpE5fyVpZ4osHusoGgStw/exec"; 
         
         let currentUser = null;
+        let isFirebaseListening = false;
         let appData = { parts: [], txs: [], depts: [], units: [] };
         let charts = {};
         let selectSearchIn, selectSearchOut;
 
-        // --- STATE UNTUK SEMUA PAGINATION ---
+        // --- STATE UNTUK PAGINATION ---
         const rowsPerPage = 15;
-        
-        let txCurrentPage = 1;
-        let txSearchQuery = "";
-        
-        let stkCurrentPage = 1;
-        let stkSearchQuery = "";
-
-        let dashCurrentPage = 1;
-        let dashAnalysisData = []; // Menyimpan data yang sudah terfilter Kritis/Habis
+        let txCurrentPage = 1, txSearchQuery = "";
+        let stkCurrentPage = 1, stkSearchQuery = "";
+        let dashCurrentPage = 1, dashAnalysisData = []; 
 
         async function fetchAPI(action, payload = {}) {
             try {
@@ -368,7 +432,9 @@
             show ? overlay.classList.remove('hide') : overlay.classList.add('hide');
         }
 
-        function notif(icon, title, text="") { Swal.fire({ icon: icon, title: title, text: text, background: '#1F2937', color: '#fff', confirmButtonColor: '#06b6d4' }); }
+        function notif(icon, title, text="") { 
+            Swal.fire({ icon: icon, title: title, text: text, background: '#1F2937', color: '#fff', confirmButtonColor: '#06b6d4' }); 
+        }
 
         function router(viewId) {
             ['view-dashboard', 'view-tracking', 'view-stock', 'view-master'].forEach(id => {
@@ -397,21 +463,42 @@
         }
 
         function applyRoleAccess() {
-            renderAuthBtn(true);
+            renderAuthBtn(currentUser !== null);
             const adminEls = document.querySelectorAll('.admin-only');
             const superAdminEls = document.querySelectorAll('.superadmin-only');
-            if (currentUser && (currentUser.role === 'Admin' || currentUser.role === 'SuperAdmin')) { adminEls.forEach(el => el.classList.remove('hide')); } else { adminEls.forEach(el => el.classList.add('hide')); }
-            if (currentUser && currentUser.role === 'SuperAdmin') { superAdminEls.forEach(el => el.classList.remove('hide')); } else { superAdminEls.forEach(el => el.classList.add('hide')); }
+            
+            if (currentUser && (currentUser.role === 'Admin' || currentUser.role === 'SuperAdmin')) { 
+                adminEls.forEach(el => el.classList.remove('hide')); 
+            } else { 
+                adminEls.forEach(el => el.classList.add('hide')); 
+            }
+            
+            if (currentUser && currentUser.role === 'SuperAdmin') { 
+                superAdminEls.forEach(el => el.classList.remove('hide')); 
+            } else { 
+                superAdminEls.forEach(el => el.classList.add('hide')); 
+            }
         }
 
         async function handleLogin(e) {
             e.preventDefault(); showLoading(true, "Verifikasi Akun...");
             const res = await fetchAPI('login', { username: document.getElementById('logUser').value, password: document.getElementById('logPass').value });
             showLoading(false);
-            if(res.success) { currentUser = res.user; localStorage.setItem('erp_session', JSON.stringify(currentUser)); closeModal('modalLogin'); applyRoleAccess(); renderStockTable(); renderTrackingTable(); notif('success', 'Login Berhasil'); } else { notif('error', 'Gagal', res.message); }
+            if(res.success) { 
+                currentUser = res.user; localStorage.setItem('erp_session', JSON.stringify(currentUser)); 
+                closeModal('modalLogin'); applyRoleAccess(); renderStockTable(); renderTrackingTable(); notif('success', 'Login Berhasil'); 
+            } else { notif('error', 'Gagal', res.message); }
         }
 
-        function logout() { localStorage.removeItem('erp_session'); currentUser = null; applyRoleAccess(); router('dashboard'); renderStockTable(); renderTrackingTable(); notif('info', 'Anda telah logout'); }
+        function logout() { 
+            localStorage.removeItem('erp_session'); 
+            currentUser = null; 
+            applyRoleAccess(); 
+            router('dashboard'); 
+            try { renderStockTable(); renderTrackingTable(); } catch(e){} 
+            notif('info', 'Anda telah logout'); 
+            setTimeout(() => location.reload(), 500); 
+        }
 
         async function loadMasterData() {
             showLoading(true, "Sinkronisasi Database...");
@@ -434,12 +521,136 @@
                 renderStockTable(); 
                 renderTrackingTable(); 
                 renderDashboard();
+                initFirebaseListeners(); 
             } else { notif('error', 'Gagal Sinkronisasi', res.message); }
         }
 
-        // ==========================================
-        // PAGINATION HELPER (Digunakan oleh semua tabel)
-        // ==========================================
+        function initFirebaseListeners() {
+            if (isFirebaseListening) return;
+            isFirebaseListening = true;
+
+            fbRoot.child('parts').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    Object.keys(data).forEach(id => {
+                        const idx = appData.parts.findIndex(p => p.id === id);
+                        if (idx > -1) { appData.parts[idx] = { ...appData.parts[idx], ...data[id] }; }
+                        else { appData.parts.push(data[id]); }
+                    });
+                    renderStockTable();
+                    renderDashboard();
+                }
+            });
+
+            fbRoot.child('txsIn').on('child_added', (snapshot) => {
+                const tx = { ...snapshot.val(), type: 'IN' };
+                if (!appData.txs.some(t => t.id === tx.id)) {
+                    appData.txs.unshift(tx);
+                    renderTrackingTable();
+                }
+            });
+
+            fbRoot.child('txsOut').on('child_added', (snapshot) => {
+                const tx = { ...snapshot.val(), type: 'OUT' };
+                if (!appData.txs.some(t => t.id === tx.id)) {
+                    appData.txs.unshift(tx);
+                    renderTrackingTable();
+                    renderDashboard();
+                }
+            });
+        }
+
+        async function migrateAllToFirebase() {
+            const result = await Swal.fire({
+                title: 'Konfirmasi Migrasi Total',
+                text: "Data dengan karakter ilegal (seperti tanda titik pada ID) akan dikonversi menjadi underscore (_) otomatis.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Ya, Bersihkan & Migrasikan!'
+            });
+
+            if (!result.isConfirmed) return;
+            showLoading(true, "MEMBERSIHKAN DATA & CLOUD SYNC...");
+
+            const fixFirebaseKey = (key) => {
+                if (!key) return "ID_KOSONG_" + Date.now();
+                return String(key).trim().replace(/[\.\#\$\/\[\]\s]/g, "_");
+            };
+
+            try {
+                const updates = {};
+                
+                appData.parts.forEach(p => {
+                    let rawId = p.id || p.part_number; 
+                    if (rawId) {
+                        let cleanObj = {};
+                        Object.keys(p).forEach(k => {
+                            // Hapus key yang kosong, undefined, atau hanya spasi agar Firebase tidak error
+                            if (k && k.trim() !== "" && p[k] !== undefined && p[k] !== null) {
+                                cleanObj[k] = p[k];
+                            }
+                        });
+                        updates[`parts/${fixFirebaseKey(rawId)}`] = cleanObj;
+                    }
+                });
+
+                appData.txs.forEach(t => {
+                    const node = t.type === 'IN' ? 'txsIn' : 'txsOut';
+                    let rawTxId = t.id || t.timestamp || ("TX" + Date.now());
+                    let cleanTx = {};
+                    Object.keys(t).forEach(k => {
+                        if (k && k.trim() !== "" && t[k] !== undefined && t[k] !== null) {
+                            cleanTx[k] = t[k];
+                        }
+                    });
+                    updates[`${node}/${fixFirebaseKey(rawTxId)}`] = cleanTx;
+                });
+
+                await fbRoot.update(updates);
+
+                showLoading(false);
+                Swal.fire({ icon: 'success', title: 'Migrasi Sukses!', text: 'Data tersinkron ke Firebase.', background: '#1F2937', color: '#fff' });
+            } catch (error) {
+                showLoading(false);
+                console.error("Firebase Update Error:", error);
+                Swal.fire({ icon: 'error', title: 'Update Gagal', text: error.message, background: '#1F2937', color: '#fff' });
+            }
+        }
+
+        async function syncManualTransactions() {
+            showLoading(true, "Membaca & Sinkronisasi Sheets ke Firebase...");
+            const res = await fetchAPI('syncManualSheets');
+            if(res.success) {
+                await loadMasterData();
+                showLoading(false);
+                notif('success', 'Sync Berhasil', res.message);
+            } else {
+                showLoading(false);
+                notif('error', 'Sync Gagal', res.message);
+            }
+        }
+
+        async function handleAddUser(e) {
+            e.preventDefault();
+            const payload = {
+                username: document.getElementById('usrUsername').value,
+                password: document.getElementById('usrPassword').value,
+                nama: document.getElementById('usrNama').value,
+                role: document.getElementById('usrRole').value
+            };
+            showLoading(true, "Menyimpan User...");
+            const res = await fetchAPI('addUser', payload);
+            showLoading(false);
+            if(res.success) {
+                closeModal('modalUser');
+                document.getElementById('formAddUser').reset();
+                notif('success', 'User Ditambahkan', res.message);
+            } else {
+                notif('error', 'Gagal', res.message);
+            }
+        }
+
         function createPaginationHtml(currentPage, totalPages, changeFuncStr) {
             let btnHtml = `<button onclick="${changeFuncStr}(${currentPage - 1})" ${currentPage === 1 ? 'disabled class="px-2 py-1 bg-dark-800 text-dark-700 rounded cursor-not-allowed"' : 'class="px-2 py-1 bg-dark-700 hover:bg-dark-600 text-white rounded transition"'}>&laquo;</button>`;
             let startPage = Math.max(1, currentPage - 2);
@@ -452,14 +663,7 @@
             return btnHtml;
         }
 
-        // ==========================================
-        // RENDER MASTER STOCK
-        // ==========================================
-        function handleSearchStock() {
-            stkSearchQuery = document.getElementById('searchStockInput').value.toLowerCase();
-            stkCurrentPage = 1;
-            renderStockTable();
-        }
+        function handleSearchStock() { stkSearchQuery = document.getElementById('searchStockInput').value.toLowerCase(); stkCurrentPage = 1; renderStockTable(); }
         function changeStkPage(page) { stkCurrentPage = page; renderStockTable(); }
         
         function renderStockTable() {
@@ -470,11 +674,9 @@
                     return searchStr.includes(stkSearchQuery);
                 });
             }
-
             const totalItems = filteredParts.length;
             const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
             if (stkCurrentPage > totalPages) stkCurrentPage = totalPages;
-            
             const startIndex = (stkCurrentPage - 1) * rowsPerPage;
             const endIndex = startIndex + rowsPerPage;
             const paginatedParts = filteredParts.slice(startIndex, endIndex);
@@ -482,7 +684,8 @@
             document.getElementById('stockTableBody').innerHTML = paginatedParts.map(p => {
                 const typeColors = { 'FILTER': 'bg-purple-900 text-purple-300', 'GET': 'bg-yellow-900 text-yellow-300', 'SPAREPART': 'bg-blue-900 text-brand-blue', 'LUBRICATE': 'bg-green-900 text-brand-green', 'CONSUMABLE': 'bg-gray-700 text-gray-300', 'TYRE': 'bg-red-900 text-brand-red' };
                 const badgeColor = typeColors[p.type] || 'bg-gray-700 text-gray-300';
-                return `<tr class="hover:bg-dark-800 transition border-b border-dark-700"><td class="px-4 py-3 font-medium text-white">${p.part_number}</td><td class="px-4 py-3">${p.item_name}</td><td class="px-4 py-3"><span class="px-2 py-1 rounded text-[10px] font-bold tracking-wider ${badgeColor}">${p.type}</span></td><td class="px-4 py-3 text-xs text-brand-cyan">${p.lokasi_gudang || '-'}</td><td class="px-4 py-3 text-center text-white font-bold">${p.stock_current} ${p.unit}</td><td class="px-4 py-3 text-center">${p.stock_min}</td><td class="px-4 py-3 text-right"><button onclick="editStock('${p.id}')" class="text-brand-cyan hover:text-cyan-300 mr-3 admin-only ${currentUser && (currentUser.role=='Admin' || currentUser.role=='SuperAdmin') ? '' : 'hide'}"><i data-lucide="edit" class="w-4 h-4"></i></button><button onclick="deleteStock('${p.id}')" class="text-brand-red hover:text-red-400 superadmin-only ${currentUser && currentUser.role=='SuperAdmin' ? '' : 'hide'}"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`;
+                // Tampilkan ID di atas, Part Number di bawahnya
+                return `<tr class="hover:bg-dark-800 transition border-b border-dark-700"><td class="px-4 py-3 font-medium text-white">${p.id} <br><span class="text-[10px] text-brand-cyan">${p.part_number}</span></td><td class="px-4 py-3">${p.item_name}</td><td class="px-4 py-3"><span class="px-2 py-1 rounded text-[10px] font-bold tracking-wider ${badgeColor}">${p.type}</span></td><td class="px-4 py-3 text-xs text-gray-400">${p.lokasi_gudang || '-'}</td><td class="px-4 py-3 text-center text-white font-bold">${p.stock_current} ${p.unit}</td><td class="px-4 py-3 text-center">${p.stock_min}</td><td class="px-4 py-3 text-right"><button onclick="editStock('${p.id}')" class="text-brand-cyan hover:text-cyan-300 mr-3 admin-only ${currentUser && (currentUser.role=='Admin' || currentUser.role=='SuperAdmin') ? '' : 'hide'}"><i data-lucide="edit" class="w-4 h-4"></i></button><button onclick="deleteStock('${p.id}')" class="text-brand-red hover:text-red-400 superadmin-only ${currentUser && currentUser.role=='SuperAdmin' ? '' : 'hide'}"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`;
             }).join('');
 
             const endItemDisplay = endIndex > totalItems ? totalItems : endIndex;
@@ -491,14 +694,7 @@
             lucide.createIcons();
         }
 
-        // ==========================================
-        // RENDER TRACKING TRANSAKSI
-        // ==========================================
-        function handleSearchTracking() {
-            txSearchQuery = document.getElementById('searchTrackingInput').value.toLowerCase();
-            txCurrentPage = 1;
-            renderTrackingTable();
-        }
+        function handleSearchTracking() { txSearchQuery = document.getElementById('searchTrackingInput').value.toLowerCase(); txCurrentPage = 1; renderTrackingTable(); }
         function changeTxPage(page) { txCurrentPage = page; renderTrackingTable(); }
 
         function renderTrackingTable() {
@@ -512,11 +708,9 @@
                     return searchStr.includes(txSearchQuery);
                 });
             }
-
             const totalItems = filteredTxs.length;
             const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
             if (txCurrentPage > totalPages) txCurrentPage = totalPages;
-            
             const startIndex = (txCurrentPage - 1) * rowsPerPage;
             const endIndex = startIndex + rowsPerPage;
             const paginatedTxs = filteredTxs.slice(startIndex, endIndex);
@@ -528,7 +722,11 @@
                     ? `<span class="text-brand-yellow">Dept:</span> ${appData.depts.find(d => d.id === t.dept_id)?.nama_dept || '-'} | <span class="text-brand-yellow">Unit:</span> ${appData.units.find(u => u.id === t.unit_id)?.nama_unit || '-'}`
                     : `<span class="text-brand-cyan">Vendor:</span> ${t.vendor || '-'} | <span class="text-brand-cyan">PO:</span> ${t.no_po || '-'} <br><span class="text-[10px] text-gray-500">Gudang: ${t.lokasi_gudang || '-'}</span>`;
 
-                return `<tr class="hover:bg-dark-800 transition border-b border-dark-700"><td class="px-4 py-3 text-xs whitespace-nowrap">${new Date(t.date).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'})}</td><td class="px-4 py-3"><span class="px-2 py-1 rounded text-[10px] font-bold ${isOut?'bg-red-900 text-brand-red':'bg-green-900 text-brand-green'}">${t.type}</span></td><td class="px-4 py-3 font-medium text-gray-300 w-1/3">${part.part_number || '?'} <br><span class="text-[10px] text-gray-500 font-normal leading-tight block mt-1">${part.item_name || '?'}</span></td><td class="px-4 py-3 text-center font-bold text-white text-lg">${isOut ? '-' : '+'}${t.qty}</td><td class="px-4 py-3 text-xs leading-relaxed w-1/3">${infoTambahan}</td><td class="px-4 py-3 text-xs text-brand-purple">${t.user_id || t.user || '?'}</td></tr>`;
+                // Prioritaskan part_number/item_name yang tersimpan di transaksi (t), fallback ke data master (part)
+                const pNumber = t.part_number || part.part_number || '?';
+                const pName = t.item_name || part.item_name || '?';
+
+                return `<tr class="hover:bg-dark-800 transition border-b border-dark-700"><td class="px-4 py-3 text-xs whitespace-nowrap">${new Date(t.date).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'})}</td><td class="px-4 py-3"><span class="px-2 py-1 rounded text-[10px] font-bold ${isOut?'bg-red-900 text-brand-red':'bg-green-900 text-brand-green'}">${t.type}</span></td><td class="px-4 py-3 font-medium text-gray-300 w-1/3">${pNumber} <br><span class="text-[10px] text-gray-500 font-normal leading-tight block mt-1">${pName}</span></td><td class="px-4 py-3 text-center font-bold text-white text-lg">${isOut ? '-' : '+'}${t.qty}</td><td class="px-4 py-3 text-xs leading-relaxed w-1/3">${infoTambahan}</td><td class="px-4 py-3 text-xs text-brand-purple">${t.user_id || t.user || '?'}</td><td class="px-4 py-3 text-right superadmin-only ${currentUser && currentUser.role === 'SuperAdmin' ? '' : 'hide'}"><button onclick="deleteTx('${t.id}', '${t.type}', '${t.part_id}', ${t.qty})" class="text-brand-red hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`;
             }).join('');
 
             const endItemDisplay = endIndex > totalItems ? totalItems : endIndex;
@@ -537,9 +735,6 @@
             lucide.createIcons();
         }
 
-        // ==========================================
-        // RENDER DASHBOARD (Chart & Analysis Table)
-        // ==========================================
         function getDatesBetween(startDate, endDate) {
             const dates = []; let currentDate = new Date(startDate); const stopDate = new Date(endDate);
             while (currentDate <= stopDate) { dates.push(new Date(currentDate)); currentDate.setDate(currentDate.getDate() + 1); }
@@ -548,7 +743,6 @@
 
         function changeDashPage(page) { dashCurrentPage = page; renderDashAnalysisTable(); }
 
-        // Fungsi terpisah khusus me-render Data Tabel Analisis di Dashboard
         function renderDashAnalysisTable() {
             const totalItems = dashAnalysisData.length;
             const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
@@ -583,12 +777,10 @@
                 return t.type === 'OUT' && txDate >= startDt && txDate <= endDt;
             });
 
-            // 1. Kumpulkan data Part yang Habis/Kritis untuk Pagination di Dashboard
             dashAnalysisData = appData.parts.filter(p => p.stock_current <= p.stock_min);
-            dashCurrentPage = 1; // reset ke page 1
+            dashCurrentPage = 1; 
             renderDashAnalysisTable();
 
-            // 2. Render Charts
             Chart.defaults.color = '#9ca3af'; Chart.defaults.borderColor = '#374151';
             const datesInRange = getDatesBetween(startDt, endDt);
             const isLargeRange = datesInRange.length > 31;
@@ -634,9 +826,6 @@
             charts.c3 = new Chart(document.getElementById('chartDept').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: labelsDept, datasets: [{ label: 'Dept', data: dataDept, backgroundColor: labelsDept.map((_, i) => deptColors[i % deptColors.length]), borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
 
-        // ==========================================
-        // OTHER CRUD FUNCTIONS
-        // ==========================================
         async function saveTransaction(e, type) {
             e.preventDefault(); let data = {};
             if(type === 'IN') data = { type: 'IN', part_id: document.getElementById('txInPart').value, date: document.getElementById('txInDate').value, qty: parseInt(document.getElementById('txInQty').value), vendor: document.getElementById('txInVendor').value, no_po: document.getElementById('txInPO').value, lokasi_gudang: document.getElementById('txInLoc').value, user: currentUser.username };
@@ -647,9 +836,22 @@
         }
 
         async function saveStock(e) {
-            e.preventDefault(); const data = { id: document.getElementById('stkId').value, part_number: document.getElementById('stkPartNo').value, item_name: document.getElementById('stkName').value, type: document.getElementById('stkType').value, lokasi_gudang: document.getElementById('stkLocation').value, unit: document.getElementById('stkUnit').value, stock_current: parseInt(document.getElementById('stkCurrent').value), stock_min: parseInt(document.getElementById('stkMin').value) };
-            showLoading(true, "Menyimpan..."); const res = await fetchAPI('saveStockItem', data);
-            if(res.success) { await loadMasterData(); closeModal('modalStock'); notif('success', 'Tersimpan'); document.getElementById('formStock').reset(); stkCurrentPage = 1;} else { showLoading(false); notif('error', 'Gagal', res.message); }
+            e.preventDefault(); 
+            const data = { 
+                mode: document.getElementById('stkMode').value,
+                id: document.getElementById('stkId').value, 
+                part_number: document.getElementById('stkPartNo').value, 
+                item_name: document.getElementById('stkName').value, 
+                type: document.getElementById('stkType').value, 
+                lokasi_gudang: document.getElementById('stkLocation').value, 
+                unit: document.getElementById('stkUnit').value, 
+                stock_current: parseInt(document.getElementById('stkCurrent').value), 
+                stock_min: parseInt(document.getElementById('stkMin').value) 
+            };
+            showLoading(true, "Menyimpan..."); 
+            const res = await fetchAPI('saveStockItem', data);
+            if(res.success) { await loadMasterData(); closeModal('modalStock'); notif('success', 'Tersimpan'); document.getElementById('formStock').reset(); stkCurrentPage = 1;} 
+            else { showLoading(false); notif('error', 'Gagal', res.message); }
         }
 
         function deleteStock(id) {
@@ -659,9 +861,49 @@
             })
         }
 
+        function deleteTx(id, type, part_id, qty) {
+            Swal.fire({ 
+                title: 'Hapus Transaksi?', 
+                text: "Stok akan otomatis disesuaikan kembali (Revert).", 
+                icon: 'warning', 
+                showCancelButton: true, 
+                confirmButtonColor: '#ef4444', 
+                cancelButtonColor: '#374151', 
+                confirmButtonText: 'Ya, Hapus!', 
+                background: '#1F2937', 
+                color: '#fff' 
+            }).then(async (result) => {
+                if (result.isConfirmed) { 
+                    showLoading(true, "Menghapus & Update Stok..."); 
+                    const res = await fetchAPI('deleteTransaction', { id: id, type: type, part_id: part_id, qty: qty }); 
+                    if(res.success) { 
+                        appData.txs = appData.txs.filter(x => x.id !== id);
+                        await loadMasterData(); 
+                        notif('success', 'Berhasil', res.message); 
+                    } else { 
+                        showLoading(false); 
+                        notif('error', 'Gagal', res.message); 
+                    } 
+                }
+            });
+        }
+
         function editStock(id) {
             const p = appData.parts.find(x => x.id === id);
-            if(p) { document.getElementById('stkId').value = p.id; document.getElementById('stkPartNo').value = p.part_number; document.getElementById('stkName').value = p.item_name; document.getElementById('stkType').value = p.type; document.getElementById('stkLocation').value = p.lokasi_gudang || ''; document.getElementById('stkUnit').value = p.unit; document.getElementById('stkCurrent').value = p.stock_current; document.getElementById('stkMin').value = p.stock_min; openModal('modalStock'); }
+            if(p) { 
+                document.getElementById('stkMode').value = 'EDIT';
+                document.getElementById('stkId').value = p.id; 
+                document.getElementById('stkId').readOnly = true; // Kunci ID agar tidak diubah saat edit
+                document.getElementById('stkId').classList.add('opacity-50'); // Beri efek visual terkunci
+                document.getElementById('stkPartNo').value = p.part_number; 
+                document.getElementById('stkName').value = p.item_name; 
+                document.getElementById('stkType').value = p.type; 
+                document.getElementById('stkLocation').value = p.lokasi_gudang || ''; 
+                document.getElementById('stkUnit').value = p.unit; 
+                document.getElementById('stkCurrent').value = p.stock_current; 
+                document.getElementById('stkMin').value = p.stock_min; 
+                openModal('modalStock'); 
+            }
         }
 
         function openModal(id) { document.getElementById(id).classList.remove('hide'); }
