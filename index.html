@@ -487,15 +487,16 @@
             const passInp = document.getElementById('logPass').value;
 
             try {
+                // Gunakan nama node 'users' konsisten dengan migrasi
                 const snapshot = await fbRoot.child('users').once('value');
                 const users = snapshot.val();
                 let foundUser = null;
 
                 if (users) {
-                    // Cari user dengan mencocokkan username dan password secara case-sensitive
+                    // Pencarian user yang lebih fleksibel (lowercase check untuk username)
                     const userList = Object.values(users);
                     foundUser = userList.find(u => 
-                        String(u.username).trim() === userInp.trim() && 
+                        String(u.username).toLowerCase().trim() === userInp.toLowerCase().trim() && 
                         String(u.password).trim() === passInp.trim()
                     );
                 }
@@ -662,7 +663,7 @@
                     updates[`units/${fixFirebaseKey(rawId)}`] = cleanObj;
                 });
 
-                // TAMBAHKAN AKUN DEFAULT KE MIGRASI
+                // TAMBAHKAN/PASTIKAN AKUN ADMIN TERDAFTAR DI CLOUD
                 updates['users/admin'] = { id: 'U01', username: 'admin', password: 'warehouse123', nama: 'Administrator', role: 'Admin' };
                 updates['users/superadmin'] = { id: 'U00', username: 'superadmin', password: 'super123', nama: 'Super Admin', role: 'SuperAdmin' };
 
