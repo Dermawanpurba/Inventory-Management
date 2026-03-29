@@ -295,6 +295,17 @@
                 <div><label class="block text-xs font-medium text-gray-400 mb-1">PASSWORD</label><input type="password" id="logPass" required class="w-full bg-dark-900 border border-dark-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand-cyan"></div>
                 <button type="submit" class="w-full bg-brand-cyan hover:bg-cyan-600 text-white font-medium py-2.5 rounded-lg transition mt-4">Masuk</button>
                 <button type="button" onclick="closeModal('modalLogin')" class="w-full text-gray-500 hover:text-white text-sm mt-4">Batal</button>
+                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+    <button type="submit" class="w-full bg-brand-cyan hover:bg-cyan-600 text-white font-medium py-2.5 rounded-lg transition mt-4">Masuk</button>
+    <button type="button" onclick="closeModal('modalLogin')" class="w-full text-gray-500 hover:text-white text-sm mt-2">Batal</button>
+    
+    <div class="pt-4 border-t border-dark-700 mt-4">
+        <p class="text-[10px] text-gray-500 text-center mb-2 uppercase tracking-widest">Sistem Baru? Inisialisasi Database</p>
+        <button type="button" onclick="emergencyInitFirebase()" class="w-full bg-dark-700 hover:bg-brand-purple border border-brand-purple/30 text-brand-purple hover:text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center">
+            <i data-lucide="database" class="w-3 h-3 mr-2"></i> SETUP AKUN ADMIN (FIRST RUN)
+        </button>
+    </div>
+</form>
             </form>
         </div>
     </div>
@@ -404,15 +415,24 @@
         let stkCurrentPage = 1, stkSearchQuery = "";
         let dashCurrentPage = 1, dashAnalysisData = []; 
 
-        async function fetchAPI(action, payload = {}) {
-            try {
-                const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: action, data: payload }) });
-                return await response.json();
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                return { success: false, message: "Gagal terhubung ke server." };
-            }
-        }
+        // Contoh perbaikan pada fungsi fetchAPI agar tidak stuck
+async function fetchAPI(action, payload = {}) {
+    try {
+        const response = await fetch(API_URL, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+            body: JSON.stringify({ action: action, data: payload }) 
+        });
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        return { success: false, message: "Gagal terhubung ke Google Script. Cek koneksi atau URL API." };
+    } finally {
+        // Pastikan loading dimatikan jika fungsi ini dipanggil dalam konteks tunggal
+        // Atau biarkan fungsi pemanggil yang mematikan loading
+    }
+}
 
         window.onload = () => {
             const today = new Date();
@@ -481,41 +501,95 @@
         }
 
         async function handleLogin(e) {
-            e.preventDefault(); 
-            showLoading(true, "Verifikasi Akun via Cloud...");
-            const userInp = document.getElementById('logUser').value;
-            const passInp = document.getElementById('logPass').value;
+    e.preventDefault(); 
+    showLoading(true, "Verifikasi Akun via Cloud...");
+    const userInp = document.getElementById('logUser').value.trim();
+    const passInp = document.getElementById('logPass').value.trim();
 
-            try {
-                // Gunakan nama node 'users' konsisten dengan migrasi
-                const snapshot = await fbRoot.child('users').once('value');
-                const users = snapshot.val();
-                let foundUser = null;
+    try {
+        const snapshot = await fbRoot.child('users').once('value');
+        const users = snapshot.val();
+        let foundUser = null;
 
-                if (users) {
-                    // Pencarian user yang lebih fleksibel (lowercase check untuk username)
-                    const userList = Object.values(users);
-                    foundUser = userList.find(u => 
-                        String(u.username).toLowerCase().trim() === userInp.toLowerCase().trim() && 
-                        String(u.password).trim() === passInp.trim()
-                    );
-                }
-
-                showLoading(false);
-                if (foundUser) {
-                    currentUser = foundUser;
-                    localStorage.setItem('erp_session', JSON.stringify(currentUser));
-                    closeModal('modalLogin');
-                    applyRoleAccess();
-                    notif('success', 'Login Berhasil (Cloud Auth)');
-                } else {
-                    notif('error', 'Gagal', 'Username atau Password salah!');
-                }
-            } catch (err) {
-                showLoading(false);
-                notif('error', 'Error Auth', err.message);
-            }
+        if (users) {
+            // Mengubah object Firebase menjadi array untuk pencarian yang aman
+            const userList = Object.values(users);
+            foundUser = userList.find(u => 
+                u && u.username && String(u.username).toLowerCase() === userInp.toLowerCase() && 
+                String(u.password) === passInp
+            );
         }
+
+        if (foundUser) {
+            currentUser = foundUser;
+            localStorage.setItem('erp_session', JSON.stringify(currentUser));
+            closeModal('modalLogin');
+            applyRoleAccess();
+            showLoading(false);
+            notif('success', 'Login Berhasil', `Selamat datang, ${foundUser.nama}`);
+            renderStockTable();
+            renderTrackingTable();
+        } else {
+            showLoading(false);
+            notif('error', 'Gagal', 'Username atau Password salah! Pastikan database Cloud sudah di-inisialisasi.');
+        }
+    } catch (err) {
+        showLoading(false);
+        console.error("Auth Error:", err);
+        notif('error', 'Error Auth', err.message);
+    }
+}
+async function emergencyInitFirebase() {
+    const result = await Swal.fire({
+        title: 'Setup Database Cloud?',
+        text: "Ini akan mendaftarkan user 'admin' & 'superadmin' ke Firebase agar Anda bisa login pertama kali.",
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#a855f7',
+        confirmButtonText: 'Ya, Setup Sekarang!',
+        background: '#1F2937',
+        color: '#fff'
+    });
+
+    if (!result.isConfirmed) return;
+
+    showLoading(true, "Menulis Data Admin ke Cloud...");
+    
+    try {
+        const updates = {};
+        // Data Akun Default
+        updates['users/admin'] = { 
+            id: 'U01', 
+            username: 'admin', 
+            password: 'warehouse123', 
+            nama: 'Administrator', 
+            role: 'Admin' 
+        };
+        updates['users/superadmin'] = { 
+            id: 'U00', 
+            username: 'superadmin', 
+            password: 'super123', 
+            nama: 'Super Admin', 
+            role: 'SuperAdmin' 
+        };
+
+        // Langsung tulis ke path /bss_warehouse_data/users
+        await fbRoot.update(updates);
+        
+        showLoading(false);
+        await Swal.fire({
+            icon: 'success',
+            title: 'Setup Berhasil!',
+            text: 'Silakan login dengan user: admin | pass: warehouse123',
+            background: '#1F2937',
+            color: '#fff'
+        });
+    } catch (error) {
+        showLoading(false);
+        console.error("Setup Error:", error);
+        notif('error', 'Gagal Setup', error.message);
+    }
+}
 
         function logout() { 
             localStorage.removeItem('erp_session'); 
