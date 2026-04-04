@@ -121,14 +121,20 @@
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-slide {
-            animation: fadeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
+        .animate-fade-slide { animation: fadeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 
         .brand-logo { max-height: 32px; max-width: 32px; object-fit: contain; }
-
-        /* Drag Drop Highlight */
         .drag-over { background-color: #d8e2ff !important; border-color: #002f6c !important; border-style: solid !important; }
+
+        /* Print Settings */
+        @media screen { #printArea { display: none; } }
+        @media print {
+            body > *:not(#printArea) { display: none !important; }
+            body { background-color: white; margin: 0; padding: 0; }
+            #printArea { display: block !important; position: absolute; left: 0; top: 0; width: 100%; color: black; font-family: 'Inter', sans-serif; }
+            .print-table th, .print-table td { border: 1px solid #000; padding: 6px; text-align: left; }
+            .print-table th { background-color: #f3f4f6; font-weight: bold; }
+        }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -141,6 +147,43 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body class="bg-background text-on-background flex h-screen overflow-hidden antialiased">
+
+    <!-- PRINT AREA (Hidden on Screen, Visible on Print) -->
+    <div id="printArea" class="p-8">
+        <h2 id="printDocTitle" class="text-xl font-bold text-center mb-1 underline">FORM MECHANIC ORDERLIST</h2>
+        <h3 class="text-lg font-bold text-center mb-6">SPAREPART BSS</h3>
+        
+        <table class="mb-4 text-sm w-full max-w-md">
+            <tr><td class="font-bold w-36" id="printLabel1">TANGGAL</td><td>: <span id="printVal1"></span></td></tr>
+            <tr><td class="font-bold w-36" id="printLabel2">UNIT TYPE</td><td>: <span id="printVal2"></span></td></tr>
+            <tr><td class="font-bold w-36" id="printLabel3">NO ID</td><td>: <span id="printVal3"></span></td></tr>
+            <tr><td class="font-bold w-36" id="printLabel4">NO WO</td><td>: <span id="printVal4"></span></td></tr>
+        </table>
+
+        <table class="w-full print-table text-xs mb-8">
+            <thead>
+                <tr>
+                    <th>NO</th>
+                    <th>PART NUMBER</th>
+                    <th>PART NAME</th>
+                    <th id="printQtyLabel">OUT</th>
+                    <th>UOI</th>
+                    <th>CATEGORY</th>
+                    <th id="printCol7Label">STOCK CODE</th>
+                    <th>STOCK</th>
+                </tr>
+            </thead>
+            <tbody id="printTableBody"></tbody>
+        </table>
+
+        <p class="text-sm mb-6">SUBMIT JAM : <span id="printTime"></span></p>
+        <div class="grid grid-cols-4 gap-4 text-center text-sm font-medium mt-12">
+            <div><p id="printSig1Title">Diketahui Oleh</p><br><br><br><br><p class="underline" id="printSig1Name">Main Dept Head.Logistik</p></div>
+            <div><p id="printSig2Title">Diperiksa Oleh</p><br><br><br><br><p class="underline" id="printSig2Name">Foreman Logistic</p></div>
+            <div><p id="printSig3Title">Diserahkan Oleh</p><br><br><br><br><p class="underline" id="printSig3Name">Logistik</p></div>
+            <div><p id="printSig4Title">Diterima Oleh</p><br><br><br><br><p class="underline" id="printSig4Name">Mechanic</p></div>
+        </div>
+    </div>
 
     <!-- LOADING OVERLAY -->
     <div id="loadingOverlay" class="fixed inset-0 bg-inverse-surface/50 backdrop-blur-sm z-[9999] flex justify-center items-center hide transition-all duration-300">
@@ -174,20 +217,19 @@
             <a href="#" onclick="router('dashboard')" id="navD-dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
                 <span class="material-symbols-outlined">dashboard</span><span>Dashboard Analitik</span>
             </a>
-            <a href="#" onclick="router('po')" id="navD-po" class="nav-desktop-active flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
+            <a href="#" onclick="router('po')" id="navD-po" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
                 <span class="material-symbols-outlined">local_shipping</span><span>Status Order & PO</span>
             </a>
             <a href="#" onclick="router('tracking')" id="navD-tracking" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
                 <span class="material-symbols-outlined">timeline</span><span>Logistik & Tracking</span>
             </a>
-            <a href="#" onclick="router('stock')" id="navD-stock" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
+            <a href="#" onclick="router('stock')" id="navD-stock" class="nav-desktop-active flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
                 <span class="material-symbols-outlined">search_insights</span><span>Master Inventory</span>
             </a>
             <a href="#" onclick="router('master')" id="navD-master" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium admin-only hide">
                 <span class="material-symbols-outlined">admin_panel_settings</span><span>System Administration</span>
             </a>
         </nav>
-        
         <div class="p-6 border-t border-white/10" id="desktopAuthBtn"></div>
     </aside>
 
@@ -196,13 +238,13 @@
         <a href="#" onclick="router('dashboard')" id="navM-dashboard" class="flex flex-col items-center p-2 text-on-surface-variant transition">
             <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">dashboard</span></div><span class="text-[10px] mt-1 font-medium">Dash</span>
         </a>
-        <a href="#" onclick="router('po')" id="navM-po" class="nav-mobile-active flex flex-col items-center p-2 text-on-surface-variant transition">
+        <a href="#" onclick="router('po')" id="navM-po" class="flex flex-col items-center p-2 text-on-surface-variant transition">
             <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">local_shipping</span></div><span class="text-[10px] mt-1 font-medium">Order</span>
         </a>
         <a href="#" onclick="router('tracking')" id="navM-tracking" class="flex flex-col items-center p-2 text-on-surface-variant transition">
             <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">timeline</span></div><span class="text-[10px] mt-1 font-medium">Track</span>
         </a>
-        <a href="#" onclick="router('stock')" id="navM-stock" class="flex flex-col items-center p-2 text-on-surface-variant transition">
+        <a href="#" onclick="router('stock')" id="navM-stock" class="nav-mobile-active flex flex-col items-center p-2 text-on-surface-variant transition">
             <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">search_insights</span></div><span class="text-[10px] mt-1 font-medium">Stock</span>
         </a>
         <a href="#" onclick="openModal('modalMobileMenu')" class="flex flex-col items-center p-2 text-on-surface-variant transition">
@@ -218,11 +260,10 @@
 
     <!-- MAIN CONTENT WRAPPER -->
     <div class="flex-1 flex flex-col overflow-hidden">
-        
         <!-- TopNavBar (Desktop) -->
         <header class="hidden md:flex h-16 bg-surface-container-lowest items-center justify-between px-8 border-b border-outline-variant/20 shrink-0 z-30 shadow-sm">
             <div class="flex items-center flex-1">
-                <h2 class="text-sm font-bold text-primary mr-4 uppercase tracking-widest opacity-70" id="topNavTitle">Status Order & PO</h2>
+                <h2 class="text-sm font-bold text-primary mr-4 uppercase tracking-widest opacity-70" id="topNavTitle">Master Inventory</h2>
             </div>
             <div class="flex items-center gap-6">
                 <div class="flex items-center gap-3 border-l border-outline-variant/30 pl-6" id="desktopUserInfo"></div>
@@ -241,8 +282,24 @@
                 <div class="flex items-center text-[10px] text-secondary-fixed bg-secondary-container/20 px-2 py-1 rounded-full border border-secondary-fixed/30 font-bold"><div class="w-1.5 h-1.5 bg-secondary-fixed rounded-full mr-1.5 animate-pulse"></div> FIREBASE</div>
             </header>
 
+            <!-- ADMIN QUICK ACTIONS -->
+            <div id="adminQuickActions" class="admin-only hide bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20 w-full mb-6">
+                <h3 class="text-lg font-bold text-primary mb-4 flex items-center"><span class="material-symbols-outlined mr-2">speed</span> Admin Quick Actions</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="triggerMigrateFromSheets()" class="bg-surface-container hover:bg-surface-dim text-primary px-4 py-3 rounded-xl text-sm font-bold flex items-center justify-center border border-outline-variant/50 transition">
+                        <span class="material-symbols-outlined mr-2">cloud_download</span> Tarik Migrasi (Pull)
+                    </button>
+                    <button onclick="triggerBackupToSheets()" class="bg-primary hover:bg-primary-fixed-variant text-on-primary px-4 py-3 rounded-xl text-sm font-bold flex items-center justify-center shadow-md transition">
+                        <span class="material-symbols-outlined mr-2">cloud_upload</span> Jalankan Backup (Push)
+                    </button>
+                    <button onclick="openModal('modalMassUpload')" class="bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary px-4 py-3 rounded-xl text-sm font-bold flex items-center justify-center shadow-md transition">
+                        <span class="material-symbols-outlined mr-2">upload_file</span> Mass Upload Transaksi
+                    </button>
+                </div>
+            </div>
+
             <!-- SECTION PO TRACKING (ACCURATE) -->
-            <section id="view-po" class="space-y-6 block">
+            <section id="view-po" class="space-y-6 hide">
                 <div class="flex flex-col lg:flex-row justify-between lg:items-center space-y-4 lg:space-y-0">
                     <div>
                         <h2 class="text-2xl font-extrabold text-on-surface">Status Pemesanan (PO) & Outstanding</h2>
@@ -253,7 +310,6 @@
                     </div>
                 </div>
 
-                <!-- Modul Upload Drag & Drop -->
                 <div class="bg-surface-container-lowest rounded-2xl p-8 border-2 border-dashed border-primary-fixed-dim hover:border-primary transition-colors text-center shadow-sm cursor-pointer admin-only hide" id="poDropZone" onclick="document.getElementById('fileAccurate').click()">
                     <input type="file" id="fileAccurate" accept=".txt" class="hidden" onchange="handleFileSelect(event)">
                     <span class="material-symbols-outlined text-4xl text-primary-fixed-dim mb-3">upload_file</span>
@@ -261,7 +317,6 @@
                     <p class="text-xs text-on-surface-variant max-w-lg mx-auto">Upload laporan "Rincian Permintaan Barang Outstanding" dari Accurate di sini. Sistem akan mem-parsing secara otomatis menjadi logistik yang mudah dipantau.</p>
                 </div>
 
-                <!-- Dashboard Summary PO -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-gradient-to-br from-primary to-primary-container p-6 rounded-2xl text-white shadow-md relative overflow-hidden">
                         <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/5 rounded-full blur-2xl"></div>
@@ -284,7 +339,6 @@
                     </div>
                 </div>
 
-                <!-- Table Tracking PO -->
                 <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
                     <div class="flex flex-col lg:flex-row gap-4 mb-6">
                         <div class="relative w-full lg:w-1/2">
@@ -300,14 +354,13 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
-                        <table class="w-full border-collapse">
+                        <table class="w-full border-collapse text-left">
                             <thead>
                                 <tr class="bg-surface-container-low/50">
-                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Dokumen Pemesanan</th>
-                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest w-1/3">Informasi Part/Barang</th>
-                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Progress (Rcv vs Order)</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Dokumen Pemesanan</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest w-1/3">Informasi Part/Barang</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Progress (Rcv vs Order)</th>
                                     <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Outstanding</th>
                                     <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Status</th>
                                 </tr>
@@ -359,13 +412,13 @@
                         <div class="flex items-center text-error text-lg font-extrabold"><span class="material-symbols-outlined mr-2 filled">warning</span> Status Kritis Stok</div>
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
-                        <table class="w-full text-sm text-left whitespace-nowrap">
+                        <table class="w-full text-sm text-left">
                             <thead class="bg-surface-container-low/50 border-b border-outline-variant/20">
                                 <tr>
-                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Part Info</th>
-                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Kategori</th>
-                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest text-center">Status</th>
-                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest text-center">Stok vs Min</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Part Info</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Kategori</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest text-center whitespace-nowrap">Status</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest text-center whitespace-nowrap">Stok vs Min</th>
                                 </tr>
                             </thead>
                             <tbody id="stockAnalysisTableBody" class="divide-y divide-outline-variant/10"></tbody>
@@ -399,15 +452,15 @@
                         <input type="text" id="searchTrackingInput" onkeyup="debounce(handleSearchTracking, 300)()" class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low border-none rounded-full text-on-surface text-sm focus:ring-2 focus:ring-primary/20 shadow-inner" placeholder="Cari Part No, Dept, WO...">
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
-                        <table class="w-full border-collapse">
+                        <table class="w-full border-collapse text-left">
                             <thead>
                                 <tr class="bg-surface-container-low/50">
-                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Tanggal</th>
-                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">In/Out</th>
-                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Info Part</th>
-                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Qty</th>
-                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Alokasi / Relasi</th>
-                                    <th class="px-6 py-4 text-right text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest superadmin-only hide">Aksi</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Tanggal</th>
+                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">In/Out</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Info Part</th>
+                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Qty</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Alokasi / Relasi</th>
+                                    <th class="px-6 py-4 text-right text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="txTableBody" class="divide-y divide-outline-variant/10"></tbody>
@@ -447,15 +500,15 @@
                     </div>
 
                     <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
-                        <table class="w-full border-collapse">
+                        <table class="w-full border-collapse text-left">
                             <thead>
                                 <tr class="bg-surface-container-low/50">
-                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Identitas Part</th>
-                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Atribut</th>
-                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Lokasi</th>
-                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Umur</th>
-                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Stok Fisik</th>
-                                    <th class="px-6 py-4 text-right text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest admin-only hide">Aksi</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Identitas Part</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Atribut</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Lokasi</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Umur</th>
+                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Stok Fisik</th>
+                                    <th class="px-6 py-4 text-right text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest admin-only hide whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="stockTableBody" class="divide-y divide-outline-variant/10"></tbody>
@@ -501,9 +554,9 @@
                             <button onclick="document.getElementById('formUser').reset(); document.getElementById('userMode').value='NEW'; document.getElementById('usrUsername').readOnly=false; openModal('modalUser');" class="bg-primary hover:bg-primary-fixed-variant text-on-primary px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-sm"><span class="material-symbols-outlined text-[18px] mr-2">person_add</span> Tambah User</button>
                         </div>
                         <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
-                            <table class="w-full border-collapse text-sm text-left whitespace-nowrap">
+                            <table class="w-full border-collapse text-left">
                                 <thead class="bg-surface-container-low/50">
-                                    <tr><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px]">Username</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px]">Nama Lengkap</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px]">Role / Hak Akses</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px] text-right">Aksi</th></tr>
+                                    <tr><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px] whitespace-nowrap">Username</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px] whitespace-nowrap">Nama Lengkap</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px] whitespace-nowrap">Role / Hak Akses</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px] text-right whitespace-nowrap">Aksi</th></tr>
                                 </thead>
                                 <tbody id="userTableBody" class="divide-y divide-outline-variant/10"></tbody>
                             </table>
@@ -520,14 +573,6 @@
                             <div class="pt-4"><button type="submit" id="btnSaveSettings" class="px-6 py-3 bg-primary hover:bg-primary-fixed-variant rounded-xl text-on-primary font-bold transition shadow-md text-sm"><span class="material-symbols-outlined text-[18px] mr-2">save</span> Terapkan Pengaturan</button></div>
                         </form>
                     </div>
-                    <div class="bg-error-container text-on-error-container rounded-2xl p-8 mt-6 shadow-sm border border-error/20">
-                        <h3 class="text-xl font-extrabold mb-2 flex items-center"><span class="material-symbols-outlined filled mr-2 text-2xl">cloud_sync</span> Google Sheets Data Center</h3>
-                        <p class="text-sm mb-6 max-w-3xl font-medium">Integrasi cadangan ke Google Sheets Backend (Migration & Backup).</p>
-                        <div class="flex flex-col md:flex-row gap-4">
-                            <button onclick="triggerMigrateFromSheets()" class="bg-surface-container-lowest hover:bg-surface border border-error/30 text-error px-6 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center w-full md:w-auto"><span class="material-symbols-outlined mr-2">cloud_download</span> Tarik Migrasi (Pull)</button>
-                            <button onclick="triggerBackupToSheets()" class="bg-error hover:bg-error-container hover:text-on-error-container text-on-error px-6 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center w-full md:w-auto shadow-md"><span class="material-symbols-outlined mr-2">cloud_upload</span> Jalankan Backup (Push)</button>
-                        </div>
-                    </div>
                 </div>
 
                 <div id="admView-SysLogs" class="hide space-y-6">
@@ -537,9 +582,9 @@
                             <button onclick="renderLogsTable()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">refresh</span></button>
                         </div>
                         <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
-                            <table class="w-full border-collapse text-sm text-left whitespace-nowrap">
+                            <table class="w-full border-collapse text-left">
                                 <thead class="bg-surface-container-low/50">
-                                    <tr><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px]">Waktu Sistem</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px]">User (Actor)</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px]">Aksi / Event</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px] w-1/2">Detail Aktivitas</th></tr>
+                                    <tr><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px] whitespace-nowrap">Waktu Sistem</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px] whitespace-nowrap">User (Actor)</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px] whitespace-nowrap">Aksi / Event</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px] w-1/2 whitespace-nowrap">Detail Aktivitas</th></tr>
                                 </thead>
                                 <tbody id="logsTableBody" class="divide-y divide-outline-variant/10"></tbody>
                             </table>
@@ -553,6 +598,38 @@
             </section>
 
         </main>
+    </div>
+
+    <!-- MODAL MASS UPLOAD TRANSAKSI -->
+    <div id="modalMassUpload" class="fixed inset-0 bg-inverse-surface/60 z-[80] flex justify-center items-center hide backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-surface-container-lowest p-8 rounded-2xl w-full max-w-lg border-t-8 border-t-secondary shadow-2xl my-8">
+            <div class="flex items-center justify-between mb-6"><div class="flex items-center text-on-surface"><span class="material-symbols-outlined mr-2 text-secondary text-3xl">upload_file</span><h3 class="text-xl font-extrabold">Mass Upload Transaksi</h3></div><button type="button" onclick="closeModal('modalMassUpload')" class="text-on-surface-variant hover:text-error bg-surface-container-low p-2 rounded-full"><span class="material-symbols-outlined">close</span></button></div>
+            
+            <div class="mb-6">
+                <p class="text-sm text-on-surface-variant mb-4">Unduh template Excel di bawah ini, isi sesuai format, dan unggah kembali.</p>
+                <div class="flex gap-3">
+                    <button onclick="downloadTemplate('IN')" class="flex-1 bg-surface-container hover:bg-surface-dim text-on-surface font-bold py-2 rounded-xl text-xs transition border border-outline-variant/50"><span class="material-symbols-outlined text-[16px] align-middle mr-1">download</span> Template IN</button>
+                    <button onclick="downloadTemplate('OUT')" class="flex-1 bg-surface-container hover:bg-surface-dim text-on-surface font-bold py-2 rounded-xl text-xs transition border border-outline-variant/50"><span class="material-symbols-outlined text-[16px] align-middle mr-1">download</span> Template OUT</button>
+                </div>
+            </div>
+
+            <form onsubmit="handleMassUploadSubmit(event)" class="space-y-5 border-t border-outline-variant/20 pt-6">
+                <div>
+                    <label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Tipe Upload</label>
+                    <select id="massUploadType" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary">
+                        <option value="IN">Transaksi Masuk (IN)</option>
+                        <option value="OUT">Transaksi Keluar (OUT)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">File Excel (.xlsx)</label>
+                    <input type="file" id="massUploadFile" accept=".xlsx, .xls" required class="w-full bg-surface-container-low border-none rounded-xl p-2 text-on-surface text-sm focus:ring-2 focus:ring-secondary file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-secondary file:text-on-secondary hover:file:bg-on-secondary-fixed-variant">
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button type="submit" id="btnSubmitMass" class="px-8 py-3 bg-secondary hover:bg-on-secondary-fixed-variant rounded-xl text-on-secondary font-bold transition w-full shadow-md text-base"><span class="material-symbols-outlined text-[18px] mr-2 align-middle">cloud_sync</span> Proses Upload</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Modal Form Masuk (IN) -->
@@ -573,7 +650,7 @@
                     <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Vendor / Supplier</label><input type="text" id="txInVendor" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
                     <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. PO / Bukti</label><input type="text" id="txInPO" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
                 </div>
-                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. Work Order (WO) <span class="text-outline text-[10px] lowercase normal-case font-normal">*Opsional</span></label><input type="text" id="txInWO" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary" placeholder="Contoh: WO-2026-001"></div>
+                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. Work Order / Surat Jalan <span class="text-outline text-[10px] lowercase normal-case font-normal">*Opsional</span></label><input type="text" id="txInWO" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary" placeholder="Contoh: SJ-2026-001"></div>
                 <div class="flex justify-end pt-4 mt-2"><button type="submit" id="btnSubmitIn" class="px-8 py-3 bg-secondary hover:bg-on-secondary-fixed-variant rounded-xl text-on-secondary font-bold transition w-full shadow-md text-base">Eksekusi Data Masuk</button></div>
             </form>
         </div>
@@ -731,8 +808,8 @@
 
         function checkSession() {
             const saved = localStorage.getItem('erp_session');
-            if (saved) { currentUser = JSON.parse(saved); applyRoleAccess(); renderAuthBtn(true); router('dashboard'); } 
-            else { renderAuthBtn(false); applyRoleAccess(); router('po'); }
+            if (saved) { currentUser = JSON.parse(saved); applyRoleAccess(); renderAuthBtn(true); router('stock'); } 
+            else { renderAuthBtn(false); applyRoleAccess(); router('stock'); }
         }
 
         function renderAuthBtn(isLoggedIn) {
@@ -752,8 +829,8 @@
 
         function applyRoleAccess() {
             const adminEls = document.querySelectorAll('.admin-only'); const superAdminEls = document.querySelectorAll('.superadmin-only');
-            if (currentUser && (currentUser.role === 'Admin' || currentUser.role === 'SuperAdmin')) { adminEls.forEach(el => { el.style.display = ''; el.classList.remove('hide'); }); } else { adminEls.forEach(el => el.style.display = 'none'); }
-            if (currentUser && currentUser.role === 'SuperAdmin') { superAdminEls.forEach(el => { el.style.display = ''; el.classList.remove('hide'); }); } else { superAdminEls.forEach(el => el.style.display = 'none'); }
+            if (currentUser && (currentUser.role === 'Admin' || currentUser.role === 'SuperAdmin')) { adminEls.forEach(el => { el.style.display = ''; el.classList.remove('hide'); }); } else { adminEls.forEach(el => { el.style.display = 'none'; el.classList.add('hide'); }); }
+            if (currentUser && currentUser.role === 'SuperAdmin') { superAdminEls.forEach(el => { el.style.display = ''; el.classList.remove('hide'); }); } else { superAdminEls.forEach(el => { el.style.display = 'none'; el.classList.add('hide'); }); }
         }
 
         async function handleLogin(e) {
@@ -770,7 +847,7 @@
                 } else { notif('error', 'Akses Ditolak', 'Username atau Password tidak valid.'); }
             } catch (err) { notif('error', 'Sistem Error', 'Gagal memverifikasi ke Cloud.'); } finally { toggleBtnState(btnId, false); showLoading(false); }
         }
-        function logout() { if(currentUser) logAction('LOGOUT', 'User logged out'); localStorage.removeItem('erp_session'); currentUser = null; applyRoleAccess(); renderAuthBtn(false); closeModal('modalMobileMenu'); router('po'); notif('info', 'Sesi Berakhir', 'Anda telah keluar.'); }
+        function logout() { if(currentUser) logAction('LOGOUT', 'User logged out'); localStorage.removeItem('erp_session'); currentUser = null; applyRoleAccess(); renderAuthBtn(false); closeModal('modalMobileMenu'); router('stock'); notif('info', 'Sesi Berakhir', 'Anda telah keluar.'); }
 
         // --- 4. NAVIGATION & VIEWS ---
         const viewTitles = { 'dashboard': 'Dashboard Analitik', 'po': 'Status Order & PO', 'tracking': 'Logistik Tracking', 'stock': 'Master Inventory', 'master': 'System Administration' };
@@ -778,24 +855,13 @@
         function router(viewId) {
             ['view-dashboard', 'view-po', 'view-tracking', 'view-stock', 'view-master'].forEach(id => {
                 const section = document.getElementById(id);
-                if (section) {
-                    section.style.display = 'none'; 
-                    section.classList.add('hide');
-                    section.classList.remove('animate-fade-slide'); // Reset animasi
-                }
-                const navD = document.getElementById('navD-' + id.split('-')[1]); 
-                const navM = document.getElementById('navM-' + id.split('-')[1]);
-                if(navD) navD.classList.remove('nav-desktop-active'); 
-                if(navM) navM.classList.remove('nav-mobile-active');
+                if(section) { section.style.display = 'none'; section.classList.add('hide'); section.classList.remove('animate-fade-slide'); }
+                const navD = document.getElementById('navD-' + id.split('-')[1]); const navM = document.getElementById('navM-' + id.split('-')[1]);
+                if(navD) navD.classList.remove('nav-desktop-active'); if(navM) navM.classList.remove('nav-mobile-active');
             });
+            const activeSec = document.getElementById('view-' + viewId);
+            if(activeSec) { activeSec.style.display = 'block'; activeSec.classList.remove('hide'); activeSec.classList.add('animate-fade-slide'); }
             
-            const activeSection = document.getElementById('view-' + viewId);
-            if (activeSection) {
-                activeSection.style.display = 'block'; 
-                activeSection.classList.remove('hide');
-                activeSection.classList.add('animate-fade-slide'); // Trigger animasi
-            }
-
             const aNavD = document.getElementById('navD-' + viewId); const aNavM = document.getElementById('navM-' + viewId);
             if(aNavD) aNavD.classList.add('nav-desktop-active'); if(aNavM) aNavM.classList.add('nav-mobile-active');
             
@@ -803,6 +869,48 @@
             if(viewId === 'master') switchAdminTab('DataMaster'); closeModal('modalMobileMenu'); 
             if (viewId === 'dashboard') renderDashboard();
             if (viewId === 'po') renderPOTable();
+        }
+
+        function switchTrackingTab(tabName) {
+            txActiveTab = tabName;
+            ['Normal', 'Service', 'Retur'].forEach(t => { 
+                const el = document.getElementById('tabTx-' + t);
+                el.classList.remove('tab-active', 'text-primary'); el.classList.add('text-on-surface-variant'); 
+            });
+            const activeEl = document.getElementById('tabTx-' + tabName);
+            activeEl.classList.add('tab-active', 'text-primary'); activeEl.classList.remove('text-on-surface-variant');
+            txCurrentPage = 1; renderTrackingTable();
+        }
+
+        // --- 5. FIREBASE REAL-TIME LISTENERS ---
+        function initFirebaseListeners() {
+            if (isFirebaseListening) return; isFirebaseListening = true; showLoading(true, "Mengambil Data Cloud...");
+
+            // Accurate PO Sync Listener
+            fbRoot.child('accurate_po').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val(); appData.accuratePO = data.records || []; appData.accuratePOLastUpdate = data.last_update || ''; appData.accuratePOUser = data.user_upload || '';
+                } else { appData.accuratePO = []; appData.accuratePOLastUpdate = ''; }
+                if(!document.getElementById('view-po').classList.contains('hide')) renderPOTable();
+            });
+
+            // General Settings
+            fbRoot.child('settings').on('value', (snapshot) => { if(snapshot.exists()) applySettings(snapshot.val()); });
+            
+            // Core Master Listeners
+            fbRoot.child('parts').on('value', (snapshot) => { 
+                appData.parts = snapshot.exists() ? Object.values(snapshot.val()) : []; 
+                populateSelects(); 
+                renderStockTable(); 
+                renderDashboard();
+                showLoading(false); 
+            });
+            
+            fbRoot.child('users').on('value', (snapshot) => { appData.users = snapshot.exists() ? Object.values(snapshot.val()) : []; });
+            fbRoot.child('depts').on('value', (snapshot) => { appData.depts = snapshot.exists() ? Object.values(snapshot.val()) : []; populateSelects(); });
+            fbRoot.child('units').on('value', (snapshot) => { appData.units = snapshot.exists() ? Object.values(snapshot.val()) : []; populateSelects(); });
+            const handleTxUpdate = () => { fbRoot.once('value', (snap) => { const data = snap.val() || {}; const normalizedIn = Object.values(data.txsIn || {}).map(t => ({...t, tx_flow: 'IN'})); const normalizedOut = Object.values(data.txsOut || {}).map(t => ({...t, tx_flow: 'OUT'})); appData.txs = [...normalizedIn, ...normalizedOut].sort((a,b) => new Date(b.timestamp||b.date) - new Date(a.timestamp||a.date)); renderTrackingTable(); renderDashboard(); }); };
+            fbRoot.child('txsIn').on('value', handleTxUpdate); fbRoot.child('txsOut').on('value', handleTxUpdate);
         }
 
         // --- DASHBOARD RENDER FUNCTIONS ---
@@ -847,35 +955,6 @@
             if(charts.c3) charts.c3.destroy(); const colors = ['#002f6c','#224583','#aec6ff','#006d43','#75f8b3','#c39100']; charts.c3 = new Chart(document.getElementById('chartDept').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: labelsDept, datasets: [{ label: 'Qty', data: dataDept, backgroundColor: labelsDept.map((_,i)=>colors[i%colors.length]), borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
 
-        // --- 5. FIREBASE REAL-TIME LISTENERS ---
-        function initFirebaseListeners() {
-            if (isFirebaseListening) return; isFirebaseListening = true; showLoading(true, "Mengambil Data Cloud...");
-
-            // Accurate PO Sync Listener
-            fbRoot.child('accurate_po').on('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    appData.accuratePO = data.records || [];
-                    appData.accuratePOLastUpdate = data.last_update || '';
-                    appData.accuratePOUser = data.user_upload || '';
-                } else {
-                    appData.accuratePO = []; appData.accuratePOLastUpdate = '';
-                }
-                if(!document.getElementById('view-po').classList.contains('hide')) renderPOTable();
-            });
-
-            // General Settings
-            fbRoot.child('settings').on('value', (snapshot) => { if(snapshot.exists()) applySettings(snapshot.val()); });
-            
-            // Standard Listeners
-            fbRoot.child('parts').on('value', (snapshot) => { appData.parts = snapshot.exists() ? Object.values(snapshot.val()) : []; showLoading(false); });
-            fbRoot.child('users').on('value', (snapshot) => { appData.users = snapshot.exists() ? Object.values(snapshot.val()) : []; });
-            fbRoot.child('depts').on('value', (snapshot) => { appData.depts = snapshot.exists() ? Object.values(snapshot.val()) : []; });
-            fbRoot.child('units').on('value', (snapshot) => { appData.units = snapshot.exists() ? Object.values(snapshot.val()) : []; });
-            const handleTxUpdate = () => { fbRoot.once('value', (snap) => { const data = snap.val() || {}; const normalizedIn = Object.values(data.txsIn || {}).map(t => ({...t, tx_flow: 'IN'})); const normalizedOut = Object.values(data.txsOut || {}).map(t => ({...t, tx_flow: 'OUT'})); appData.txs = [...normalizedIn, ...normalizedOut].sort((a,b) => new Date(b.timestamp||b.date) - new Date(a.timestamp||a.date)); }); };
-            fbRoot.child('txsIn').on('value', handleTxUpdate); fbRoot.child('txsOut').on('value', handleTxUpdate);
-        }
-
         // --- ACCURATE PO PARSER & UPLOAD LOGIC ---
         function setupDragAndDrop() {
             const dropZone = document.getElementById('poDropZone');
@@ -900,23 +979,16 @@
                 try {
                     const text = e.target.result;
                     const lines = text.split('\n');
-                    let records = [];
-                    let currentRecord = null;
-                    let headerFound = false;
-                    let colIndices = [];
+                    let records = []; let currentRecord = null; let headerFound = false; let colIndices = [];
 
-                    // 1. Find Headers via Regex (Splitting spaces)
                     for(let i=0; i<lines.length; i++) {
                         if(lines[i].includes('Nomor PR') && lines[i].includes('Part Number')) {
                             headerFound = true;
                             let regex = /([a-zA-Z0-9#\/]+(?:\s[a-zA-Z0-9#\/]+)*)(?=\s{2,}|$)/g;
                             let match;
-                            while ((match = regex.exec(lines[i])) !== null) {
-                                colIndices.push({ title: match[1].trim(), start: match.index, end: 9999 });
-                            }
+                            while ((match = regex.exec(lines[i])) !== null) { colIndices.push({ title: match[1].trim(), start: match.index, end: 9999 }); }
                             for(let j=0; j<colIndices.length-1; j++) colIndices[j].end = colIndices[j+1].start;
                             
-                            // Map to internal keys
                             const keyMap = { 'Nomor PR': 'pr_no', 'Tanggal': 'pr_date', 'Kode #': 'item_code', 'Part Number': 'part_no', 'Nama Barang': 'item_name', 'Kuantitas': 'qty_pr', 'Nomor PO': 'po_no', 'Tanggal PO': 'po_date', 'Qty Dipesan': 'qty_po', 'Qty Diterima': 'qty_rcv', 'Qty Belum Terproses': 'qty_out', 'No MR': 'mr_no', 'Tanggal MR': 'mr_date' };
                             colIndices = colIndices.map(c => ({...c, key: keyMap[c.title] || null})).filter(c => c.key);
                             break;
@@ -925,13 +997,11 @@
 
                     if(!headerFound || colIndices.length === 0) throw new Error("Header laporan tidak dikenali. Pastikan file Accurate asli.");
 
-                    // 2. Parse Lines
                     for(let i=0; i<lines.length; i++) {
                         let line = lines[i];
                         if(!line.trim() || line.includes('PT Benamakmur') || line.includes('ACCURATE Accounting') || line.includes('Tercetak pada') || line.includes('Halaman') || line.includes('Nomor PR')) continue;
                         
-                        let tempRec = {};
-                        let hasData = false;
+                        let tempRec = {}; let hasData = false;
                         colIndices.forEach(col => {
                             let paddedLine = line.padEnd(col.end, ' ');
                             let val = paddedLine.substring(col.start, col.end).trim();
@@ -942,34 +1012,24 @@
                         if(!hasData) continue;
 
                         if(tempRec.pr_no && tempRec.pr_no.match(/^(PR|PO|MR)/i)) {
-                            // Format number columns
                             tempRec.qty_po = parseFloat(tempRec.qty_po.replace(/,/g, '')) || 0;
                             tempRec.qty_rcv = parseFloat(tempRec.qty_rcv.replace(/,/g, '')) || 0;
                             tempRec.qty_out = parseFloat(tempRec.qty_out.replace(/,/g, '')) || 0;
-                            records.push(tempRec);
-                            currentRecord = tempRec;
+                            records.push(tempRec); currentRecord = tempRec;
                         } else if (currentRecord && !tempRec.pr_no) {
-                            // Append multi-line strings
                             if(tempRec.part_no) currentRecord.part_no += ' ' + tempRec.part_no;
                             if(tempRec.item_name) currentRecord.item_name += ' ' + tempRec.item_name;
                         }
                     }
 
-                    // 3. Save to Firebase
                     if(records.length > 0) {
                         const uploadData = { records: records, last_update: new Date().toISOString(), user_upload: currentUser ? currentUser.nama : 'System' };
                         await fbRoot.child('accurate_po').set(uploadData);
                         logAction('UPLOAD_PO', `Uploaded ${records.length} PO tracking items.`);
                         notif('success', 'Sinkronisasi Selesai', `Berhasil mem-parsing ${records.length} item dari Accurate.`);
-                    } else {
-                        notif('warning', 'Data Kosong', 'Tidak ada data valid yang ditemukan pada file.');
-                    }
-                } catch(e) {
-                    console.error(e);
-                    notif('error', 'Gagal Parsing', 'Pastikan format TXT tidak diubah dari sistem Accurate.');
-                } finally {
-                    showLoading(false);
-                }
+                    } else { notif('warning', 'Data Kosong', 'Tidak ada data valid yang ditemukan pada file.'); }
+                } catch(e) { console.error(e); notif('error', 'Gagal Parsing', 'Pastikan format TXT tidak diubah dari sistem Accurate.'); } 
+                finally { showLoading(false); }
             };
             reader.readAsText(file);
         }
@@ -977,9 +1037,7 @@
         async function clearPOData() {
             const confirm = await Swal.fire({ title: 'Bersihkan Log PO?', text: "Seluruh riwayat outstanding saat ini akan dihapus.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ba1a1a', background: '#fbf9f8', color: '#1b1c1c' });
             if(!confirm.isConfirmed) return;
-            await fbRoot.child('accurate_po').set(null);
-            logAction('DELETE_PO', `Cleared PO Tracking log.`);
-            notif('success', 'Berhasil', 'Data PO Tracking telah dibersihkan.');
+            await fbRoot.child('accurate_po').set(null); logAction('DELETE_PO', `Cleared PO Tracking log.`); notif('success', 'Berhasil', 'Data PO Tracking telah dibersihkan.');
         }
 
         function changePOPage(page) { poCurrentPage = page; renderPOTable(); }
@@ -988,10 +1046,7 @@
             const searchVal = document.getElementById('searchPOInput').value.toLowerCase();
             const statusFilter = document.getElementById('filterPOStatus').value;
 
-            if(searchVal) {
-                filtered = filtered.filter(p => `${p.po_no} ${p.pr_no} ${p.part_no} ${p.item_name}`.toLowerCase().includes(searchVal));
-            }
-            
+            if(searchVal) { filtered = filtered.filter(p => `${p.po_no} ${p.pr_no} ${p.part_no} ${p.item_name}`.toLowerCase().includes(searchVal)); }
             if(statusFilter !== 'ALL') {
                 filtered = filtered.filter(p => {
                     if(statusFilter === 'DONE') return p.qty_out === 0;
@@ -1002,19 +1057,14 @@
             }
 
             let sumOut = 0; let uniquePO = new Set();
-            appData.accuratePO.forEach(p => { 
-                sumOut += p.qty_out; 
-                if(p.qty_out > 0 && p.po_no) uniquePO.add(p.po_no); 
-            });
+            appData.accuratePO.forEach(p => { sumOut += p.qty_out; if(p.qty_out > 0 && p.po_no) uniquePO.add(p.po_no); });
             document.getElementById('poSumOutstanding').innerHTML = `${sumOut}<span class="text-sm font-medium ml-1">Items</span>`;
             document.getElementById('poSumActive').innerText = uniquePO.size;
-            
             if(appData.accuratePOLastUpdate) {
                 document.getElementById('poLastUpdate').innerText = new Date(appData.accuratePOLastUpdate).toLocaleString('id-ID');
                 document.getElementById('poLastUser').innerText = "Oleh: " + (appData.accuratePOUser || 'System');
             } else {
-                document.getElementById('poLastUpdate').innerText = "Belum Ada Data";
-                document.getElementById('poLastUser').innerText = "";
+                document.getElementById('poLastUpdate').innerText = "Belum Ada Data"; document.getElementById('poLastUser').innerText = "";
             }
 
             const totalItems = filtered.length; const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
@@ -1030,42 +1080,344 @@
                     stTxt = "PENDING"; stClass = "bg-error-container text-on-error-container border-error-container"; barColor = "bg-error";
                 } else if (p.qty_out > 0 && p.qty_rcv > 0) {
                     stTxt = "PARSIAL"; stClass = "bg-tertiary-fixed text-on-tertiary-fixed-variant border-tertiary-fixed-dim"; barColor = "bg-tertiary-fixed-dim";
-                } else if (p.qty_out === 0 && p.qty_rcv === 0 && p.qty_po === 0) {
-                    progressPct = 0; stTxt = "-";
-                }
+                } else if (p.qty_out === 0 && p.qty_rcv === 0 && p.qty_po === 0) { progressPct = 0; stTxt = "-"; }
 
-                return `
-                <tr class="hover:bg-primary-fixed/20 transition-colors border-b border-outline-variant/10">
-                    <td class="px-6 py-4">
-                        <div class="font-extrabold text-primary text-sm">${p.po_no || 'TIDAK ADA PO'}</div>
-                        <div class="text-[10px] font-medium text-on-surface-variant mt-0.5">PO Date: ${p.po_date || '-'}</div>
-                        <div class="mt-1.5 text-[9px] bg-surface-container-high text-on-surface font-bold px-1.5 py-0.5 rounded inline-block border border-outline-variant/50">PR: ${p.pr_no || '-'}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="font-extrabold text-on-surface text-xs tracking-wide">${p.part_no || '-'}</div>
-                        <div class="text-[11px] font-medium text-on-surface-variant mt-1 max-w-[250px] whitespace-normal leading-tight">${p.item_name || '-'}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center gap-3">
-                            <div class="flex-1 bg-surface-variant h-1.5 rounded-full overflow-hidden w-24"><div class="${barColor} h-full" style="width: ${progressPct}%"></div></div>
-                            <span class="text-xs font-bold text-on-surface w-8">${progressPct}%</span>
-                        </div>
-                        <div class="text-[10px] text-on-surface-variant mt-1 font-medium">Order: <span class="font-bold text-primary">${p.qty_po}</span> | Rcv: <span class="font-bold text-secondary">${p.qty_rcv}</span></div>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <div class="text-error font-extrabold text-xl">${p.qty_out}</div>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${stClass} border inline-block tracking-wider">${stTxt}</span>
-                    </td>
+                return `<tr class="hover:bg-primary-fixed/20 transition-colors border-b border-outline-variant/10">
+                    <td class="px-6 py-4"><div class="font-extrabold text-primary text-sm">${p.po_no || 'TIDAK ADA PO'}</div><div class="text-[10px] font-medium text-on-surface-variant mt-0.5">PO Date: ${p.po_date || '-'}</div><div class="mt-1.5 text-[9px] bg-surface-container-high text-on-surface font-bold px-1.5 py-0.5 rounded inline-block border border-outline-variant/50">PR: ${p.pr_no || '-'}</div></td>
+                    <td class="px-6 py-4"><div class="font-extrabold text-on-surface text-xs tracking-wide">${p.part_no || '-'}</div><div class="text-[11px] font-medium text-on-surface-variant mt-1 max-w-[250px] whitespace-normal leading-tight">${p.item_name || '-'}</div></td>
+                    <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="flex-1 bg-surface-variant h-1.5 rounded-full overflow-hidden w-24"><div class="${barColor} h-full" style="width: ${progressPct}%"></div></div><span class="text-xs font-bold text-on-surface w-8">${progressPct}%</span></div><div class="text-[10px] text-on-surface-variant mt-1 font-medium">Order: <span class="font-bold text-primary">${p.qty_po}</span> | Rcv: <span class="font-bold text-secondary">${p.qty_rcv}</span></div></td>
+                    <td class="px-6 py-4 text-center"><div class="text-error font-extrabold text-xl">${p.qty_out}</div></td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${stClass} border inline-block tracking-wider">${stTxt}</span></td>
                 </tr>`;
             }).join('');
-            
             document.getElementById('poPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Data Outstanding`;
             document.getElementById('poPaginationButtons').innerHTML = createPaginationHtml(poCurrentPage, totalPages, 'changePOPage');
         }
 
-        // --- EXPORT, DASHBOARD, ADMIN & OTHER RENDER LOGIC ---
+        // --- PRINT KELUAR/MASUK TRANSACTION LOGIC ---
+        function printTransaction(txId, flow) {
+            const tx = appData.txs.find(t => t.id === txId);
+            if(!tx) return notif('error', 'Gagal Cetak', 'Transaksi tidak valid.');
+            
+            const part = appData.parts.find(p => p.id === tx.part_id);
+            const unit = flow === 'OUT' ? appData.units.find(u => u.id === tx.unit_id) : null;
+            
+            const txDateObj = new Date(tx.date);
+            const formattedDate = txDateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            
+            document.getElementById('printVal1').innerText = formattedDate;
+
+            if (flow === 'OUT') {
+                document.getElementById('printDocTitle').innerText = 'FORM MECHANIC ORDERLIST';
+                document.getElementById('printLabel2').innerText = 'UNIT TYPE';
+                document.getElementById('printVal2').innerText = (part ? part.unit_type : '-') || '-';
+                document.getElementById('printLabel3').innerText = 'NO ID (UNIT)';
+                document.getElementById('printVal3').innerText = (unit ? unit.nama_unit : '-') || '-';
+                document.getElementById('printLabel4').innerText = 'NO WO';
+                document.getElementById('printVal4').innerText = tx.no_wo || '-';
+                
+                document.getElementById('printQtyLabel').innerText = 'OUT';
+                document.getElementById('printCol7Label').innerText = 'STOCK CODE';
+
+                document.getElementById('printSig1Title').innerText = 'Diketahui Oleh';
+                document.getElementById('printSig1Name').innerText = 'Main Dept Head.Logistik';
+                document.getElementById('printSig2Title').innerText = 'Diperiksa Oleh';
+                document.getElementById('printSig2Name').innerText = 'Foreman Logistic';
+                document.getElementById('printSig3Title').innerText = 'Diserahkan Oleh';
+                document.getElementById('printSig3Name').innerText = 'Logistik';
+                document.getElementById('printSig4Title').innerText = 'Diterima Oleh';
+                document.getElementById('printSig4Name').innerText = 'Mechanic';
+            } else {
+                document.getElementById('printDocTitle').innerText = 'FORM RECEIVING ITEM (IN)';
+                document.getElementById('printLabel2').innerText = 'VENDOR/SUPPLIER';
+                document.getElementById('printVal2').innerText = tx.vendor || '-';
+                document.getElementById('printLabel3').innerText = 'NO PO';
+                document.getElementById('printVal3').innerText = tx.no_po || '-';
+                document.getElementById('printLabel4').innerText = 'NO BUKTI / SJ';
+                document.getElementById('printVal4').innerText = tx.no_wo || '-'; 
+                
+                document.getElementById('printQtyLabel').innerText = 'IN';
+                document.getElementById('printCol7Label').innerText = 'LOKASI RAK';
+
+                document.getElementById('printSig1Title').innerText = 'Dikirim Oleh';
+                document.getElementById('printSig1Name').innerText = 'Supplier / Ekspedisi';
+                document.getElementById('printSig2Title').innerText = 'Diperiksa Oleh';
+                document.getElementById('printSig2Name').innerText = 'Foreman Logistic';
+                document.getElementById('printSig3Title').innerText = 'Diterima Oleh';
+                document.getElementById('printSig3Name').innerText = 'Logistik';
+                document.getElementById('printSig4Title').innerText = 'Diketahui Oleh';
+                document.getElementById('printSig4Name').innerText = 'Head Dept. Logistik';
+            }
+            
+            let rowHtml = `
+            <tr>
+                <td>1</td>
+                <td>${tx.part_number}</td>
+                <td>${tx.item_name}</td>
+                <td class="text-center font-bold">${tx.qty}</td>
+                <td>${part ? part.satuan : '-'}</td>
+                <td>${part ? part.kategori : '-'}</td>
+                <td>${flow === 'OUT' ? ((part && part.kode_accurate) ? part.kode_accurate : '-') : ((part && part.lokasi_gudang) ? part.lokasi_gudang : '-')}</td>
+                <td class="text-center">${part ? part.stock_current : '-'}</td>
+            </tr>`;
+            
+            document.getElementById('printTableBody').innerHTML = rowHtml;
+            const now = new Date();
+            document.getElementById('printTime').innerText = `${String(now.getHours()).padStart(2, '0')}.${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            logAction('PRINT_DOC', `User printed document for TX: ${tx.id} (${flow})`);
+            window.print();
+        }
+
+        // --- MASS UPLOAD TRANSACTIONS (EXCEL) LOGIC ---
+        function downloadTemplate(type) {
+            let ws_data = [];
+            if(type === 'IN') {
+                ws_data = [['Part Number', 'Qty', 'Tanggal (YYYY-MM-DD)', 'Jenis (Normal/Retur/Service)', 'Vendor', 'No PO', 'No WO', 'Lokasi Gudang']];
+            } else {
+                ws_data = [['Part Number', 'Qty', 'Tanggal (YYYY-MM-DD)', 'Jenis (Normal/Retur/Service)', 'No WO', 'ID Departemen', 'ID Unit']];
+            }
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Template_" + type);
+            XLSX.writeFile(wb, `Template_Mass_Upload_${type}.xlsx`);
+        }
+
+        function handleMassUploadSubmit(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('massUploadFile');
+            const type = document.getElementById('massUploadType').value;
+            const file = fileInput.files[0];
+            if(!file) return notif('error', 'Pilih File', 'Silakan pilih file Excel terlebih dahulu.');
+            
+            showLoading(true, "Membaca dan Memproses File Excel...");
+            toggleBtnState('btnSubmitMass', true);
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const data = new Uint8Array(event.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(sheet, {defval: ""});
+                    
+                    if(rows.length === 0) throw new Error("File Excel kosong atau format tidak sesuai template.");
+
+                    let updates = {}; let errors = []; let successCount = 0; let currentStocks = {}; 
+
+                    for(let i=0; i<rows.length; i++) {
+                        const row = rows[i];
+                        const partNo = String(row['Part Number'] || '').trim();
+                        if(!partNo) continue; 
+
+                        const part = appData.parts.find(p => p.part_number === partNo);
+                        if(!part) { errors.push(`Baris ${i+2}: Part [${partNo}] tidak terdaftar di sistem.`); continue; }
+
+                        const qty = parseInt(row['Qty']) || 0;
+                        if(qty <= 0) { errors.push(`Baris ${i+2}: Qty tidak valid.`); continue; }
+
+                        const partId = part.id;
+                        if(currentStocks[partId] === undefined) currentStocks[partId] = parseInt(part.stock_current || 0);
+
+                        const jenisTx = row['Jenis (Normal/Retur/Service)'] || 'Normal';
+                        const txId = (type === 'IN' ? 'TIN' : 'TOU') + Date.now() + i;
+                        const isoDate = new Date().toISOString();
+                        const txDateRaw = row['Tanggal (YYYY-MM-DD)'];
+                        
+                        let txDate = new Date().toISOString().split('T')[0];
+                        if(txDateRaw) {
+                            if(!isNaN(txDateRaw) && typeof txDateRaw === 'number') {
+                                const excelEpoch = new Date(1899, 11, 30);
+                                const d = new Date(excelEpoch.getTime() + txDateRaw * 86400000);
+                                txDate = d.toISOString().split('T')[0];
+                            } else { txDate = String(txDateRaw); }
+                        }
+
+                        if (type === 'OUT') {
+                            if (jenisTx !== 'Retur' && currentStocks[partId] < qty) {
+                                errors.push(`Baris ${i+2}: Part [${partNo}] stok (Sisa: ${currentStocks[partId]}) tidak cukup.`); continue;
+                            }
+                            currentStocks[partId] -= qty;
+                            let txData = { id: txId, part_id: partId, qty: qty, date: txDate, jenis_tx: jenisTx, no_wo: String(row['No WO']||'').trim(), user_id: currentUser.username, timestamp: isoDate, part_number: part.part_number, item_name: part.item_name, dept_id: String(row['ID Departemen']||'').trim(), unit_id: String(row['ID Unit']||'').trim() };
+                            updates[`txsOut/${txId}`] = txData;
+                        } else {
+                            currentStocks[partId] += qty;
+                            let txData = { id: txId, part_id: partId, qty: qty, date: txDate, jenis_tx: jenisTx, no_wo: String(row['No WO']||'').trim(), user_id: currentUser.username, timestamp: isoDate, part_number: part.part_number, item_name: part.item_name, vendor: String(row['Vendor']||'').trim(), no_po: String(row['No PO']||'').trim(), lokasi_gudang: String(row['Lokasi Gudang']||'').trim() };
+                            updates[`txsIn/${txId}`] = txData;
+                            if(txData.lokasi_gudang) updates[`parts/${partId}/lokasi_gudang`] = txData.lokasi_gudang;
+                        }
+                        updates[`parts/${partId}/stock_current`] = currentStocks[partId];
+                        successCount++;
+                    }
+
+                    if(successCount > 0) {
+                        await fbRoot.update(updates);
+                        logAction('MASS_UPLOAD', `Uploaded ${successCount} ${type} transactions via Excel.`);
+                    }
+
+                    closeModal('modalMassUpload');
+                    if(errors.length > 0) {
+                        Swal.fire({
+                            title: 'Diproses Sebagian',
+                            html: `Berhasil diproses: <b>${successCount}</b> Transaksi<br>Gagal / Ditolak:<br><div class="text-left text-xs max-h-32 overflow-y-auto text-error font-mono mt-2 bg-error-container p-2 rounded">${errors.join('<br>')}</div>`,
+                            icon: 'warning', background: '#fbf9f8', color: '#1b1c1c', confirmButtonColor: '#001b44'
+                        });
+                    } else { notif('success', 'Berhasil', `Semua ${successCount} transaksi berhasil diunggah.`); }
+                } catch(error) { console.error(error); notif('error', 'Gagal Eksekusi', error.message); } 
+                finally { showLoading(false); toggleBtnState('btnSubmitMass', false); fileInput.value = ''; }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // --- STOCK & TRANSACTION CRUD ---
+        function handleSearchStock() { stkSearchQuery = document.getElementById('searchStockInput').value.toLowerCase(); stkCurrentPage = 1; renderStockTable(); }
+        function changeStkPage(page) { stkCurrentPage = page; renderStockTable(); }
+        
+        function handleSearchTracking() { txSearchQuery = document.getElementById('searchTrackingInput').value.toLowerCase(); txCurrentPage = 1; renderTrackingTable(); }
+        function changeTxPage(page) { txCurrentPage = page; renderTrackingTable(); }
+
+        function renderStockTable() {
+            const fKat = document.getElementById('filterKategori').value; const fMov = document.getElementById('filterPergerakan').value;
+            let filtered = appData.parts;
+            if (stkSearchQuery) { filtered = filtered.filter(p => `${p.part_number} ${p.item_name} ${p.kode_accurate||''}`.toLowerCase().includes(stkSearchQuery)); }
+            if (fKat) filtered = filtered.filter(p => p.kategori === fKat);
+            if (fMov) filtered = filtered.filter(p => p.pergerakan === fMov);
+
+            const totalItems = filtered.length; const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+            if (stkCurrentPage > totalPages) stkCurrentPage = totalPages;
+            const start = (stkCurrentPage - 1) * rowsPerPage; const paginated = filtered.slice(start, start + rowsPerPage);
+
+            document.getElementById('stockTableBody').innerHTML = paginated.map(p => {
+                const umur = calculateAge(p.created_at); const sClass = p.stock_current <= p.stock_min ? 'text-error font-extrabold' : 'text-status-in font-extrabold';
+                return `<tr class="hover:bg-primary-fixed/20 transition-colors border-b border-outline-variant/10">
+                    <td class="px-6 py-4"><div class="font-extrabold text-primary tracking-wide text-sm">${p.part_number}</div><div class="text-[11px] font-medium text-on-surface-variant mt-0.5 whitespace-normal break-words max-w-xs">${p.item_name}</div>${p.kode_accurate ? `<div class="text-[10px] text-on-primary-container mt-1.5 border border-primary-fixed-dim inline-block px-1.5 py-0.5 rounded bg-primary-fixed font-bold">ACC: ${p.kode_accurate}</div>` : ''}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 rounded text-[10px] font-bold bg-surface-container-high text-on-surface-variant block w-max mb-1 border border-outline-variant/30">${p.brand_merk || '-'} | ${p.unit_type || 'ALL'}</span><span class="px-2 py-1 rounded text-[10px] font-bold bg-primary-fixed text-on-primary-fixed-variant block w-max">${p.kategori} | ${p.pergerakan}</span></td>
+                    <td class="px-6 py-4 text-sm font-medium text-on-surface">${p.lokasi_gudang || '-'}</td><td class="px-6 py-4 text-xs text-on-tertiary-container font-mono font-bold">${umur}</td>
+                    <td class="px-6 py-4 text-center"><div class="${sClass} text-xl">${p.stock_current} <span class="text-[10px] text-on-surface-variant font-medium uppercase">${p.satuan || '-'}</span></div><div class="text-[10px] text-on-surface-variant font-medium mt-0.5">Min: ${p.stock_min}</div></td>
+                    <td class="px-6 py-4 text-right admin-only hide"><button onclick="editStock('${p.id}')" class="text-primary hover:text-primary-container p-2 bg-surface-container rounded-full hover:bg-surface-dim transition"><span class="material-symbols-outlined text-[18px]">edit</span></button></td>
+                </tr>`;
+            }).join('');
+            document.getElementById('stkPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Master Asset`;
+            document.getElementById('stkPaginationButtons').innerHTML = createPaginationHtml(stkCurrentPage, totalPages, 'changeStkPage');
+            applyRoleAccess();
+        }
+
+        function renderTrackingTable() {
+            let filtered = appData.txs.filter(t => (t.jenis_tx || 'Normal') === txActiveTab);
+            if (txSearchQuery) { filtered = filtered.filter(t => { const dept = appData.depts.find(d => d.id === t.dept_id)?.nama_dept || ''; return `${t.part_number} ${t.item_name} ${t.no_wo||''} ${dept} ${t.vendor||''}`.toLowerCase().includes(txSearchQuery); }); }
+            const totalItems = filtered.length; const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+            if (txCurrentPage > totalPages) txCurrentPage = totalPages;
+            const start = (txCurrentPage - 1) * rowsPerPage; const paginated = filtered.slice(start, start + rowsPerPage);
+
+            document.getElementById('txTableBody').innerHTML = paginated.map(t => {
+                const isOut = t.tx_flow === 'OUT'; const colorC = isOut ? 'text-status-out' : 'text-status-in'; const sign = isOut ? '-' : '+';
+                let relasi = isOut ? `<span class="text-[11px] font-medium text-on-surface-variant block mb-0.5">Dept: <span class="text-on-surface font-bold whitespace-normal break-words">${appData.depts.find(d=>d.id===t.dept_id)?.nama_dept||'-'}</span></span><span class="text-[11px] font-medium text-on-surface-variant block">Unit: <span class="text-on-tertiary-container font-bold whitespace-normal break-words">${appData.units.find(u=>u.id===t.unit_id)?.nama_unit||'-'}</span></span>` : `<span class="text-[11px] font-medium text-on-surface-variant block mb-0.5">Vend: <span class="text-on-surface font-bold whitespace-normal break-words">${t.vendor||'-'}</span></span><span class="text-[11px] font-medium text-on-surface-variant block">PO: <span class="text-primary font-bold whitespace-normal break-words">${t.no_po||'-'}</span></span>`;
+                return `<tr class="hover:bg-primary-fixed/20 transition-colors border-b border-outline-variant/10">
+                    <td class="px-6 py-4 text-sm whitespace-nowrap"><div class="text-on-surface font-medium">${new Date(t.date).toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'})}</div><div class="text-[10px] font-bold text-outline mt-1 uppercase tracking-wider">Oleh: ${t.user_id||t.user||'?'}</div></td>
+                    <td class="px-6 py-4 text-center"><div class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${isOut?'bg-error-container text-on-error-container border border-error-container':'bg-secondary-container text-on-secondary-container border border-secondary-container'} inline-flex items-center gap-1">${isOut?'<span class="w-1.5 h-1.5 bg-error rounded-full"></span>':'<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>'} ${t.tx_flow}</div></td>
+                    <td class="px-6 py-4"><div class="font-extrabold text-primary text-sm">${t.part_number}</div><div class="text-[11px] font-medium text-on-surface-variant mt-0.5 whitespace-normal break-words max-w-xs">${t.item_name}</div>${t.no_wo ? `<div class="mt-1.5 text-[10px] bg-surface-container-high text-on-surface font-bold px-1.5 py-0.5 rounded inline-block border border-outline-variant/50">WO: ${t.no_wo}</div>` : ''}</td>
+                    <td class="px-6 py-4 text-center"><div class="${colorC} font-extrabold text-xl">${sign}${t.qty}</div></td>
+                    <td class="px-6 py-4 w-1/4">${relasi}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="printTransaction('${t.id}', '${t.tx_flow}')" class="text-primary hover:text-primary-container p-2 bg-primary-fixed/30 rounded-full hover:bg-primary-fixed transition mr-1" title="Cetak Dokumen"><span class="material-symbols-outlined text-[18px]">print</span></button>
+                        <button onclick="deleteTx('${t.id}', '${t.tx_flow}', '${t.part_id}', ${t.qty}, '${t.part_number}')" class="text-error hover:text-on-error-container p-2 bg-error-container/30 rounded-full hover:bg-error-container transition superadmin-only hide" title="Hapus Log"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                    </td>
+                </tr>`;
+            }).join('');
+            document.getElementById('txPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Log`;
+            document.getElementById('txPaginationButtons').innerHTML = createPaginationHtml(txCurrentPage, totalPages, 'changeTxPage');
+            applyRoleAccess();
+        }
+
+        async function saveTransaction(e, type) {
+            e.preventDefault(); const btnId = type === 'IN' ? 'btnSubmitIn' : 'btnSubmitOut'; toggleBtnState(btnId, true);
+            const jenisTx = type === 'IN' ? document.getElementById('txInJenis').value : document.getElementById('txOutJenis').value;
+            const partId = type === 'IN' ? document.getElementById('txInPart').value : document.getElementById('txOutPart').value;
+            const qty = parseInt(type === 'IN' ? document.getElementById('txInQty').value : document.getElementById('txOutQty').value);
+            const noWo = type === 'IN' ? document.getElementById('txInWO').value : document.getElementById('txOutWO').value;
+            const txId = (type === 'IN' ? 'TIN' : 'TOU') + Date.now(); const isoDate = new Date().toISOString();
+
+            showLoading(true, "Mengeksekusi Transaksi Cloud...");
+            try {
+                const partRef = fbRoot.child('parts').child(partId); const partSnap = await partRef.once('value');
+                if (!partSnap.exists()) throw new Error("ID Master Item tidak valid.");
+                
+                const partData = partSnap.val(); let newStock = parseInt(partData.stock_current || 0);
+                if (type === 'OUT') { if (jenisTx !== 'Retur' && newStock < qty) throw new Error("Sisa Stok Fisik tidak mencukupi!"); newStock -= qty; } else { newStock += qty; }
+
+                let txData = { id: txId, part_id: partId, qty: qty, date: type === 'IN' ? document.getElementById('txInDate').value : document.getElementById('txOutDate').value, jenis_tx: jenisTx, no_wo: noWo, user_id: currentUser.username, timestamp: isoDate, part_number: partData.part_number, item_name: partData.item_name };
+                if (type === 'IN') { txData.vendor = document.getElementById('txInVendor').value; txData.no_po = document.getElementById('txInPO').value; txData.lokasi_gudang = document.getElementById('txInLoc').value; } 
+                else { txData.dept_id = document.getElementById('txOutDept').value; txData.unit_id = document.getElementById('txOutUnit').value; }
+
+                let updates = {}; updates[`parts/${partId}/stock_current`] = newStock;
+                if (type === 'IN' && txData.lokasi_gudang) updates[`parts/${partId}/lokasi_gudang`] = txData.lokasi_gudang;
+                updates[`${type === 'IN' ? 'txsIn' : 'txsOut'}/${txId}`] = txData;
+
+                await fbRoot.update(updates);
+                logAction(`TX_${type}`, `${jenisTx} ${qty}x [${partData.part_number}] ${partData.item_name}. WO: ${noWo||'-'}`);
+                
+                closeModal(type === 'IN' ? 'modalTxIn' : 'modalTxOut'); notif('success', 'Berhasil', 'Sirkulasi Logistik terekam ke Cloud.');
+                document.getElementById(type === 'IN' ? 'formTxIn' : 'formTxOut').reset();
+                if(selectSearchIn) selectSearchIn.clear(); if(selectSearchOut) selectSearchOut.clear();
+            } catch (err) { notif('error', 'Transaksi Ditolak', err.message); } 
+            finally { showLoading(false); toggleBtnState(btnId, false); }
+        }
+
+        async function saveStock(e) {
+            e.preventDefault(); const btnId = 'btnSubmitStock'; toggleBtnState(btnId, true);
+            const rawId = document.getElementById('stkId').value.trim(); const cleanId = rawId.replace(/[\.\#\$\/\[\]\s]/g, "_");
+            const isNew = document.getElementById('stkMode').value === 'NEW';
+            let cAt = document.getElementById('stkCreatedAt').value; if(isNew || !cAt) cAt = new Date().toISOString();
+
+            const data = {
+                id: cleanId, part_number: document.getElementById('stkPartNo').value, item_name: document.getElementById('stkName').value,
+                brand_merk: document.getElementById('stkBrand').value, unit_type: document.getElementById('stkUnitType').value, kategori: document.getElementById('stkType').value,
+                pergerakan: document.getElementById('stkMove').value, kode_accurate: document.getElementById('stkAccurate').value, satuan: document.getElementById('stkUnit').value,
+                lokasi_gudang: document.getElementById('stkLocation').value, stock_current: parseInt(document.getElementById('stkCurrent').value), stock_min: parseInt(document.getElementById('stkMin').value), created_at: cAt
+            };
+
+            showLoading(true, "Menulis ke Master Cloud...");
+            try {
+                if(isNew) { const snap = await fbRoot.child('parts').child(cleanId).once('value'); if(snap.exists()) throw new Error("ID Item sudah digunakan."); }
+                await fbRoot.child('parts').child(cleanId).set(data);
+                logAction(isNew ? 'ADD_MASTER' : 'EDIT_MASTER', `${isNew ? 'Created' : 'Updated'} master data: [${data.part_number}]`);
+                closeModal('modalStock'); notif('success', 'Data Master Terpusat', 'Berhasil memperbarui katalog aset.');
+                document.getElementById('formStock').reset();
+            } catch (err) { notif('error', 'Gagal Simpan', err.message); } 
+            finally { showLoading(false); toggleBtnState(btnId, false); }
+        }
+
+        function editStock(id) {
+            const p = appData.parts.find(x => x.id === id);
+            if(p) { 
+                document.getElementById('stkMode').value = 'EDIT'; document.getElementById('stkCreatedAt').value = p.created_at || '';
+                const idEl = document.getElementById('stkId'); idEl.value = p.id; idEl.readOnly = true; idEl.classList.add('opacity-50'); 
+                document.getElementById('stkPartNo').value = p.part_number || ''; document.getElementById('stkAccurate').value = p.kode_accurate || ''; 
+                document.getElementById('stkName').value = p.item_name || ''; document.getElementById('stkBrand').value = p.brand_merk || ''; 
+                document.getElementById('stkUnitType').value = p.unit_type || 'ALL'; document.getElementById('stkType').value = p.kategori || 'SPAREPART'; 
+                document.getElementById('stkMove').value = p.pergerakan || 'FAST'; document.getElementById('stkUnit').value = p.satuan || 'pcs'; 
+                document.getElementById('stkLocation').value = p.lokasi_gudang || ''; document.getElementById('stkCurrent').value = p.stock_current || 0; 
+                document.getElementById('stkMin').value = p.stock_min || 0; openModal('modalStock'); 
+            }
+        }
+
+        async function deleteTx(id, type, part_id, qty, part_no) {
+            const result = await Swal.fire({ title: 'Hapus & Revert Stok?', text: "Hapus permanen log dan stok akan dikembalikan.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ba1a1a', background: '#fbf9f8', color: '#1b1c1c' });
+            if (!result.isConfirmed) return;
+            showLoading(true, "Reverting Cloud Data...");
+            try {
+                const partRef = fbRoot.child('parts').child(part_id); const partSnap = await partRef.once('value');
+                if (partSnap.exists()) {
+                    let currentStock = parseInt(partSnap.val().stock_current); let revertedStock = type === 'IN' ? currentStock - qty : currentStock + qty;
+                    let updates = {}; updates[`parts/${part_id}/stock_current`] = revertedStock; updates[`${type === 'IN' ? 'txsIn' : 'txsOut'}/${id}`] = null;
+                    await fbRoot.update(updates);
+                    logAction('TX_DELETE', `Reverted ${type} tx for ${part_no}. Restored ${qty} qty.`);
+                    notif('success', 'Transaksi Dibatalkan', 'Stok telah diperbarui di Cloud.');
+                } else { throw new Error("Item master tidak ditemukan untuk revert stok."); }
+            } catch (err) { notif('error', 'Gagal Revert', err.message); } finally { showLoading(false); }
+        }
+
+        // --- ADMIN, SETTINGS & MIGRATIONS ---
         function applySettings(config) {
             const appName = config.appName || "ERP WAREHOUSE";
             document.getElementById('desktopAppName').innerText = appName; document.getElementById('mobileAppName').innerText = appName; document.getElementById('docTitle').innerText = appName + " - Enterprise";
@@ -1083,20 +1435,12 @@
                 const btn = document.getElementById('tabAdm-' + t); 
                 const view = document.getElementById('admView-' + t); 
                 if(btn) { btn.classList.remove('tab-active', 'text-primary', 'font-bold'); btn.classList.add('text-on-surface-variant'); } 
-                if(view) { 
-                    view.style.display = 'none'; 
-                    view.classList.add('hide'); 
-                    view.classList.remove('animate-fade-slide'); // Reset animasi tab
-                } 
+                if(view) { view.style.display = 'none'; view.classList.add('hide'); view.classList.remove('animate-fade-slide'); } 
             });
             const aBtn = document.getElementById('tabAdm-' + tabName); 
             const aView = document.getElementById('admView-' + tabName);
             if(aBtn) { aBtn.classList.add('tab-active', 'text-primary', 'font-bold'); aBtn.classList.remove('text-on-surface-variant'); } 
-            if(aView) { 
-                aView.style.display = 'block'; 
-                aView.classList.remove('hide'); 
-                aView.classList.add('animate-fade-slide'); // Trigger animasi tab
-            }
+            if(aView) { aView.style.display = 'block'; aView.classList.remove('hide'); aView.classList.add('animate-fade-slide'); }
             if(tabName === 'UserMgmt') renderUserTable(); if(tabName === 'SysLogs') renderLogsTable();
         }
 
@@ -1163,7 +1507,27 @@
             if(u) { document.getElementById('userMode').value = 'EDIT'; document.getElementById('usrUsername').value = u.username; document.getElementById('usrUsername').readOnly = true; document.getElementById('usrPassword').value = u.password; document.getElementById('usrName').value = u.nama; document.getElementById('usrRole').value = u.role; openModal('modalUser'); }
         }
 
-        function openModal(id) { document.getElementById(id).classList.remove('hide'); } function closeModal(id) { document.getElementById(id).classList.add('hide'); }
+        // --- OTHER UTILS ---
+        function exportToExcel() {
+            if(!appData.parts || appData.parts.length === 0) return notif('warning', 'Data Kosong', 'Tidak ada data stok.'); showLoading(true, "Menyiapkan File Excel...");
+            try {
+                const exportData = appData.parts.map((p, index) => ({ 'No': index + 1, 'Part Number': p.part_number, 'Kode Accurate': p.kode_accurate || '-', 'Nama / Deskripsi': p.item_name, 'Brand': p.brand_merk || '-', 'Tipe Unit': p.unit_type || '-', 'Kategori': p.kategori, 'Pergerakan': p.pergerakan, 'Satuan': p.satuan, 'Lokasi': p.lokasi_gudang || '-', 'Stok Sistem': p.stock_current, 'Stok Fisik Aktual': '', 'Selisih': '', 'Keterangan': '' }));
+                const ws = XLSX.utils.json_to_sheet(exportData); ws['!cols'] = [{wch:5}, {wch:20}, {wch:15}, {wch:40}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:10}, {wch:15}, {wch:12}, {wch:15}, {wch:10}, {wch:20}];
+                const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Sheet_Opname");
+                XLSX.writeFile(wb, `Form_Stock_Opname_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.xlsx`);
+                logAction('EXPORT_EXCEL', `User downloaded Master Asset excel`); notif('success', 'Download Selesai', 'File Excel siap.');
+            } catch (err) { notif('error', 'Export Gagal', err.message); } finally { showLoading(false); }
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('pdfTargetArea'); notif('info', 'Menyiapkan Render PDF...', 'Harap tunggu.');
+            logAction('EXPORT_PDF', `User exported critical stock PDF`);
+            html2pdf().set({ margin: 0.5, filename: `Report_Kritis_${new Date().getTime()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save().then(() => Swal.close());
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hide'); } 
+        function closeModal(id) { document.getElementById(id).classList.add('hide'); }
+        
         function populateSelects() {
             if(selectSearchIn) selectSearchIn.destroy(); if(selectSearchOut) selectSearchOut.destroy();
             const partOptions = `<option value="">Ketik untuk mencari (ID/Part/Nama)...</option>` + appData.parts.map(p => `<option value="${p.id}">[${p.part_number}] ${p.item_name} - Stok: ${p.stock_current} ${p.satuan||''}</option>`).join('');
