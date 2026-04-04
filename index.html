@@ -104,7 +104,7 @@
         .ts-control { background-color: #f5f3f3 !important; border: 1px solid #e4e2e2 !important; color: #1b1c1c !important; border-radius: 0.5rem !important; padding: 0.6rem 0.75rem !important; font-size: 0.875rem !important; }
         .ts-control input { color: #1b1c1c !important; }
         .ts-control.focus { border-color: #001b44 !important; box-shadow: 0 0 0 1px rgba(0,27,68,0.2) !important; }
-        .ts-dropdown { background-color: #ffffff !important; border: 1px solid #e4e2e2 !important; color: #1b1c1c !important; border-radius: 0.5rem !important; shadow-lg; font-size: 0.875rem !important; }
+        .ts-dropdown { background-color: #ffffff !important; border: 1px solid #e4e2e2 !important; color: #1b1c1c !important; border-radius: 0.5rem !important; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); font-size: 0.875rem !important; }
         .ts-dropdown .option:hover, .ts-dropdown .option.active { background-color: #f5f3f3 !important; color: #001b44 !important; font-weight: 500; }
         
         .tab-btn { transition: all 0.3s ease; border-bottom: 2px solid transparent; }
@@ -116,8 +116,10 @@
         @keyframes progress-indeterminate { 0% { transform: translateX(-100%); width: 30%; } 50% { width: 50%; } 100% { transform: translateX(400%); width: 30%; } }
         .animate-progress { animation: progress-indeterminate 1.5s ease-in-out infinite; }
         
-        /* Logo Image Container */
         .brand-logo { max-height: 32px; max-width: 32px; object-fit: contain; }
+
+        /* Drag Drop Highlight */
+        .drag-over { background-color: #d8e2ff !important; border-color: #002f6c !important; border-style: solid !important; }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -152,7 +154,6 @@
         <div class="p-6 flex items-center gap-3 mb-1 border-b border-white/10">
             <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center overflow-hidden" id="desktopLogoContainer">
                 <span class="material-symbols-outlined text-on-primary-container filled text-2xl" id="defaultLogo">inventory_2</span>
-                <!-- Image logo akan disisipkan di sini via JS jika disetting -->
             </div>
             <div>
                 <h1 class="text-lg font-extrabold tracking-tight truncate w-36" id="desktopAppName">ERP WAREHOUSE</h1>
@@ -161,21 +162,20 @@
         </div>
         
         <nav class="flex-grow px-4 space-y-2 mt-6">
-            <a href="#" onclick="router('dashboard')" id="navD-dashboard" class="nav-desktop-active flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
-                <span class="material-symbols-outlined">dashboard</span>
-                <span>Dashboard Analitik</span>
+            <a href="#" onclick="router('dashboard')" id="navD-dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
+                <span class="material-symbols-outlined">dashboard</span><span>Dashboard Analitik</span>
+            </a>
+            <a href="#" onclick="router('po')" id="navD-po" class="nav-desktop-active flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
+                <span class="material-symbols-outlined">local_shipping</span><span>Status Order & PO</span>
             </a>
             <a href="#" onclick="router('tracking')" id="navD-tracking" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
-                <span class="material-symbols-outlined">timeline</span>
-                <span>Logistik & Tracking</span>
+                <span class="material-symbols-outlined">timeline</span><span>Logistik & Tracking</span>
             </a>
             <a href="#" onclick="router('stock')" id="navD-stock" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
-                <span class="material-symbols-outlined">search_insights</span>
-                <span>Master Inventory</span>
+                <span class="material-symbols-outlined">search_insights</span><span>Master Inventory</span>
             </a>
             <a href="#" onclick="router('master')" id="navD-master" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium admin-only hide">
-                <span class="material-symbols-outlined">admin_panel_settings</span>
-                <span>System Administration</span>
+                <span class="material-symbols-outlined">admin_panel_settings</span><span>System Administration</span>
             </a>
         </nav>
         
@@ -184,17 +184,17 @@
 
     <!-- MOBILE BOTTOM NAV -->
     <nav class="md:hidden fixed bottom-0 w-full bg-surface-container-lowest/95 backdrop-blur-md border-t border-outline-variant/20 z-50 flex justify-around p-2 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]" id="mobileNav">
-        <a href="#" onclick="router('dashboard')" id="navM-dashboard" class="nav-mobile-active flex flex-col items-center p-2 text-on-surface-variant transition">
+        <a href="#" onclick="router('dashboard')" id="navM-dashboard" class="flex flex-col items-center p-2 text-on-surface-variant transition">
             <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">dashboard</span></div><span class="text-[10px] mt-1 font-medium">Dash</span>
+        </a>
+        <a href="#" onclick="router('po')" id="navM-po" class="nav-mobile-active flex flex-col items-center p-2 text-on-surface-variant transition">
+            <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">local_shipping</span></div><span class="text-[10px] mt-1 font-medium">Order</span>
         </a>
         <a href="#" onclick="router('tracking')" id="navM-tracking" class="flex flex-col items-center p-2 text-on-surface-variant transition">
             <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">timeline</span></div><span class="text-[10px] mt-1 font-medium">Track</span>
         </a>
         <a href="#" onclick="router('stock')" id="navM-stock" class="flex flex-col items-center p-2 text-on-surface-variant transition">
             <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">search_insights</span></div><span class="text-[10px] mt-1 font-medium">Stock</span>
-        </a>
-        <a href="#" onclick="router('master')" id="navM-master" class="flex flex-col items-center p-2 text-on-surface-variant transition admin-only hide">
-            <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">admin_panel_settings</span></div><span class="text-[10px] mt-1 font-medium">Admin</span>
         </a>
         <a href="#" onclick="openModal('modalMobileMenu')" class="flex flex-col items-center p-2 text-on-surface-variant transition">
             <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">menu</span></div><span class="text-[10px] mt-1 font-medium">Menu</span>
@@ -213,7 +213,7 @@
         <!-- TopNavBar (Desktop) -->
         <header class="hidden md:flex h-16 bg-surface-container-lowest items-center justify-between px-8 border-b border-outline-variant/20 shrink-0 z-30 shadow-sm">
             <div class="flex items-center flex-1">
-                <h2 class="text-sm font-bold text-primary mr-4 uppercase tracking-widest opacity-70" id="topNavTitle">Dashboard Analitik</h2>
+                <h2 class="text-sm font-bold text-primary mr-4 uppercase tracking-widest opacity-70" id="topNavTitle">Status Order & PO</h2>
             </div>
             <div class="flex items-center gap-6">
                 <div class="flex items-center gap-3 border-l border-outline-variant/30 pl-6" id="desktopUserInfo"></div>
@@ -232,12 +232,93 @@
                 <div class="flex items-center text-[10px] text-secondary-fixed bg-secondary-container/20 px-2 py-1 rounded-full border border-secondary-fixed/30 font-bold"><div class="w-1.5 h-1.5 bg-secondary-fixed rounded-full mr-1.5 animate-pulse"></div> FIREBASE</div>
             </header>
 
-            <!-- DASHBOARD SECTION (Same as before) -->
-            <section id="view-dashboard" class="space-y-6 block">
+            <!-- SECTION PO TRACKING (ACCURATE) -->
+            <section id="view-po" class="space-y-6 block">
+                <div class="flex flex-col lg:flex-row justify-between lg:items-center space-y-4 lg:space-y-0">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-on-surface">Status Pemesanan (PO) & Outstanding</h2>
+                        <p class="text-sm text-on-surface-variant">Pantau kedatangan barang dari sistem Accurate secara Real-time.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="clearPOData()" class="bg-surface-container hover:bg-surface-dim text-error px-4 py-2 rounded-xl text-sm font-bold flex items-center transition shadow-sm admin-only hide"><span class="material-symbols-outlined text-[18px] mr-2">delete_sweep</span> Bersihkan Log</button>
+                    </div>
+                </div>
+
+                <!-- Modul Upload Drag & Drop -->
+                <div class="bg-surface-container-lowest rounded-2xl p-8 border-2 border-dashed border-primary-fixed-dim hover:border-primary transition-colors text-center shadow-sm cursor-pointer admin-only hide" id="poDropZone" onclick="document.getElementById('fileAccurate').click()">
+                    <input type="file" id="fileAccurate" accept=".txt" class="hidden" onchange="handleFileSelect(event)">
+                    <span class="material-symbols-outlined text-4xl text-primary-fixed-dim mb-3">upload_file</span>
+                    <h3 class="text-lg font-bold text-primary mb-1">Upload File Report ACCURATE (.txt)</h3>
+                    <p class="text-xs text-on-surface-variant max-w-lg mx-auto">Upload laporan "Rincian Permintaan Barang Outstanding" dari Accurate di sini. Sistem akan mem-parsing secara otomatis menjadi logistik yang mudah dipantau.</p>
+                </div>
+
+                <!-- Dashboard Summary PO -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gradient-to-br from-primary to-primary-container p-6 rounded-2xl text-white shadow-md relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/5 rounded-full blur-2xl"></div>
+                        <p class="text-xs font-bold uppercase tracking-widest opacity-70 mb-1">Total Outstanding (Sisa)</p>
+                        <h4 class="text-4xl font-extrabold" id="poSumOutstanding">0<span class="text-sm font-medium ml-1">Items</span></h4>
+                    </div>
+                    <div class="bg-surface-container-lowest border border-outline-variant/20 p-6 rounded-2xl shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Dokumen PO Aktif</p>
+                                <h4 class="text-4xl font-extrabold text-primary" id="poSumActive">0</h4>
+                            </div>
+                            <div class="p-2 bg-secondary-container/20 rounded-xl"><span class="material-symbols-outlined text-secondary">receipt_long</span></div>
+                        </div>
+                    </div>
+                    <div class="bg-surface-container-lowest border border-outline-variant/20 p-6 rounded-2xl shadow-sm">
+                        <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">Pembaruan Terakhir</p>
+                        <h4 class="text-lg font-bold text-on-surface mt-2" id="poLastUpdate">-</h4>
+                        <p class="text-[10px] text-primary mt-1 font-bold tracking-wider" id="poLastUser"></p>
+                    </div>
+                </div>
+
+                <!-- Table Tracking PO -->
+                <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
+                    <div class="flex flex-col lg:flex-row gap-4 mb-6">
+                        <div class="relative w-full lg:w-1/2">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+                            <input type="text" id="searchPOInput" onkeyup="debounce(renderPOTable, 300)()" class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low border-none rounded-full text-on-surface text-sm focus:ring-2 focus:ring-primary/20 shadow-inner" placeholder="Cari No. PO, Part Number, atau Nama Barang...">
+                        </div>
+                        <div class="w-full lg:w-1/2 flex gap-3">
+                            <select id="filterPOStatus" onchange="renderPOTable()" class="w-full bg-surface-container-low border-none rounded-xl text-on-surface text-sm px-4 py-2.5 focus:ring-2 focus:ring-primary/20 font-medium shadow-inner">
+                                <option value="ALL">Tampilkan Semua Status</option>
+                                <option value="PENDING">Belum Terproses (0%)</option>
+                                <option value="PARTIAL">Parsial (Sebagian Diterima)</option>
+                                <option value="DONE">Selesai (Fulfilled)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container-low/50">
+                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Dokumen Pemesanan</th>
+                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest w-1/3">Informasi Part/Barang</th>
+                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Progress (Rcv vs Order)</th>
+                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Outstanding</th>
+                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="poTableBody" class="divide-y divide-outline-variant/10"></tbody>
+                        </table>
+                    </div>
+                    <div class="flex justify-between items-center mt-4">
+                        <div class="text-xs text-on-surface-variant font-medium" id="poPaginationInfo">Menampilkan 0 data</div>
+                        <div class="flex gap-1" id="poPaginationButtons"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DASHBOARD SECTION -->
+            <section id="view-dashboard" class="space-y-6 hide">
                 <div class="flex flex-col lg:flex-row justify-between lg:items-end space-y-4 lg:space-y-0">
                     <div>
                         <h2 class="text-2xl font-extrabold text-on-surface mb-1">Dashboard Analitik</h2>
-                        <p class="text-sm text-on-surface-variant">Monitoring pergerakan logistik real-time.</p>
+                        <p class="text-sm text-on-surface-variant">Monitoring pergerakan logistik internal real-time.</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2 bg-surface-container-lowest p-2 rounded-2xl border border-outline-variant/20 shadow-sm w-full lg:w-auto">
                         <input type="date" id="dashStartDate" class="bg-surface-container-low border-none text-on-surface text-xs rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-primary/20 flex-grow lg:flex-grow-0 font-medium">
@@ -288,10 +369,10 @@
                 </div>
             </section>
 
-            <!-- TRACKING SECTION (Same as before) -->
+            <!-- TRACKING SECTION (Internal Transaksi) -->
             <section id="view-tracking" class="space-y-6 hide">
                 <div class="flex flex-col lg:flex-row justify-between lg:items-center space-y-4 lg:space-y-0">
-                    <div><h2 class="text-2xl font-extrabold text-on-surface">Logistik Tracking</h2><p class="text-sm text-on-surface-variant">Pusat pencatatan sirkulasi pergerakan aset.</p></div>
+                    <div><h2 class="text-2xl font-extrabold text-on-surface">Logistik Tracking</h2><p class="text-sm text-on-surface-variant">Pusat pencatatan sirkulasi pergerakan aset gudang.</p></div>
                     <div class="flex flex-wrap gap-2 admin-only hide">
                         <button onclick="openModal('modalTxIn')" class="bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary px-4 py-2 rounded-xl text-sm font-bold flex items-center w-full lg:w-auto justify-center shadow-sm"><span class="material-symbols-outlined text-[18px] mr-2">call_received</span> Form In (Masuk)</button>
                         <button onclick="openModal('modalTxOut')" class="bg-error hover:bg-on-error-container text-on-error px-4 py-2 rounded-xl text-sm font-bold flex items-center w-full lg:w-auto justify-center shadow-sm"><span class="material-symbols-outlined text-[18px] mr-2">call_made</span> Form Out (Keluar)</button>
@@ -330,10 +411,10 @@
                 </div>
             </section>
 
-            <!-- STOCK SECTION (Same as before) -->
+            <!-- STOCK SECTION -->
             <section id="view-stock" class="space-y-6 hide">
                 <div class="flex flex-col lg:flex-row justify-between lg:items-center space-y-4 lg:space-y-0">
-                    <div><h2 class="text-2xl font-extrabold text-on-surface">Master Inventory</h2><p class="text-sm text-on-surface-variant">Pusat data referensi item & aset gudang (Real-Time).</p></div>
+                    <div><h2 class="text-2xl font-extrabold text-on-surface">Master Inventory</h2><p class="text-sm text-on-surface-variant">Pusat data referensi item & aset gudang.</p></div>
                     <div class="flex flex-wrap gap-2 admin-only hide">
                         <button onclick="exportToExcel()" class="bg-surface-container hover:bg-surface-dim text-secondary px-4 py-2 rounded-xl text-sm font-bold flex items-center justify-center w-full lg:w-auto shadow-sm"><span class="material-symbols-outlined text-[18px] mr-2">description</span> Export Excel (Opname)</button>
                         <button onclick="document.getElementById('formStock').reset(); document.getElementById('stkMode').value='NEW'; document.getElementById('stkId').readOnly=false; document.getElementById('stkId').classList.remove('opacity-50'); openModal('modalStock');" class="bg-primary hover:bg-primary-fixed-variant text-on-primary px-4 py-2 rounded-xl text-sm font-bold flex items-center justify-center w-full lg:w-auto shadow-sm"><span class="material-symbols-outlined text-[18px] mr-2">add</span> Item Baru</button>
@@ -378,12 +459,11 @@
                 </div>
             </section>
             
-            <!-- SYSTEM ADMINISTRATION SECTION (Redesigned with Sub-Tabs) -->
+            <!-- SYSTEM ADMINISTRATION SECTION -->
             <section id="view-master" class="space-y-6 hide">
                 <h2 class="text-2xl font-extrabold text-on-surface">System Administration</h2>
                 <p class="text-sm text-on-surface-variant mb-6">Pusat kendali konfigurasi Enterprise ERP.</p>
                 
-                <!-- Sub Navigation Tabs for Admin -->
                 <div class="flex gap-6 mb-6 border-b border-outline-variant/20 overflow-x-auto pb-1">
                     <button onclick="switchAdminTab('DataMaster')" id="tabAdm-DataMaster" class="tab-btn tab-active pb-2 text-sm whitespace-nowrap text-primary font-bold">Data Master</button>
                     <button onclick="switchAdminTab('UserMgmt')" id="tabAdm-UserMgmt" class="tab-btn pb-2 text-sm text-on-surface-variant hover:text-primary whitespace-nowrap superadmin-only hide">Manajemen User</button>
@@ -391,7 +471,7 @@
                     <button onclick="switchAdminTab('SysLogs')" id="tabAdm-SysLogs" class="tab-btn pb-2 text-sm text-on-surface-variant hover:text-primary whitespace-nowrap admin-only hide">System Logs</button>
                 </div>
 
-                <!-- Sub-View: Data Master (Dept & Unit) -->
+                <!-- Sub-Views -->
                 <div id="admView-DataMaster" class="block space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
@@ -405,7 +485,6 @@
                     </div>
                 </div>
 
-                <!-- Sub-View: User Management -->
                 <div id="admView-UserMgmt" class="hide space-y-6">
                     <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
                         <div class="flex justify-between items-center mb-6">
@@ -423,7 +502,6 @@
                     </div>
                 </div>
 
-                <!-- Sub-View: App Configuration -->
                 <div id="admView-AppConfig" class="hide space-y-6">
                     <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20 max-w-3xl">
                         <h3 class="text-lg font-bold text-on-surface mb-6 flex items-center"><span class="material-symbols-outlined text-tertiary-fixed-dim mr-2 filled">branding_watermark</span> Enterprise Branding</h3>
@@ -433,22 +511,16 @@
                             <div class="pt-4"><button type="submit" id="btnSaveSettings" class="px-6 py-3 bg-primary hover:bg-primary-fixed-variant rounded-xl text-on-primary font-bold transition shadow-md text-sm"><span class="material-symbols-outlined text-[18px] mr-2">save</span> Terapkan Pengaturan</button></div>
                         </form>
                     </div>
-
                     <div class="bg-error-container text-on-error-container rounded-2xl p-8 mt-6 shadow-sm border border-error/20">
                         <h3 class="text-xl font-extrabold mb-2 flex items-center"><span class="material-symbols-outlined filled mr-2 text-2xl">cloud_sync</span> Google Sheets Data Center</h3>
-                        <p class="text-sm mb-6 max-w-3xl font-medium">Fungsi ini untuk integrasi cadangan ke Google Sheets Backend (Migration & Backup). <br><span class="font-bold text-error">Catatan:</span> Pastikan script Backend (Code.gs) Anda telah diperbarui jika ingin membackup tabel baru (Users, Logs, Settings) secara utuh.</p>
+                        <p class="text-sm mb-6 max-w-3xl font-medium">Integrasi cadangan ke Google Sheets Backend (Migration & Backup).</p>
                         <div class="flex flex-col md:flex-row gap-4">
-                            <button onclick="triggerMigrateFromSheets()" class="bg-surface-container-lowest hover:bg-surface border border-error/30 text-error px-6 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center w-full md:w-auto">
-                                <span class="material-symbols-outlined mr-2">cloud_download</span> Tarik Migrasi (Pull)
-                            </button>
-                            <button onclick="triggerBackupToSheets()" class="bg-error hover:bg-error-container hover:text-on-error-container text-on-error px-6 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center w-full md:w-auto shadow-md">
-                                <span class="material-symbols-outlined mr-2">cloud_upload</span> Jalankan Backup (Push)
-                            </button>
+                            <button onclick="triggerMigrateFromSheets()" class="bg-surface-container-lowest hover:bg-surface border border-error/30 text-error px-6 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center w-full md:w-auto"><span class="material-symbols-outlined mr-2">cloud_download</span> Tarik Migrasi (Pull)</button>
+                            <button onclick="triggerBackupToSheets()" class="bg-error hover:bg-error-container hover:text-on-error-container text-on-error px-6 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center w-full md:w-auto shadow-md"><span class="material-symbols-outlined mr-2">cloud_upload</span> Jalankan Backup (Push)</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Sub-View: System Logs (Audit Trail) -->
                 <div id="admView-SysLogs" class="hide space-y-6">
                     <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
                         <div class="flex justify-between items-center mb-6">
@@ -469,13 +541,11 @@
                         </div>
                     </div>
                 </div>
-
             </section>
 
         </main>
     </div>
 
-    <!-- SEMUA MODAL TRANSAKSI & STOCK (Tetap Sama Seperti Sebelumnya, Saya Singkat untuk Kerapian Logika) -->
     <!-- Modal Form Masuk (IN) -->
     <div id="modalTxIn" class="fixed inset-0 bg-inverse-surface/60 z-[70] flex justify-center items-center hide backdrop-blur-sm p-4 overflow-y-auto">
         <div class="bg-surface-container-lowest p-8 rounded-2xl w-full max-w-lg border-t-8 border-t-secondary shadow-2xl my-8">
@@ -559,7 +629,7 @@
         </div>
     </div>
 
-    <!-- Modal Form User (NEW FEATURE) -->
+    <!-- Modal Form User -->
     <div id="modalUser" class="fixed inset-0 bg-inverse-surface/60 z-[80] flex justify-center items-center hide backdrop-blur-sm p-4 overflow-y-auto">
         <div class="bg-surface-container-lowest p-8 rounded-2xl w-full max-w-md border-t-8 border-t-primary-fixed shadow-2xl my-8">
             <div class="flex items-center justify-between mb-6"><div class="flex items-center text-on-surface"><span class="material-symbols-outlined mr-2 text-primary-fixed-variant text-3xl">manage_accounts</span><h3 class="text-xl font-extrabold">Form User</h3></div><button type="button" onclick="closeModal('modalUser')" class="text-on-surface-variant hover:text-error bg-surface-container-low p-2 rounded-full"><span class="material-symbols-outlined">close</span></button></div>
@@ -593,297 +663,40 @@
             apiKey: "AIzaSyAyfvwSnamOx06PI9CehFjifKg00uBEKoE",
             authDomain: "gen-lang-client-0064579309.firebaseapp.com",
             databaseURL: "https://gen-lang-client-0064579309-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "gen-lang-client-0064579309",
-            storageBucket: "gen-lang-client-0064579309.appspot.com",
-            messagingSenderId: "649461053263",
-            appId: "1:649461053263:web:3d53d8628245b189c8b73a"
+            projectId: "gen-lang-client-0064579309"
         };
-
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.database();
         const fbRoot = db.ref('bss_warehouse_data');
-
-        // MASUKAN URL APPS SCRIPT ANDA DI SINI
         const API_URL = "https://script.google.com/macros/s/AKfycbzyaOMGl1LyYBtgj3L0kqFCiTYqpUt1wgstyTe1JLo03HXoPBpE5fyVpZ4osHusoGgStw/exec"; 
         
-        let currentUser = null;
-        let isFirebaseListening = false;
-        let appData = { parts: [], txs: [], depts: [], units: [], users: [], logs: [], settings: {} };
-        let charts = {};
-        let selectSearchIn, selectSearchOut;
+        let currentUser = null; let isFirebaseListening = false;
+        let appData = { parts: [], txs: [], depts: [], units: [], users: [], logs: [], settings: {}, accuratePO: [], accuratePOLastUpdate: '' };
+        let charts = {}; let selectSearchIn, selectSearchOut;
 
-        // Pagination & Filter States
+        // Pagination States
         const rowsPerPage = 15;
         let txCurrentPage = 1, txSearchQuery = "", txActiveTab = "Normal";
         let stkCurrentPage = 1, stkSearchQuery = "";
         let dashCurrentPage = 1, dashAnalysisData = []; 
         let logCurrentPage = 1;
+        let poCurrentPage = 1, poSearchQuery = "";
 
-        // --- 2. CORE UTILITIES ---
+        // --- 2. CORE UTILITIES & LOGS ---
         function showLoading(show, text="Memproses...") {
-            const overlay = document.getElementById('loadingOverlay');
-            document.getElementById('loadingText').innerText = text;
+            const overlay = document.getElementById('loadingOverlay'); document.getElementById('loadingText').innerText = text;
             show ? overlay.classList.remove('hide') : overlay.classList.add('hide');
         }
+        function notif(icon, title, text="") { Swal.fire({ icon: icon, title: title, text: text, background: '#fbf9f8', color: '#1b1c1c', confirmButtonColor: '#001b44', customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-xl font-bold px-6 py-2' } }); }
+        function debounce(func, wait) { let timeout; return function(...args) { const later = () => { clearTimeout(timeout); func(...args); }; clearTimeout(timeout); timeout = setTimeout(later, wait); }; }
+        function toggleBtnState(btnId, isLoading) { const btn = document.getElementById(btnId); if(!btn) return; if(isLoading) { btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); } else { btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); } }
 
-        function notif(icon, title, text="") { 
-            Swal.fire({ 
-                icon: icon, title: title, text: text, background: '#fbf9f8', color: '#1b1c1c', confirmButtonColor: '#001b44',
-                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-xl font-bold px-6 py-2' }
-            }); 
-        }
-
-        function debounce(func, wait) {
-            let timeout; return function(...args) { const later = () => { clearTimeout(timeout); func(...args); }; clearTimeout(timeout); timeout = setTimeout(later, wait); };
-        }
-
-        function toggleBtnState(btnId, isLoading) {
-            const btn = document.getElementById(btnId); if(!btn) return;
-            if(isLoading) { btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); } 
-            else { btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); }
-        }
-
-        async function fetchAPI(action, payload = {}) {
-            try {
-                const controller = new AbortController(); const timeoutId = setTimeout(() => controller.abort(), 20000); 
-                const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: action, data: payload }), signal: controller.signal });
-                clearTimeout(timeoutId); return await response.json();
-            } catch (error) {
-                console.error("Fetch Error:", error); return { success: false, message: "Koneksi ke server terputus/Timeout." };
-            }
-        }
-
-        // NEW: Core Logging Function
         async function logAction(actionName, details) {
-            if(!currentUser) return;
-            const logId = 'LOG_' + Date.now();
-            const logData = {
-                id: logId, timestamp: new Date().toISOString(), user: currentUser.username, 
-                nama: currentUser.nama, action: actionName, details: details
-            };
+            if(!currentUser) return; const logId = 'LOG_' + Date.now();
+            const logData = { id: logId, timestamp: new Date().toISOString(), user: currentUser.username, nama: currentUser.nama, action: actionName, details: details };
             try { await fbRoot.child('logs').child(logId).set(logData); } catch(e) { console.error("Log error", e); }
         }
 
-        // --- 3. INIT & AUTH ---
-        window.onload = () => {
-            const today = new Date();
-            document.getElementById('dashStartDate').valueAsDate = new Date(today.getFullYear(), today.getMonth(), 1);
-            document.getElementById('dashEndDate').valueAsDate = today;
-            document.getElementById('txInDate').valueAsDate = today;
-            document.getElementById('txOutDate').valueAsDate = today;
-            
-            checkSession();
-            initFirebaseListeners();
-        };
-
-        function checkSession() {
-            const saved = localStorage.getItem('erp_session');
-            if (saved) { currentUser = JSON.parse(saved); applyRoleAccess(); renderAuthBtn(true); } 
-            else { renderAuthBtn(false); applyRoleAccess(); router('dashboard'); }
-        }
-
-        function renderAuthBtn(isLoggedIn) {
-            const dAuth = document.getElementById('desktopAuthBtn'); const dUser = document.getElementById('desktopUserInfo'); const mMenu = document.getElementById('mobileMenuContent');
-            if (isLoggedIn) {
-                const roleColor = currentUser.role === 'SuperAdmin' ? 'text-error' : 'text-primary';
-                const roleBg = currentUser.role === 'SuperAdmin' ? 'bg-error-container' : 'bg-primary-fixed';
-                
-                dUser.innerHTML = `<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined text-on-surface-variant">person</span></div><div class="hidden lg:block"><p class="text-sm font-bold text-on-surface">${currentUser.nama}</p><p class="text-[10px] ${roleColor} uppercase tracking-widest font-bold">${currentUser.role}</p></div>`;
-                dUser.classList.remove('hide');
-                dAuth.innerHTML = `<button onclick="logout()" class="w-full flex items-center justify-center px-4 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-on-primary-container transition text-sm font-bold"><span class="material-symbols-outlined mr-2">logout</span> Keluar Sistem</button>`;
-                dAuth.classList.remove('hide');
-                mMenu.innerHTML = `<div class="bg-surface-container-lowest p-6 rounded-2xl mb-4 text-center border border-outline-variant/20 shadow-sm"><span class="material-symbols-outlined text-4xl ${roleColor} mb-2 p-3 ${roleBg} rounded-full inline-block">shield_person</span><p class="text-on-surface font-extrabold text-lg mt-2">${currentUser.nama}</p><p class="text-xs ${roleColor} font-bold uppercase tracking-widest mt-1">${currentUser.role}</p></div><button onclick="logout()" class="w-full flex items-center justify-center px-4 py-3 bg-surface-container hover:bg-surface-dim rounded-xl text-error font-bold transition text-sm"><span class="material-symbols-outlined mr-2">logout</span> Keluar Sistem</button>`;
-            } else {
-                dUser.classList.add('hide');
-                dAuth.innerHTML = `<button onclick="openModal('modalLogin')" class="w-full flex items-center justify-center px-4 py-3 bg-secondary hover:bg-on-secondary-fixed-variant rounded-xl text-on-secondary font-bold transition shadow-lg text-sm"><span class="material-symbols-outlined mr-2">lock</span> SECURE LOGIN</button>`;
-                dAuth.classList.remove('hide');
-                mMenu.innerHTML = `<div class="bg-surface-container-lowest p-6 rounded-2xl mb-4 text-center border border-outline-variant/20"><span class="material-symbols-outlined text-4xl text-on-surface-variant mb-2">lock_person</span><p class="text-on-surface-variant text-sm mt-2 font-medium">Anda belum login</p></div><button onclick="openModal('modalLogin')" class="w-full flex items-center justify-center px-4 py-3 bg-primary hover:bg-primary-fixed-variant rounded-xl text-on-primary font-bold transition shadow-md text-sm"><span class="material-symbols-outlined mr-2">lock</span> LOGIN SEKARANG</button>`;
-            }
-        }
-
-        function applyRoleAccess() {
-            const adminEls = document.querySelectorAll('.admin-only'); const superAdminEls = document.querySelectorAll('.superadmin-only');
-            if (currentUser && (currentUser.role === 'Admin' || currentUser.role === 'SuperAdmin')) { adminEls.forEach(el => { el.style.display = ''; el.classList.remove('hide'); }); } else { adminEls.forEach(el => el.style.display = 'none'); }
-            if (currentUser && currentUser.role === 'SuperAdmin') { superAdminEls.forEach(el => { el.style.display = ''; el.classList.remove('hide'); }); } else { superAdminEls.forEach(el => el.style.display = 'none'); }
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault(); 
-            const btnId = 'btnSubmitLogin'; toggleBtnState(btnId, true); showLoading(true, "Verifikasi Kredensial...");
-            const userInp = document.getElementById('logUser').value.trim(); const passInp = document.getElementById('logPass').value.trim();
-
-            try {
-                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Firebase Timeout')), 10000));
-                const snapshotPromise = fbRoot.child('users').once('value');
-                const snapshot = await Promise.race([snapshotPromise, timeoutPromise]);
-                
-                const users = snapshot.val(); let foundUser = null;
-                if (users) {
-                    const userList = Object.values(users);
-                    foundUser = userList.find(u => u && String(u.username).toLowerCase() === userInp.toLowerCase() && String(u.password) === passInp);
-                }
-
-                if (foundUser) {
-                    currentUser = foundUser; localStorage.setItem('erp_session', JSON.stringify(currentUser));
-                    closeModal('modalLogin'); applyRoleAccess(); document.getElementById('loginForm').reset();
-                    renderAuthBtn(true);
-                    logAction('LOGIN', 'User logged into system'); // LOGGING
-                    notif('success', 'Akses Diberikan', `Selamat datang kembali, ${foundUser.nama}`);
-                    renderStockTable(); renderTrackingTable();
-                } else { notif('error', 'Akses Ditolak', 'Username atau Password tidak valid.'); }
-            } catch (err) { console.error(err); notif('error', 'Sistem Error', 'Gagal memverifikasi ke Cloud.'); } 
-            finally { toggleBtnState(btnId, false); showLoading(false); }
-        }
-
-        function logout() { 
-            if(currentUser) logAction('LOGOUT', 'User logged out of system'); // LOGGING
-            localStorage.removeItem('erp_session'); currentUser = null; applyRoleAccess(); renderAuthBtn(false); closeModal('modalMobileMenu'); router('dashboard'); notif('info', 'Sesi Berakhir', 'Anda telah keluar dari sistem.'); 
-        }
-
-        async function emergencyInitFirebase() {
-            const result = await Swal.fire({ title: 'Inisialisasi Master Akun?', text: "Membuat akun 'admin' & 'superadmin' untuk akses perdana.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#001b44', confirmButtonText: 'Eksekusi Setup', background: '#fbf9f8', color: '#1b1c1c' });
-            if (!result.isConfirmed) return;
-            showLoading(true, "Membangun Skema Awal...");
-            try {
-                const updates = {};
-                updates['users/admin'] = { id: 'U01', username: 'admin', password: 'warehouse123', nama: 'Administrator', role: 'Admin', created_at: new Date().toISOString() };
-                updates['users/superadmin'] = { id: 'U00', username: 'superadmin', password: 'super123', nama: 'Super Admin', role: 'SuperAdmin', created_at: new Date().toISOString() };
-                await fbRoot.update(updates);
-                fetchAPI('setup', {});
-                await Swal.fire({ icon: 'success', title: 'Setup Selesai!', html: 'Silakan login:<br><br>User: <b>admin</b> | Pass: <b>warehouse123</b>', background: '#fbf9f8', color: '#1b1c1c' });
-            } catch (error) { notif('error', 'Gagal Setup', error.message); } finally { showLoading(false); }
-        }
-
-        // --- 4. NAVIGATION & VIEWS ---
-        const viewTitles = { 'dashboard': 'Dashboard Analitik', 'tracking': 'Logistik Tracking', 'stock': 'Master Inventory', 'master': 'System Administration' };
-
-        function router(viewId) {
-            ['view-dashboard', 'view-tracking', 'view-stock', 'view-master'].forEach(id => {
-                document.getElementById(id).style.display = 'none'; document.getElementById(id).classList.add('hide');
-                const navD = document.getElementById('navD-' + id.split('-')[1]); const navM = document.getElementById('navM-' + id.split('-')[1]);
-                if(navD) navD.classList.remove('nav-desktop-active'); if(navM) navM.classList.remove('nav-mobile-active');
-            });
-            document.getElementById('view-' + viewId).style.display = 'block'; document.getElementById('view-' + viewId).classList.remove('hide');
-            const aNavD = document.getElementById('navD-' + viewId); const aNavM = document.getElementById('navM-' + viewId);
-            if(aNavD) aNavD.classList.add('nav-desktop-active'); if(aNavM) aNavM.classList.add('nav-mobile-active');
-            
-            const headerTitle = document.getElementById('topNavTitle');
-            if(headerTitle) headerTitle.innerText = viewTitles[viewId];
-
-            if(viewId === 'master') switchAdminTab('DataMaster'); // Default Admin Tab
-            closeModal('modalMobileMenu'); if (viewId === 'dashboard') renderDashboard();
-        }
-
-        function switchTrackingTab(tabName) {
-            txActiveTab = tabName;
-            ['Normal', 'Service', 'Retur'].forEach(t => { 
-                const el = document.getElementById('tabTx-' + t);
-                el.classList.remove('tab-active', 'text-primary'); el.classList.add('text-on-surface-variant'); 
-            });
-            const activeEl = document.getElementById('tabTx-' + tabName);
-            activeEl.classList.add('tab-active', 'text-primary'); activeEl.classList.remove('text-on-surface-variant');
-            txCurrentPage = 1; renderTrackingTable();
-        }
-
-        function switchAdminTab(tabName) {
-            ['DataMaster', 'UserMgmt', 'AppConfig', 'SysLogs'].forEach(t => {
-                const btn = document.getElementById('tabAdm-' + t); const view = document.getElementById('admView-' + t);
-                if(btn) { btn.classList.remove('tab-active', 'text-primary', 'font-bold'); btn.classList.add('text-on-surface-variant'); }
-                if(view) { view.style.display = 'none'; view.classList.add('hide'); }
-            });
-            const aBtn = document.getElementById('tabAdm-' + tabName); const aView = document.getElementById('admView-' + tabName);
-            if(aBtn) { aBtn.classList.add('tab-active', 'text-primary', 'font-bold'); aBtn.classList.remove('text-on-surface-variant'); }
-            if(aView) { aView.style.display = 'block'; aView.classList.remove('hide'); }
-            
-            if(tabName === 'UserMgmt') renderUserTable();
-            if(tabName === 'SysLogs') renderLogsTable();
-        }
-
-        // --- 5. FIREBASE REAL-TIME LISTENERS ---
-        function initFirebaseListeners() {
-            if (isFirebaseListening) return;
-            isFirebaseListening = true;
-            
-            showLoading(true, "Mengambil Data Engine dari Cloud...");
-
-            // Core App Config / Settings
-            fbRoot.child('settings').on('value', (snapshot) => {
-                if(snapshot.exists()) {
-                    appData.settings = snapshot.val();
-                    applySettings(appData.settings);
-                }
-            });
-
-            // Users & Logs
-            fbRoot.child('users').on('value', (snapshot) => { appData.users = snapshot.exists() ? Object.values(snapshot.val()) : []; if(!document.getElementById('admView-UserMgmt').classList.contains('hide')) renderUserTable(); });
-            fbRoot.child('logs').on('value', (snapshot) => { 
-                appData.logs = snapshot.exists() ? Object.values(snapshot.val()).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)) : []; 
-                if(!document.getElementById('admView-SysLogs').classList.contains('hide')) renderLogsTable(); 
-            });
-
-            // Master Parts
-            fbRoot.child('parts').on('value', (snapshot) => {
-                appData.parts = snapshot.exists() ? Object.values(snapshot.val()) : [];
-                populateSelects(); renderStockTable(); renderDashboard();
-                showLoading(false); 
-            });
-
-            // Dept & Unit
-            fbRoot.child('depts').on('value', (snapshot) => { appData.depts = snapshot.exists() ? Object.values(snapshot.val()) : []; populateSelects(); });
-            fbRoot.child('units').on('value', (snapshot) => { appData.units = snapshot.exists() ? Object.values(snapshot.val()) : []; populateSelects(); });
-
-            // Transactions
-            const handleTxUpdate = () => {
-                fbRoot.once('value', (snap) => {
-                    const data = snap.val() || {};
-                    const normalizedIn = Object.values(data.txsIn || {}).map(t => ({...t, tx_flow: 'IN'}));
-                    const normalizedOut = Object.values(data.txsOut || {}).map(t => ({...t, tx_flow: 'OUT'}));
-                    appData.txs = [...normalizedIn, ...normalizedOut].sort((a,b) => new Date(b.timestamp||b.date) - new Date(a.timestamp||a.date));
-                    renderTrackingTable(); renderDashboard();
-                });
-            };
-            fbRoot.child('txsIn').on('value', handleTxUpdate);
-            fbRoot.child('txsOut').on('value', handleTxUpdate);
-        }
-
-        // --- 6. MIGRATION & BACKUP TOOLS ---
-        async function triggerMigrateFromSheets() {
-            const confirm = await Swal.fire({ title: 'Tarik Data dari Sheets?', text: "Proses ini akan mereplikasi data Sheets ke Firebase Cloud. ID yang bentrok akan ditimpa.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#fbbc00', confirmButtonText: 'Ya, Migrasikan!', background: '#fbf9f8', color: '#1b1c1c' });
-            if(!confirm.isConfirmed) return;
-            showLoading(true, "Membaca Google Sheets...");
-            const res = await fetchAPI('getAllData');
-            if(!res.success) { showLoading(false); return notif('error', 'Gagal Baca Sheets', res.message); }
-            showLoading(true, "Memproses Data & Push ke Cloud...");
-            try {
-                const updates = {};
-                (res.data.parts || []).forEach(p => { const cleanId = String(p.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `PRT_${Date.now()}`; if(cleanId) updates[`parts/${cleanId}`] = p; });
-                (res.data.txsIn || []).forEach(t => { const cleanId = String(t.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `TIN_${Date.now()}`; if(cleanId) updates[`txsIn/${cleanId}`] = t; });
-                (res.data.txsOut || []).forEach(t => { const cleanId = String(t.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `TOU_${Date.now()}`; if(cleanId) updates[`txsOut/${cleanId}`] = t; });
-                (res.data.depts || []).forEach(d => { if(d.id) updates[`depts/${String(d.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_")}`] = d; });
-                (res.data.units || []).forEach(u => { if(u.id) updates[`units/${String(u.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_")}`] = u; });
-                await fbRoot.update(updates);
-                logAction('MIGRATE_PULL', 'User pulled data from Google Sheets'); // LOGGING
-                showLoading(false); notif('success', 'Migrasi Berhasil', 'Data Sheets telah diimpor.');
-            } catch (err) { showLoading(false); notif('error', 'Migrasi Cloud Gagal', err.message); }
-        }
-
-        async function triggerBackupToSheets() {
-            const confirm = await Swal.fire({ title: 'Backup ke Sheets?', text: "Proses ini mengirim database Cloud saat ini ke Google Sheets.", icon: 'info', showCancelButton: true, confirmButtonColor: '#001b44', confirmButtonText: 'Mulai Backup', background: '#fbf9f8', color: '#1b1c1c' });
-            if(!confirm.isConfirmed) return;
-            showLoading(true, "Menyiapkan Data Cloud...");
-            try {
-                const snap = await fbRoot.once('value'); const firebaseData = snap.val() || {};
-                showLoading(true, "Menulis Data ke Google Sheets (Bisa memakan waktu)...");
-                const res = await fetchAPI('runFullBackup', firebaseData);
-                showLoading(false);
-                if(res.success) { 
-                    logAction('MIGRATE_PUSH', 'User pushed backup to Google Sheets'); // LOGGING
-                    notif('success', 'Backup Selesai', res.message); 
-                } else { notif('error', 'Gagal Backup', res.message); }
-            } catch(err) { showLoading(false); notif('error', 'Sistem Error', err.message); }
-        }
-
-        // --- 7. RENDER LOGIC ---
         function calculateAge(dateString) {
             if (!dateString) return '-'; const start = new Date(dateString); const now = new Date();
             const diffDays = Math.ceil(Math.abs(now - start) / (1000 * 60 * 60 * 24));
@@ -901,145 +714,75 @@
             return btnHtml;
         }
 
-        // SETTINGS & SYSTEM ADMIN RENDER
-        function applySettings(config) {
-            const defaultName = "ERP WAREHOUSE";
-            const appName = config.appName || defaultName;
-            document.getElementById('desktopAppName').innerText = appName;
-            document.getElementById('mobileAppName').innerText = appName;
-            document.getElementById('docTitle').innerText = appName + " - Cloud Edition";
-            
-            // Populating form values if open
-            if(document.getElementById('setAppName')) document.getElementById('setAppName').value = config.appName || '';
-            if(document.getElementById('setAppLogo')) document.getElementById('setAppLogo').value = config.logoUrl || '';
+        // --- 3. INIT & AUTH ---
+        window.onload = () => {
+            const today = new Date(); document.getElementById('dashStartDate').valueAsDate = new Date(today.getFullYear(), today.getMonth(), 1); document.getElementById('dashEndDate').valueAsDate = today;
+            checkSession(); initFirebaseListeners(); setupDragAndDrop();
+        };
 
-            // Handle Logo Image
-            const dLogoCont = document.getElementById('desktopLogoContainer');
-            const dDefLogo = document.getElementById('defaultLogo');
-            const mDefLogo = document.getElementById('mobileDefaultLogo');
-            const mImgLogo = document.getElementById('mobileImgLogo');
+        function checkSession() {
+            const saved = localStorage.getItem('erp_session');
+            if (saved) { currentUser = JSON.parse(saved); applyRoleAccess(); renderAuthBtn(true); router('dashboard'); } 
+            else { renderAuthBtn(false); applyRoleAccess(); router('po'); }
+        }
 
-            if(config.logoUrl && config.logoUrl.trim() !== '') {
-                dDefLogo.classList.add('hide'); mDefLogo.classList.add('hide');
-                let imgD = dLogoCont.querySelector('img');
-                if(!imgD) {
-                    imgD = document.createElement('img'); imgD.className = 'w-full h-full object-cover';
-                    dLogoCont.appendChild(imgD);
-                }
-                imgD.src = config.logoUrl;
-                
-                mImgLogo.src = config.logoUrl; mImgLogo.classList.remove('hide');
+        function renderAuthBtn(isLoggedIn) {
+            const dAuth = document.getElementById('desktopAuthBtn'); const dUser = document.getElementById('desktopUserInfo'); const mMenu = document.getElementById('mobileMenuContent');
+            if (isLoggedIn) {
+                const roleColor = currentUser.role === 'SuperAdmin' ? 'text-error' : 'text-primary';
+                const roleBg = currentUser.role === 'SuperAdmin' ? 'bg-error-container' : 'bg-primary-fixed';
+                dUser.innerHTML = `<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined text-on-surface-variant">person</span></div><div class="hidden lg:block"><p class="text-sm font-bold text-on-surface">${currentUser.nama}</p><p class="text-[10px] ${roleColor} uppercase tracking-widest font-bold">${currentUser.role}</p></div>`; dUser.classList.remove('hide');
+                dAuth.innerHTML = `<button onclick="logout()" class="w-full flex items-center justify-center px-4 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-on-primary-container transition text-sm font-bold"><span class="material-symbols-outlined mr-2">logout</span> Keluar Sistem</button>`; dAuth.classList.remove('hide');
+                mMenu.innerHTML = `<div class="bg-surface-container-lowest p-6 rounded-2xl mb-4 text-center border border-outline-variant/20 shadow-sm"><span class="material-symbols-outlined text-4xl ${roleColor} mb-2 p-3 ${roleBg} rounded-full inline-block">shield_person</span><p class="text-on-surface font-extrabold text-lg mt-2">${currentUser.nama}</p><p class="text-xs ${roleColor} font-bold uppercase tracking-widest mt-1">${currentUser.role}</p></div><button onclick="logout()" class="w-full flex items-center justify-center px-4 py-3 bg-surface-container hover:bg-surface-dim rounded-xl text-error font-bold transition text-sm"><span class="material-symbols-outlined mr-2">logout</span> Keluar Sistem</button>`;
             } else {
-                dDefLogo.classList.remove('hide'); mDefLogo.classList.remove('hide');
-                let imgD = dLogoCont.querySelector('img'); if(imgD) imgD.remove();
-                mImgLogo.classList.add('hide');
+                dUser.classList.add('hide');
+                dAuth.innerHTML = `<button onclick="openModal('modalLogin')" class="w-full flex items-center justify-center px-4 py-3 bg-secondary hover:bg-on-secondary-fixed-variant rounded-xl text-on-secondary font-bold transition shadow-lg text-sm"><span class="material-symbols-outlined mr-2">lock</span> SECURE LOGIN</button>`; dAuth.classList.remove('hide');
+                mMenu.innerHTML = `<div class="bg-surface-container-lowest p-6 rounded-2xl mb-4 text-center border border-outline-variant/20"><span class="material-symbols-outlined text-4xl text-on-surface-variant mb-2">lock_person</span><p class="text-on-surface-variant text-sm mt-2 font-medium">Anda belum login</p></div><button onclick="openModal('modalLogin')" class="w-full flex items-center justify-center px-4 py-3 bg-primary hover:bg-primary-fixed-variant rounded-xl text-on-primary font-bold transition shadow-md text-sm"><span class="material-symbols-outlined mr-2">lock</span> LOGIN SEKARANG</button>`;
             }
         }
 
-        async function saveSettings(e) {
-            e.preventDefault(); toggleBtnState('btnSaveSettings', true);
-            const data = { appName: document.getElementById('setAppName').value, logoUrl: document.getElementById('setAppLogo').value };
+        function applyRoleAccess() {
+            const adminEls = document.querySelectorAll('.admin-only'); const superAdminEls = document.querySelectorAll('.superadmin-only');
+            if (currentUser && (currentUser.role === 'Admin' || currentUser.role === 'SuperAdmin')) { adminEls.forEach(el => { el.style.display = ''; el.classList.remove('hide'); }); } else { adminEls.forEach(el => el.style.display = 'none'); }
+            if (currentUser && currentUser.role === 'SuperAdmin') { superAdminEls.forEach(el => { el.style.display = ''; el.classList.remove('hide'); }); } else { superAdminEls.forEach(el => el.style.display = 'none'); }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault(); const btnId = 'btnSubmitLogin'; toggleBtnState(btnId, true); showLoading(true, "Verifikasi Kredensial...");
+            const userInp = document.getElementById('logUser').value.trim(); const passInp = document.getElementById('logPass').value.trim();
             try {
-                await fbRoot.child('settings').set(data);
-                logAction('SETTINGS_UPDATE', `Updated app settings. Name: ${data.appName}`); // LOGGING
-                notif('success', 'Berhasil', 'Pengaturan aplikasi telah disimpan.');
-            } catch(err) { notif('error', 'Gagal', err.message); } finally { toggleBtnState('btnSaveSettings', false); }
+                const snapshot = await fbRoot.child('users').once('value'); const users = snapshot.val(); let foundUser = null;
+                if (users) { const userList = Object.values(users); foundUser = userList.find(u => u && String(u.username).toLowerCase() === userInp.toLowerCase() && String(u.password) === passInp); }
+                if (foundUser) {
+                    currentUser = foundUser; localStorage.setItem('erp_session', JSON.stringify(currentUser));
+                    closeModal('modalLogin'); applyRoleAccess(); document.getElementById('loginForm').reset();
+                    renderAuthBtn(true); logAction('LOGIN', 'User logged into system'); notif('success', 'Akses Diberikan', `Selamat datang, ${foundUser.nama}`);
+                    router('dashboard'); 
+                } else { notif('error', 'Akses Ditolak', 'Username atau Password tidak valid.'); }
+            } catch (err) { notif('error', 'Sistem Error', 'Gagal memverifikasi ke Cloud.'); } finally { toggleBtnState(btnId, false); showLoading(false); }
+        }
+        function logout() { if(currentUser) logAction('LOGOUT', 'User logged out'); localStorage.removeItem('erp_session'); currentUser = null; applyRoleAccess(); renderAuthBtn(false); closeModal('modalMobileMenu'); router('po'); notif('info', 'Sesi Berakhir', 'Anda telah keluar.'); }
+
+        // --- 4. NAVIGATION & VIEWS ---
+        const viewTitles = { 'dashboard': 'Dashboard Analitik', 'po': 'Status Order & PO', 'tracking': 'Logistik Tracking', 'stock': 'Master Inventory', 'master': 'System Administration' };
+
+        function router(viewId) {
+            ['view-dashboard', 'view-po', 'view-tracking', 'view-stock', 'view-master'].forEach(id => {
+                document.getElementById(id).style.display = 'none'; document.getElementById(id).classList.add('hide');
+                const navD = document.getElementById('navD-' + id.split('-')[1]); const navM = document.getElementById('navM-' + id.split('-')[1]);
+                if(navD) navD.classList.remove('nav-desktop-active'); if(navM) navM.classList.remove('nav-mobile-active');
+            });
+            document.getElementById('view-' + viewId).style.display = 'block'; document.getElementById('view-' + viewId).classList.remove('hide');
+            const aNavD = document.getElementById('navD-' + viewId); const aNavM = document.getElementById('navM-' + viewId);
+            if(aNavD) aNavD.classList.add('nav-desktop-active'); if(aNavM) aNavM.classList.add('nav-mobile-active');
+            
+            const headerTitle = document.getElementById('topNavTitle'); if(headerTitle) headerTitle.innerText = viewTitles[viewId];
+            if(viewId === 'master') switchAdminTab('DataMaster'); closeModal('modalMobileMenu'); 
+            if (viewId === 'dashboard') renderDashboard();
+            if (viewId === 'po') renderPOTable();
         }
 
-        function renderUserTable() {
-            document.getElementById('userTableBody').innerHTML = appData.users.map(u => {
-                let rClass = u.role === 'SuperAdmin' ? 'text-error font-extrabold' : (u.role === 'Admin' ? 'text-primary font-extrabold' : 'text-on-surface-variant font-bold');
-                return `<tr class="border-b border-outline-variant/10 hover:bg-primary-fixed/20 transition">
-                    <td class="px-6 py-4 font-mono text-sm text-on-surface">${u.username}</td>
-                    <td class="px-6 py-4 text-sm font-bold text-on-surface">${u.nama}</td>
-                    <td class="px-6 py-4 text-xs ${rClass} uppercase tracking-wider">${u.role}</td>
-                    <td class="px-6 py-4 text-right"><button onclick="editUser('${u.username}')" class="text-primary hover:text-primary-container p-2 bg-surface-container rounded-full hover:bg-surface-dim transition"><span class="material-symbols-outlined text-[16px]">edit</span></button></td>
-                </tr>`;
-            }).join('');
-        }
-
-        function changeLogPage(page) { logCurrentPage = page; renderLogsTable(); }
-        function renderLogsTable() {
-            const totalItems = appData.logs.length; const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
-            if (logCurrentPage > totalPages) logCurrentPage = totalPages;
-            const start = (logCurrentPage - 1) * rowsPerPage; const paginated = appData.logs.slice(start, start + rowsPerPage);
-
-            document.getElementById('logsTableBody').innerHTML = paginated.map(l => {
-                const dt = new Date(l.timestamp);
-                const isLogin = l.action.includes('LOGIN');
-                const isError = l.action.includes('DELETE') || l.action.includes('OUT');
-                let actColor = isError ? 'text-error' : (isLogin ? 'text-secondary' : 'text-primary');
-                
-                return `<tr class="border-b border-outline-variant/10 hover:bg-primary-fixed/20 transition">
-                    <td class="px-6 py-4 text-[11px] font-mono text-on-surface-variant">${dt.toLocaleString('id-ID')}</td>
-                    <td class="px-6 py-4 text-xs font-bold text-on-surface">${l.nama || l.user} <span class="text-[10px] text-outline font-normal">(${l.user})</span></td>
-                    <td class="px-6 py-4 text-[10px] ${actColor} font-extrabold uppercase tracking-wider">${l.action}</td>
-                    <td class="px-6 py-4 text-xs text-on-surface-variant whitespace-normal min-w-[200px]">${l.details}</td>
-                </tr>`;
-            }).join('');
-            document.getElementById('logPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Log`;
-            document.getElementById('logPaginationButtons').innerHTML = createPaginationHtml(logCurrentPage, totalPages, 'changeLogPage');
-        }
-
-        // STOCK RENDER
-        function handleSearchStock() { stkSearchQuery = document.getElementById('searchStockInput').value.toLowerCase(); stkCurrentPage = 1; renderStockTable(); }
-        function changeStkPage(page) { stkCurrentPage = page; renderStockTable(); }
-        
-        function renderStockTable() {
-            const fKat = document.getElementById('filterKategori').value; const fMov = document.getElementById('filterPergerakan').value;
-            let filtered = appData.parts;
-            if (stkSearchQuery) { filtered = filtered.filter(p => `${p.part_number} ${p.item_name} ${p.kode_accurate||''}`.toLowerCase().includes(stkSearchQuery)); }
-            if (fKat) filtered = filtered.filter(p => p.kategori === fKat);
-            if (fMov) filtered = filtered.filter(p => p.pergerakan === fMov);
-
-            const totalItems = filtered.length; const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
-            if (stkCurrentPage > totalPages) stkCurrentPage = totalPages;
-            const start = (stkCurrentPage - 1) * rowsPerPage; const paginated = filtered.slice(start, start + rowsPerPage);
-
-            document.getElementById('stockTableBody').innerHTML = paginated.map(p => {
-                const umur = calculateAge(p.created_at); const sClass = p.stock_current <= p.stock_min ? 'text-error font-extrabold' : 'text-status-in font-extrabold';
-                return `<tr class="hover:bg-primary-fixed/20 transition-colors border-b border-outline-variant/10">
-                    <td class="px-6 py-4"><div class="font-extrabold text-primary tracking-wide text-sm">${p.part_number}</div><div class="text-[11px] font-medium text-on-surface-variant mt-0.5 truncate max-w-[200px]">${p.item_name}</div>${p.kode_accurate ? `<div class="text-[10px] text-on-primary-container mt-1.5 border border-primary-fixed-dim inline-block px-1.5 py-0.5 rounded bg-primary-fixed font-bold">ACC: ${p.kode_accurate}</div>` : ''}</td>
-                    <td class="px-6 py-4"><span class="px-2 py-1 rounded text-[10px] font-bold bg-surface-container-high text-on-surface-variant block w-max mb-1 border border-outline-variant/30">${p.brand_merk || '-'} | ${p.unit_type || 'ALL'}</span><span class="px-2 py-1 rounded text-[10px] font-bold bg-primary-fixed text-on-primary-fixed-variant block w-max">${p.kategori} | ${p.pergerakan}</span></td>
-                    <td class="px-6 py-4 text-sm font-medium text-on-surface">${p.lokasi_gudang || '-'}</td><td class="px-6 py-4 text-xs text-on-tertiary-container font-mono font-bold">${umur}</td>
-                    <td class="px-6 py-4 text-center"><div class="${sClass} text-xl">${p.stock_current} <span class="text-[10px] text-on-surface-variant font-medium uppercase">${p.satuan || '-'}</span></div><div class="text-[10px] text-on-surface-variant font-medium mt-0.5">Min: ${p.stock_min}</div></td>
-                    <td class="px-6 py-4 text-right admin-only hide"><button onclick="editStock('${p.id}')" class="text-primary hover:text-primary-container p-2 bg-surface-container rounded-full hover:bg-surface-dim transition"><span class="material-symbols-outlined text-[18px]">edit</span></button></td>
-                </tr>`;
-            }).join('');
-            document.getElementById('stkPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Master Asset`;
-            document.getElementById('stkPaginationButtons').innerHTML = createPaginationHtml(stkCurrentPage, totalPages, 'changeStkPage');
-            applyRoleAccess();
-        }
-
-        // TRACKING RENDER
-        function handleSearchTracking() { txSearchQuery = document.getElementById('searchTrackingInput').value.toLowerCase(); txCurrentPage = 1; renderTrackingTable(); }
-        function changeTxPage(page) { txCurrentPage = page; renderTrackingTable(); }
-
-        function renderTrackingTable() {
-            let filtered = appData.txs.filter(t => (t.jenis_tx || 'Normal') === txActiveTab);
-            if (txSearchQuery) { filtered = filtered.filter(t => { const dept = appData.depts.find(d => d.id === t.dept_id)?.nama_dept || ''; return `${t.part_number} ${t.item_name} ${t.no_wo||''} ${dept} ${t.vendor||''}`.toLowerCase().includes(txSearchQuery); }); }
-            const totalItems = filtered.length; const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
-            if (txCurrentPage > totalPages) txCurrentPage = totalPages;
-            const start = (txCurrentPage - 1) * rowsPerPage; const paginated = filtered.slice(start, start + rowsPerPage);
-
-            document.getElementById('txTableBody').innerHTML = paginated.map(t => {
-                const isOut = t.tx_flow === 'OUT'; const colorC = isOut ? 'text-status-out' : 'text-status-in'; const sign = isOut ? '-' : '+';
-                let relasi = isOut ? `<span class="text-[11px] font-medium text-on-surface-variant block mb-0.5">Dept: <span class="text-on-surface font-bold">${appData.depts.find(d=>d.id===t.dept_id)?.nama_dept||'-'}</span></span><span class="text-[11px] font-medium text-on-surface-variant block">Unit: <span class="text-on-tertiary-container font-bold">${appData.units.find(u=>u.id===t.unit_id)?.nama_unit||'-'}</span></span>` : `<span class="text-[11px] font-medium text-on-surface-variant block mb-0.5">Vend: <span class="text-on-surface font-bold">${t.vendor||'-'}</span></span><span class="text-[11px] font-medium text-on-surface-variant block">PO: <span class="text-primary font-bold">${t.no_po||'-'}</span></span>`;
-                return `<tr class="hover:bg-primary-fixed/20 transition-colors border-b border-outline-variant/10">
-                    <td class="px-6 py-4 text-sm whitespace-nowrap"><div class="text-on-surface font-medium">${new Date(t.date).toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'})}</div><div class="text-[10px] font-bold text-outline mt-1 uppercase tracking-wider">Oleh: ${t.user_id||t.user||'?'}</div></td>
-                    <td class="px-6 py-4 text-center"><div class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${isOut?'bg-error-container text-on-error-container border border-error-container':'bg-secondary-container text-on-secondary-container border border-secondary-container'} inline-flex items-center gap-1">${isOut?'<span class="w-1.5 h-1.5 bg-error rounded-full"></span>':'<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>'} ${t.tx_flow}</div></td>
-                    <td class="px-6 py-4"><div class="font-extrabold text-primary text-sm">${t.part_number}</div><div class="text-[11px] font-medium text-on-surface-variant mt-0.5 truncate max-w-[200px]">${t.item_name}</div>${t.no_wo ? `<div class="mt-1.5 text-[10px] bg-surface-container-high text-on-surface font-bold px-1.5 py-0.5 rounded inline-block border border-outline-variant/50">WO: ${t.no_wo}</div>` : ''}</td>
-                    <td class="px-6 py-4 text-center"><div class="${colorC} font-extrabold text-xl">${sign}${t.qty}</div></td>
-                    <td class="px-6 py-4 w-1/4">${relasi}</td>
-                    <td class="px-6 py-4 text-right superadmin-only hide"><button onclick="deleteTx('${t.id}', '${t.tx_flow}', '${t.part_id}', ${t.qty}, '${t.part_number}')" class="text-error hover:text-on-error-container p-2 bg-error-container/30 rounded-full hover:bg-error-container transition"><span class="material-symbols-outlined text-[18px]">delete</span></button></td>
-                </tr>`;
-            }).join('');
-            document.getElementById('txPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Log`;
-            document.getElementById('txPaginationButtons').innerHTML = createPaginationHtml(txCurrentPage, totalPages, 'changeTxPage');
-            applyRoleAccess();
-        }
-
-        // DASHBOARD RENDER
+        // --- DASHBOARD RENDER FUNCTIONS ---
         function changeDashPage(page) { dashCurrentPage = page; renderDashAnalysisTable(); }
         function renderDashAnalysisTable() {
             const totalItems = dashAnalysisData.length; const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
@@ -1081,152 +824,307 @@
             if(charts.c3) charts.c3.destroy(); const colors = ['#002f6c','#224583','#aec6ff','#006d43','#75f8b3','#c39100']; charts.c3 = new Chart(document.getElementById('chartDept').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: labelsDept, datasets: [{ label: 'Qty', data: dataDept, backgroundColor: labelsDept.map((_,i)=>colors[i%colors.length]), borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
 
-        // --- 8. CRUD LOGIC (FIREBASE DIRECT) ---
-        async function saveTransaction(e, type) {
-            e.preventDefault(); const btnId = type === 'IN' ? 'btnSubmitIn' : 'btnSubmitOut'; toggleBtnState(btnId, true);
-            const jenisTx = type === 'IN' ? document.getElementById('txInJenis').value : document.getElementById('txOutJenis').value;
-            const partId = type === 'IN' ? document.getElementById('txInPart').value : document.getElementById('txOutPart').value;
-            const qty = parseInt(type === 'IN' ? document.getElementById('txInQty').value : document.getElementById('txOutQty').value);
-            const noWo = type === 'IN' ? document.getElementById('txInWO').value : document.getElementById('txOutWO').value;
-            const txId = (type === 'IN' ? 'TIN' : 'TOU') + Date.now(); const isoDate = new Date().toISOString();
+        // --- 5. FIREBASE REAL-TIME LISTENERS ---
+        function initFirebaseListeners() {
+            if (isFirebaseListening) return; isFirebaseListening = true; showLoading(true, "Mengambil Data Cloud...");
 
-            showLoading(true, "Mengeksekusi Transaksi Cloud...");
-            try {
-                const partRef = fbRoot.child('parts').child(partId); const partSnap = await partRef.once('value');
-                if (!partSnap.exists()) throw new Error("ID Master Item tidak valid.");
-                
-                const partData = partSnap.val(); let newStock = parseInt(partData.stock_current || 0);
-                if (type === 'OUT') { if (jenisTx !== 'Retur' && newStock < qty) throw new Error("Sisa Stok Fisik tidak mencukupi!"); newStock -= qty; } else { newStock += qty; }
+            // Accurate PO Sync Listener
+            fbRoot.child('accurate_po').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    appData.accuratePO = data.records || [];
+                    appData.accuratePOLastUpdate = data.last_update || '';
+                    appData.accuratePOUser = data.user_upload || '';
+                } else {
+                    appData.accuratePO = []; appData.accuratePOLastUpdate = '';
+                }
+                if(!document.getElementById('view-po').classList.contains('hide')) renderPOTable();
+            });
 
-                let txData = { id: txId, part_id: partId, qty: qty, date: type === 'IN' ? document.getElementById('txInDate').value : document.getElementById('txOutDate').value, jenis_tx: jenisTx, no_wo: noWo, user_id: currentUser.username, timestamp: isoDate, part_number: partData.part_number, item_name: partData.item_name };
-                if (type === 'IN') { txData.vendor = document.getElementById('txInVendor').value; txData.no_po = document.getElementById('txInPO').value; txData.lokasi_gudang = document.getElementById('txInLoc').value; } 
-                else { txData.dept_id = document.getElementById('txOutDept').value; txData.unit_id = document.getElementById('txOutUnit').value; }
-
-                let updates = {}; updates[`parts/${partId}/stock_current`] = newStock;
-                if (type === 'IN' && txData.lokasi_gudang) updates[`parts/${partId}/lokasi_gudang`] = txData.lokasi_gudang;
-                updates[`${type === 'IN' ? 'txsIn' : 'txsOut'}/${txId}`] = txData;
-
-                await fbRoot.update(updates);
-                logAction(`TX_${type}`, `${jenisTx} ${qty}x [${partData.part_number}] ${partData.item_name}. WO: ${noWo||'-'}`); // LOGGING
-                
-                closeModal(type === 'IN' ? 'modalTxIn' : 'modalTxOut'); notif('success', 'Berhasil', 'Sirkulasi Logistik terekam ke Cloud.');
-                document.getElementById(type === 'IN' ? 'formTxIn' : 'formTxOut').reset();
-                if(selectSearchIn) selectSearchIn.clear(); if(selectSearchOut) selectSearchOut.clear();
-            } catch (err) { notif('error', 'Transaksi Ditolak', err.message); } 
-            finally { showLoading(false); toggleBtnState(btnId, false); }
+            // General Settings
+            fbRoot.child('settings').on('value', (snapshot) => { if(snapshot.exists()) applySettings(snapshot.val()); });
+            
+            // Standard Listeners
+            fbRoot.child('parts').on('value', (snapshot) => { appData.parts = snapshot.exists() ? Object.values(snapshot.val()) : []; showLoading(false); });
+            fbRoot.child('users').on('value', (snapshot) => { appData.users = snapshot.exists() ? Object.values(snapshot.val()) : []; });
+            fbRoot.child('depts').on('value', (snapshot) => { appData.depts = snapshot.exists() ? Object.values(snapshot.val()) : []; });
+            fbRoot.child('units').on('value', (snapshot) => { appData.units = snapshot.exists() ? Object.values(snapshot.val()) : []; });
+            const handleTxUpdate = () => { fbRoot.once('value', (snap) => { const data = snap.val() || {}; const normalizedIn = Object.values(data.txsIn || {}).map(t => ({...t, tx_flow: 'IN'})); const normalizedOut = Object.values(data.txsOut || {}).map(t => ({...t, tx_flow: 'OUT'})); appData.txs = [...normalizedIn, ...normalizedOut].sort((a,b) => new Date(b.timestamp||b.date) - new Date(a.timestamp||a.date)); }); };
+            fbRoot.child('txsIn').on('value', handleTxUpdate); fbRoot.child('txsOut').on('value', handleTxUpdate);
         }
 
-        async function saveStock(e) {
-            e.preventDefault(); const btnId = 'btnSubmitStock'; toggleBtnState(btnId, true);
-            const rawId = document.getElementById('stkId').value.trim(); const cleanId = rawId.replace(/[\.\#\$\/\[\]\s]/g, "_");
-            const isNew = document.getElementById('stkMode').value === 'NEW';
-            let cAt = document.getElementById('stkCreatedAt').value; if(isNew || !cAt) cAt = new Date().toISOString();
+        // --- ACCURATE PO PARSER & UPLOAD LOGIC ---
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('poDropZone');
+            if(!dropZone) return;
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+            dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('drag-over'); });
+            dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); if (e.dataTransfer.files.length) processAccurateFile(e.dataTransfer.files[0]); });
+        }
 
-            const data = {
-                id: cleanId, part_number: document.getElementById('stkPartNo').value, item_name: document.getElementById('stkName').value,
-                brand_merk: document.getElementById('stkBrand').value, unit_type: document.getElementById('stkUnitType').value, kategori: document.getElementById('stkType').value,
-                pergerakan: document.getElementById('stkMove').value, kode_accurate: document.getElementById('stkAccurate').value, satuan: document.getElementById('stkUnit').value,
-                lokasi_gudang: document.getElementById('stkLocation').value, stock_current: parseInt(document.getElementById('stkCurrent').value), stock_min: parseInt(document.getElementById('stkMin').value), created_at: cAt
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if(file) processAccurateFile(file);
+            event.target.value = ''; // reset
+        }
+
+        function processAccurateFile(file) {
+            if(!file.name.endsWith('.txt')) { return notif('error', 'Format Salah', 'Harap unggah file .txt dari Accurate.'); }
+            showLoading(true, "Memproses File Accurate...");
+            
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const text = e.target.result;
+                    const lines = text.split('\n');
+                    let records = [];
+                    let currentRecord = null;
+                    let headerFound = false;
+                    let colIndices = [];
+
+                    // 1. Find Headers via Regex (Splitting spaces)
+                    for(let i=0; i<lines.length; i++) {
+                        if(lines[i].includes('Nomor PR') && lines[i].includes('Part Number')) {
+                            headerFound = true;
+                            let regex = /([a-zA-Z0-9#\/]+(?:\s[a-zA-Z0-9#\/]+)*)(?=\s{2,}|$)/g;
+                            let match;
+                            while ((match = regex.exec(lines[i])) !== null) {
+                                colIndices.push({ title: match[1].trim(), start: match.index, end: 9999 });
+                            }
+                            for(let j=0; j<colIndices.length-1; j++) colIndices[j].end = colIndices[j+1].start;
+                            
+                            // Map to internal keys
+                            const keyMap = { 'Nomor PR': 'pr_no', 'Tanggal': 'pr_date', 'Kode #': 'item_code', 'Part Number': 'part_no', 'Nama Barang': 'item_name', 'Kuantitas': 'qty_pr', 'Nomor PO': 'po_no', 'Tanggal PO': 'po_date', 'Qty Dipesan': 'qty_po', 'Qty Diterima': 'qty_rcv', 'Qty Belum Terproses': 'qty_out', 'No MR': 'mr_no', 'Tanggal MR': 'mr_date' };
+                            colIndices = colIndices.map(c => ({...c, key: keyMap[c.title] || null})).filter(c => c.key);
+                            break;
+                        }
+                    }
+
+                    if(!headerFound || colIndices.length === 0) throw new Error("Header laporan tidak dikenali. Pastikan file Accurate asli.");
+
+                    // 2. Parse Lines
+                    for(let i=0; i<lines.length; i++) {
+                        let line = lines[i];
+                        if(!line.trim() || line.includes('PT Benamakmur') || line.includes('ACCURATE Accounting') || line.includes('Tercetak pada') || line.includes('Halaman') || line.includes('Nomor PR')) continue;
+                        
+                        let tempRec = {};
+                        let hasData = false;
+                        colIndices.forEach(col => {
+                            let paddedLine = line.padEnd(col.end, ' ');
+                            let val = paddedLine.substring(col.start, col.end).trim();
+                            tempRec[col.key] = val;
+                            if(val) hasData = true;
+                        });
+
+                        if(!hasData) continue;
+
+                        if(tempRec.pr_no && tempRec.pr_no.match(/^(PR|PO|MR)/i)) {
+                            // Format number columns
+                            tempRec.qty_po = parseFloat(tempRec.qty_po.replace(/,/g, '')) || 0;
+                            tempRec.qty_rcv = parseFloat(tempRec.qty_rcv.replace(/,/g, '')) || 0;
+                            tempRec.qty_out = parseFloat(tempRec.qty_out.replace(/,/g, '')) || 0;
+                            records.push(tempRec);
+                            currentRecord = tempRec;
+                        } else if (currentRecord && !tempRec.pr_no) {
+                            // Append multi-line strings
+                            if(tempRec.part_no) currentRecord.part_no += ' ' + tempRec.part_no;
+                            if(tempRec.item_name) currentRecord.item_name += ' ' + tempRec.item_name;
+                        }
+                    }
+
+                    // 3. Save to Firebase
+                    if(records.length > 0) {
+                        const uploadData = { records: records, last_update: new Date().toISOString(), user_upload: currentUser ? currentUser.nama : 'System' };
+                        await fbRoot.child('accurate_po').set(uploadData);
+                        logAction('UPLOAD_PO', `Uploaded ${records.length} PO tracking items.`);
+                        notif('success', 'Sinkronisasi Selesai', `Berhasil mem-parsing ${records.length} item dari Accurate.`);
+                    } else {
+                        notif('warning', 'Data Kosong', 'Tidak ada data valid yang ditemukan pada file.');
+                    }
+                } catch(e) {
+                    console.error(e);
+                    notif('error', 'Gagal Parsing', 'Pastikan format TXT tidak diubah dari sistem Accurate.');
+                } finally {
+                    showLoading(false);
+                }
             };
+            reader.readAsText(file);
+        }
 
-            showLoading(true, "Menulis ke Master Cloud...");
+        async function clearPOData() {
+            const confirm = await Swal.fire({ title: 'Bersihkan Log PO?', text: "Seluruh riwayat outstanding saat ini akan dihapus.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ba1a1a', background: '#fbf9f8', color: '#1b1c1c' });
+            if(!confirm.isConfirmed) return;
+            await fbRoot.child('accurate_po').set(null);
+            logAction('DELETE_PO', `Cleared PO Tracking log.`);
+            notif('success', 'Berhasil', 'Data PO Tracking telah dibersihkan.');
+        }
+
+        function changePOPage(page) { poCurrentPage = page; renderPOTable(); }
+        function renderPOTable() {
+            let filtered = appData.accuratePO || [];
+            const searchVal = document.getElementById('searchPOInput').value.toLowerCase();
+            const statusFilter = document.getElementById('filterPOStatus').value;
+
+            if(searchVal) {
+                filtered = filtered.filter(p => `${p.po_no} ${p.pr_no} ${p.part_no} ${p.item_name}`.toLowerCase().includes(searchVal));
+            }
+            
+            if(statusFilter !== 'ALL') {
+                filtered = filtered.filter(p => {
+                    if(statusFilter === 'DONE') return p.qty_out === 0;
+                    if(statusFilter === 'PENDING') return p.qty_rcv === 0 && p.qty_out > 0;
+                    if(statusFilter === 'PARTIAL') return p.qty_rcv > 0 && p.qty_out > 0;
+                    return true;
+                });
+            }
+
+            let sumOut = 0; let uniquePO = new Set();
+            appData.accuratePO.forEach(p => { 
+                sumOut += p.qty_out; 
+                if(p.qty_out > 0 && p.po_no) uniquePO.add(p.po_no); 
+            });
+            document.getElementById('poSumOutstanding').innerHTML = `${sumOut}<span class="text-sm font-medium ml-1">Items</span>`;
+            document.getElementById('poSumActive').innerText = uniquePO.size;
+            
+            if(appData.accuratePOLastUpdate) {
+                document.getElementById('poLastUpdate').innerText = new Date(appData.accuratePOLastUpdate).toLocaleString('id-ID');
+                document.getElementById('poLastUser').innerText = "Oleh: " + (appData.accuratePOUser || 'System');
+            } else {
+                document.getElementById('poLastUpdate').innerText = "Belum Ada Data";
+                document.getElementById('poLastUser').innerText = "";
+            }
+
+            const totalItems = filtered.length; const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+            if (poCurrentPage > totalPages) poCurrentPage = totalPages;
+            const start = (poCurrentPage - 1) * rowsPerPage; const paginated = filtered.slice(start, start + rowsPerPage);
+
+            document.getElementById('poTableBody').innerHTML = paginated.map(p => {
+                let stTxt = "SELESAI"; let stClass = "bg-secondary-container text-on-secondary-container border-secondary-container";
+                let progressPct = p.qty_po > 0 ? Math.round((p.qty_rcv / p.qty_po) * 100) : 0;
+                let barColor = "bg-secondary";
+                
+                if (p.qty_out > 0 && p.qty_rcv === 0) {
+                    stTxt = "PENDING"; stClass = "bg-error-container text-on-error-container border-error-container"; barColor = "bg-error";
+                } else if (p.qty_out > 0 && p.qty_rcv > 0) {
+                    stTxt = "PARSIAL"; stClass = "bg-tertiary-fixed text-on-tertiary-fixed-variant border-tertiary-fixed-dim"; barColor = "bg-tertiary-fixed-dim";
+                } else if (p.qty_out === 0 && p.qty_rcv === 0 && p.qty_po === 0) {
+                    progressPct = 0; stTxt = "-";
+                }
+
+                return `
+                <tr class="hover:bg-primary-fixed/20 transition-colors border-b border-outline-variant/10">
+                    <td class="px-6 py-4">
+                        <div class="font-extrabold text-primary text-sm">${p.po_no || 'TIDAK ADA PO'}</div>
+                        <div class="text-[10px] font-medium text-on-surface-variant mt-0.5">PO Date: ${p.po_date || '-'}</div>
+                        <div class="mt-1.5 text-[9px] bg-surface-container-high text-on-surface font-bold px-1.5 py-0.5 rounded inline-block border border-outline-variant/50">PR: ${p.pr_no || '-'}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-extrabold text-on-surface text-xs tracking-wide">${p.part_no || '-'}</div>
+                        <div class="text-[11px] font-medium text-on-surface-variant mt-1 max-w-[250px] whitespace-normal leading-tight">${p.item_name || '-'}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1 bg-surface-variant h-1.5 rounded-full overflow-hidden w-24"><div class="${barColor} h-full" style="width: ${progressPct}%"></div></div>
+                            <span class="text-xs font-bold text-on-surface w-8">${progressPct}%</span>
+                        </div>
+                        <div class="text-[10px] text-on-surface-variant mt-1 font-medium">Order: <span class="font-bold text-primary">${p.qty_po}</span> | Rcv: <span class="font-bold text-secondary">${p.qty_rcv}</span></div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="text-error font-extrabold text-xl">${p.qty_out}</div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${stClass} border inline-block tracking-wider">${stTxt}</span>
+                    </td>
+                </tr>`;
+            }).join('');
+            
+            document.getElementById('poPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Data Outstanding`;
+            document.getElementById('poPaginationButtons').innerHTML = createPaginationHtml(poCurrentPage, totalPages, 'changePOPage');
+        }
+
+        // --- EXPORT, DASHBOARD, ADMIN & OTHER RENDER LOGIC ---
+        function applySettings(config) {
+            const appName = config.appName || "ERP WAREHOUSE";
+            document.getElementById('desktopAppName').innerText = appName; document.getElementById('mobileAppName').innerText = appName; document.getElementById('docTitle').innerText = appName + " - Enterprise";
+            if(document.getElementById('setAppName')) document.getElementById('setAppName').value = config.appName || ''; if(document.getElementById('setAppLogo')) document.getElementById('setAppLogo').value = config.logoUrl || '';
+            const dLogoCont = document.getElementById('desktopLogoContainer'); const dDefLogo = document.getElementById('defaultLogo'); const mDefLogo = document.getElementById('mobileDefaultLogo'); const mImgLogo = document.getElementById('mobileImgLogo');
+            if(config.logoUrl) {
+                dDefLogo.classList.add('hide'); mDefLogo.classList.add('hide'); let imgD = dLogoCont.querySelector('img'); if(!imgD) { imgD = document.createElement('img'); imgD.className = 'w-full h-full object-cover'; dLogoCont.appendChild(imgD); } imgD.src = config.logoUrl; mImgLogo.src = config.logoUrl; mImgLogo.classList.remove('hide');
+            } else {
+                dDefLogo.classList.remove('hide'); mDefLogo.classList.remove('hide'); let imgD = dLogoCont.querySelector('img'); if(imgD) imgD.remove(); mImgLogo.classList.add('hide');
+            }
+        }
+        function switchAdminTab(tabName) {
+            ['DataMaster', 'UserMgmt', 'AppConfig', 'SysLogs'].forEach(t => { const btn = document.getElementById('tabAdm-' + t); const view = document.getElementById('admView-' + t); if(btn) { btn.classList.remove('tab-active', 'text-primary', 'font-bold'); btn.classList.add('text-on-surface-variant'); } if(view) { view.style.display = 'none'; view.classList.add('hide'); } });
+            const aBtn = document.getElementById('tabAdm-' + tabName); const aView = document.getElementById('admView-' + tabName);
+            if(aBtn) { aBtn.classList.add('tab-active', 'text-primary', 'font-bold'); aBtn.classList.remove('text-on-surface-variant'); } if(aView) { aView.style.display = 'block'; aView.classList.remove('hide'); }
+            if(tabName === 'UserMgmt') renderUserTable(); if(tabName === 'SysLogs') renderLogsTable();
+        }
+
+        async function triggerMigrateFromSheets() {
+            const confirm = await Swal.fire({ title: 'Tarik Data dari Sheets?', text: "Proses ini akan mereplikasi data Sheets ke Firebase Cloud.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#fbbc00', confirmButtonText: 'Ya, Migrasikan!', background: '#fbf9f8', color: '#1b1c1c' });
+            if(!confirm.isConfirmed) return;
+            showLoading(true, "Membaca Google Sheets..."); const res = await fetchAPI('getAllData'); if(!res.success) { showLoading(false); return notif('error', 'Gagal Baca Sheets', res.message); }
+            showLoading(true, "Memproses Data & Push ke Cloud...");
             try {
-                if(isNew) { const snap = await fbRoot.child('parts').child(cleanId).once('value'); if(snap.exists()) throw new Error("ID Item sudah digunakan."); }
-                await fbRoot.child('parts').child(cleanId).set(data);
-                logAction(isNew ? 'ADD_MASTER' : 'EDIT_MASTER', `${isNew ? 'Created' : 'Updated'} master data: [${data.part_number}]`); // LOGGING
-                closeModal('modalStock'); notif('success', 'Data Master Terpusat', 'Berhasil memperbarui katalog aset.');
-                document.getElementById('formStock').reset();
-            } catch (err) { notif('error', 'Gagal Simpan', err.message); } 
-            finally { showLoading(false); toggleBtnState(btnId, false); }
+                const updates = {};
+                (res.data.parts || []).forEach(p => { const cleanId = String(p.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `PRT_${Date.now()}`; if(cleanId) updates[`parts/${cleanId}`] = p; });
+                (res.data.txsIn || []).forEach(t => { const cleanId = String(t.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `TIN_${Date.now()}`; if(cleanId) updates[`txsIn/${cleanId}`] = t; });
+                (res.data.txsOut || []).forEach(t => { const cleanId = String(t.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `TOU_${Date.now()}`; if(cleanId) updates[`txsOut/${cleanId}`] = t; });
+                (res.data.depts || []).forEach(d => { if(d.id) updates[`depts/${String(d.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_")}`] = d; });
+                (res.data.units || []).forEach(u => { if(u.id) updates[`units/${String(u.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_")}`] = u; });
+                await fbRoot.update(updates); logAction('MIGRATE_PULL', 'User pulled data from Google Sheets'); showLoading(false); notif('success', 'Migrasi Berhasil', 'Data Sheets telah diimpor.');
+            } catch (err) { showLoading(false); notif('error', 'Migrasi Cloud Gagal', err.message); }
+        }
+
+        async function triggerBackupToSheets() {
+            const confirm = await Swal.fire({ title: 'Backup ke Sheets?', text: "Proses ini mengirim database Cloud saat ini ke Google Sheets.", icon: 'info', showCancelButton: true, confirmButtonColor: '#001b44', confirmButtonText: 'Mulai Backup', background: '#fbf9f8', color: '#1b1c1c' });
+            if(!confirm.isConfirmed) return; showLoading(true, "Menyiapkan Data Cloud...");
+            try {
+                const snap = await fbRoot.once('value'); const firebaseData = snap.val() || {}; showLoading(true, "Menulis Data ke Google Sheets...");
+                const res = await fetchAPI('runFullBackup', firebaseData); showLoading(false);
+                if(res.success) { logAction('MIGRATE_PUSH', 'User pushed backup to Google Sheets'); notif('success', 'Backup Selesai', res.message); } else { notif('error', 'Gagal Backup', res.message); }
+            } catch(err) { showLoading(false); notif('error', 'Sistem Error', err.message); }
+        }
+
+        function renderUserTable() {
+            document.getElementById('userTableBody').innerHTML = appData.users.map(u => {
+                let rClass = u.role === 'SuperAdmin' ? 'text-error font-extrabold' : (u.role === 'Admin' ? 'text-primary font-extrabold' : 'text-on-surface-variant font-bold');
+                return `<tr class="border-b border-outline-variant/10 hover:bg-primary-fixed/20 transition"><td class="px-6 py-4 font-mono text-sm text-on-surface">${u.username}</td><td class="px-6 py-4 text-sm font-bold text-on-surface">${u.nama}</td><td class="px-6 py-4 text-xs ${rClass} uppercase tracking-wider">${u.role}</td><td class="px-6 py-4 text-right"><button onclick="editUser('${u.username}')" class="text-primary hover:text-primary-container p-2 bg-surface-container rounded-full hover:bg-surface-dim transition"><span class="material-symbols-outlined text-[16px]">edit</span></button></td></tr>`;
+            }).join('');
+        }
+
+        function changeLogPage(page) { logCurrentPage = page; renderLogsTable(); }
+        function renderLogsTable() {
+            const totalItems = appData.logs.length; const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+            if (logCurrentPage > totalPages) logCurrentPage = totalPages; const start = (logCurrentPage - 1) * rowsPerPage; const paginated = appData.logs.slice(start, start + rowsPerPage);
+            document.getElementById('logsTableBody').innerHTML = paginated.map(l => {
+                const dt = new Date(l.timestamp); const isLogin = l.action.includes('LOGIN'); const isError = l.action.includes('DELETE') || l.action.includes('OUT'); let actColor = isError ? 'text-error' : (isLogin ? 'text-secondary' : 'text-primary');
+                return `<tr class="border-b border-outline-variant/10 hover:bg-primary-fixed/20 transition"><td class="px-6 py-4 text-[11px] font-mono text-on-surface-variant">${dt.toLocaleString('id-ID')}</td><td class="px-6 py-4 text-xs font-bold text-on-surface">${l.nama || l.user} <span class="text-[10px] text-outline font-normal">(${l.user})</span></td><td class="px-6 py-4 text-[10px] ${actColor} font-extrabold uppercase tracking-wider">${l.action}</td><td class="px-6 py-4 text-xs text-on-surface-variant whitespace-normal min-w-[200px]">${l.details}</td></tr>`;
+            }).join('');
+            document.getElementById('logPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Log`;
+            document.getElementById('logPaginationButtons').innerHTML = createPaginationHtml(logCurrentPage, totalPages, 'changeLogPage');
+        }
+
+        async function saveSettings(e) {
+            e.preventDefault(); toggleBtnState('btnSaveSettings', true); const data = { appName: document.getElementById('setAppName').value, logoUrl: document.getElementById('setAppLogo').value };
+            try { await fbRoot.child('settings').set(data); logAction('SETTINGS_UPDATE', `Updated app settings. Name: ${data.appName}`); notif('success', 'Berhasil', 'Pengaturan aplikasi telah disimpan.'); } catch(err) { notif('error', 'Gagal', err.message); } finally { toggleBtnState('btnSaveSettings', false); }
         }
 
         async function saveUser(e) {
-            e.preventDefault(); toggleBtnState('btnSubmitUser', true);
-            const username = document.getElementById('usrUsername').value.trim().toLowerCase();
-            const data = {
-                id: 'U' + Date.now().toString().slice(-6),
-                username: username,
-                password: document.getElementById('usrPassword').value,
-                nama: document.getElementById('usrName').value,
-                role: document.getElementById('usrRole').value,
-                created_at: new Date().toISOString()
-            };
+            e.preventDefault(); toggleBtnState('btnSubmitUser', true); const username = document.getElementById('usrUsername').value.trim().toLowerCase();
+            const data = { id: 'U' + Date.now().toString().slice(-6), username: username, password: document.getElementById('usrPassword').value, nama: document.getElementById('usrName').value, role: document.getElementById('usrRole').value, created_at: new Date().toISOString() };
             const isNew = document.getElementById('userMode').value === 'NEW';
-            
             showLoading(true, "Menyimpan User...");
-            try {
-                if(isNew) { const snap = await fbRoot.child('users').child(username).once('value'); if(snap.exists()) throw new Error("Username sudah terdaftar."); }
-                await fbRoot.child('users').child(username).set(data);
-                logAction(isNew ? 'USER_ADD' : 'USER_EDIT', `${isNew ? 'Created' : 'Modified'} user: ${username} (${data.role})`); // LOGGING
-                closeModal('modalUser'); notif('success', 'Berhasil', 'Data Pengguna berhasil diperbarui.');
-            } catch (err) { notif('error', 'Gagal Simpan', err.message); } finally { showLoading(false); toggleBtnState('btnSubmitUser', false); }
-        }
-
-        function editStock(id) {
-            const p = appData.parts.find(x => x.id === id);
-            if(p) { 
-                document.getElementById('stkMode').value = 'EDIT'; document.getElementById('stkCreatedAt').value = p.created_at || '';
-                const idEl = document.getElementById('stkId'); idEl.value = p.id; idEl.readOnly = true; idEl.classList.add('opacity-50'); 
-                document.getElementById('stkPartNo').value = p.part_number || ''; document.getElementById('stkAccurate').value = p.kode_accurate || ''; 
-                document.getElementById('stkName').value = p.item_name || ''; document.getElementById('stkBrand').value = p.brand_merk || ''; 
-                document.getElementById('stkUnitType').value = p.unit_type || 'ALL'; document.getElementById('stkType').value = p.kategori || 'SPAREPART'; 
-                document.getElementById('stkMove').value = p.pergerakan || 'FAST'; document.getElementById('stkUnit').value = p.satuan || 'pcs'; 
-                document.getElementById('stkLocation').value = p.lokasi_gudang || ''; document.getElementById('stkCurrent').value = p.stock_current || 0; 
-                document.getElementById('stkMin').value = p.stock_min || 0; openModal('modalStock'); 
-            }
+            try { if(isNew) { const snap = await fbRoot.child('users').child(username).once('value'); if(snap.exists()) throw new Error("Username sudah terdaftar."); } await fbRoot.child('users').child(username).set(data); logAction(isNew ? 'USER_ADD' : 'USER_EDIT', `${isNew ? 'Created' : 'Modified'} user: ${username} (${data.role})`); closeModal('modalUser'); notif('success', 'Berhasil', 'Data Pengguna berhasil diperbarui.'); } catch (err) { notif('error', 'Gagal Simpan', err.message); } finally { showLoading(false); toggleBtnState('btnSubmitUser', false); }
         }
 
         function editUser(username) {
             const u = appData.users.find(x => x.username === username);
-            if(u) {
-                document.getElementById('userMode').value = 'EDIT';
-                const idEl = document.getElementById('usrUsername'); idEl.value = u.username; idEl.readOnly = true;
-                document.getElementById('usrPassword').value = u.password;
-                document.getElementById('usrName').value = u.nama;
-                document.getElementById('usrRole').value = u.role;
-                openModal('modalUser');
-            }
+            if(u) { document.getElementById('userMode').value = 'EDIT'; document.getElementById('usrUsername').value = u.username; document.getElementById('usrUsername').readOnly = true; document.getElementById('usrPassword').value = u.password; document.getElementById('usrName').value = u.nama; document.getElementById('usrRole').value = u.role; openModal('modalUser'); }
         }
 
-        async function deleteTx(id, type, part_id, qty, part_no) {
-            const result = await Swal.fire({ title: 'Hapus & Revert Stok?', text: "Hapus permanen log dan stok akan dikembalikan.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ba1a1a', background: '#fbf9f8', color: '#1b1c1c' });
-            if (!result.isConfirmed) return;
-            showLoading(true, "Reverting Cloud Data...");
-            try {
-                const partRef = fbRoot.child('parts').child(part_id); const partSnap = await partRef.once('value');
-                if (partSnap.exists()) {
-                    let currentStock = parseInt(partSnap.val().stock_current); let revertedStock = type === 'IN' ? currentStock - qty : currentStock + qty;
-                    let updates = {}; updates[`parts/${part_id}/stock_current`] = revertedStock; updates[`${type === 'IN' ? 'txsIn' : 'txsOut'}/${id}`] = null;
-                    await fbRoot.update(updates);
-                    logAction('TX_DELETE', `Reverted ${type} tx for ${part_no}. Restored ${qty} qty.`); // LOGGING
-                    notif('success', 'Transaksi Dibatalkan', 'Stok telah diperbarui di Cloud.');
-                } else { throw new Error("Item master tidak ditemukan untuk revert stok."); }
-            } catch (err) { notif('error', 'Gagal Revert', err.message); } finally { showLoading(false); }
-        }
-
-        // --- 9. EXPORT EXCEL & PDF ---
-        function exportToExcel() {
-            if(!appData.parts || appData.parts.length === 0) return notif('warning', 'Data Kosong', 'Tidak ada data stok.');
-            showLoading(true, "Menyiapkan File Excel...");
-            try {
-                const exportData = appData.parts.map((p, index) => ({ 'No': index + 1, 'Part Number': p.part_number, 'Kode Accurate': p.kode_accurate || '-', 'Nama / Deskripsi': p.item_name, 'Brand': p.brand_merk || '-', 'Tipe Unit': p.unit_type || '-', 'Kategori': p.kategori, 'Pergerakan': p.pergerakan, 'Satuan': p.satuan, 'Lokasi': p.lokasi_gudang || '-', 'Stok Sistem': p.stock_current, 'Stok Fisik Aktual': '', 'Selisih': '', 'Keterangan': '' }));
-                const ws = XLSX.utils.json_to_sheet(exportData); ws['!cols'] = [{wch:5}, {wch:20}, {wch:15}, {wch:40}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:10}, {wch:15}, {wch:12}, {wch:15}, {wch:10}, {wch:20}];
-                const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Sheet_Opname");
-                XLSX.writeFile(wb, `Form_Stock_Opname_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.xlsx`);
-                logAction('EXPORT_EXCEL', `User downloaded Master Asset excel`); // LOGGING
-                notif('success', 'Download Selesai', 'File Excel siap.');
-            } catch (err) { notif('error', 'Export Gagal', err.message); } finally { showLoading(false); }
-        }
-
-        function downloadPDF() {
-            const element = document.getElementById('pdfTargetArea'); notif('info', 'Menyiapkan Render PDF...', 'Harap tunggu.');
-            logAction('EXPORT_PDF', `User exported critical stock PDF`); // LOGGING
-            html2pdf().set({ margin: 0.5, filename: `Report_Kritis_${new Date().getTime()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save().then(() => Swal.close());
-        }
-
-        // --- 10. HELPERS ---
-        function openModal(id) { document.getElementById(id).classList.remove('hide'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hide'); }
+        function openModal(id) { document.getElementById(id).classList.remove('hide'); } function closeModal(id) { document.getElementById(id).classList.add('hide'); }
         function populateSelects() {
             if(selectSearchIn) selectSearchIn.destroy(); if(selectSearchOut) selectSearchOut.destroy();
             const partOptions = `<option value="">Ketik untuk mencari (ID/Part/Nama)...</option>` + appData.parts.map(p => `<option value="${p.id}">[${p.part_number}] ${p.item_name} - Stok: ${p.stock_current} ${p.satuan||''}</option>`).join('');
