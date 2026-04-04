@@ -1,59 +1,125 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Warehouse ERP - Cloud Edition</title>
+    <title id="docTitle">Warehouse ERP - Cloud Edition</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        dark: { 900: '#0B1120', 800: '#111827', 700: '#1F2937' },
-                        brand: { blue: '#3b82f6', cyan: '#06b6d4', green: '#10b981', red: '#ef4444', yellow: '#f59e0b', purple: '#a855f7' }
-                    }
-                }
-            }
-        }
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "on-primary": "#ffffff",
+              "surface-variant": "#e4e2e2",
+              "on-secondary-fixed-variant": "#005232",
+              "primary-container": "#002f6c",
+              "on-primary-fixed-variant": "#224583",
+              "background": "#fbf9f8",
+              "primary-fixed-dim": "#aec6ff",
+              "secondary-container": "#75f8b3",
+              "surface-dim": "#dbd9d9",
+              "tertiary-container": "#412e00",
+              "on-secondary-fixed": "#002111",
+              "error-container": "#ffdad6",
+              "on-error-container": "#93000a",
+              "secondary": "#006d43",
+              "surface-bright": "#fbf9f8",
+              "tertiary": "#271a00",
+              "tertiary-fixed-dim": "#fbbc00",
+              "surface-container": "#efeded",
+              "primary": "#001b44",
+              "on-tertiary-container": "#c39100",
+              "surface-container-high": "#eae8e7",
+              "on-tertiary-fixed": "#261a00",
+              "surface": "#fbf9f8",
+              "inverse-on-surface": "#f2f0f0",
+              "secondary-fixed": "#78fbb6",
+              "on-secondary": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "error": "#ba1a1a",
+              "on-tertiary-fixed-variant": "#5c4300",
+              "on-secondary-container": "#007147",
+              "outline-variant": "#c4c6d2",
+              "inverse-primary": "#aec6ff",
+              "outline": "#747781",
+              "surface-container-highest": "#e4e2e2",
+              "surface-container-low": "#f5f3f3",
+              "on-error": "#ffffff",
+              "primary-fixed": "#d8e2ff",
+              "secondary-fixed-dim": "#59de9b",
+              "on-background": "#1b1c1c",
+              "on-surface-variant": "#434750",
+              "inverse-surface": "#303030",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed": "#ffdfa0",
+              "on-primary-container": "#7999dc",
+              "surface-tint": "#3c5d9c",
+              "on-surface": "#1b1c1c",
+              "on-primary-fixed": "#001a42",
+              "status-in": "#006d43",
+              "status-out": "#ba1a1a",
+              "status-warning": "#fbbc00"
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "2xl": "1rem", "full": "9999px"},
+          },
+        },
+      }
     </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0B1120; color: #f3f4f6; }
-        .glass-panel { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(31, 41, 55, 1); }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c4c6d2; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #747781; }
+
         .hide { display: none !important; }
         
-        .nav-desktop-active { background-color: rgba(6, 182, 212, 0.1); color: #06b6d4; border-right: 3px solid #06b6d4; }
-        .nav-mobile-active { color: #06b6d4; }
-        .nav-mobile-active .nav-icon-bg { background-color: rgba(6, 182, 212, 0.1); padding: 4px; border-radius: 9999px; }
+        .nav-desktop-active { background-color: #002f6c; color: #ffffff; }
+        .nav-desktop-active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
+        .nav-mobile-active { color: #001b44; font-weight: 600; }
+        .nav-mobile-active .nav-icon-bg { background-color: #d8e2ff; padding: 4px; border-radius: 9999px; }
+        .nav-mobile-active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #111827; }
-        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
-
-        .ts-control { background-color: #0B1120 !important; border: 1px solid #1F2937 !important; color: #fff !important; border-radius: 0.5rem !important; padding: 0.6rem 0.75rem !important; }
-        .ts-control input { color: #fff !important; }
-        .ts-dropdown { background-color: #111827 !important; border: 1px solid #1F2937 !important; color: #fff !important; border-radius: 0.5rem !important; }
-        .ts-dropdown .option:hover, .ts-dropdown .option.active { background-color: #1F2937 !important; color: #06b6d4 !important; }
+        /* TomSelect Overrides */
+        .ts-control { background-color: #f5f3f3 !important; border: 1px solid #e4e2e2 !important; color: #1b1c1c !important; border-radius: 0.5rem !important; padding: 0.6rem 0.75rem !important; font-size: 0.875rem !important; }
+        .ts-control input { color: #1b1c1c !important; }
+        .ts-control.focus { border-color: #001b44 !important; box-shadow: 0 0 0 1px rgba(0,27,68,0.2) !important; }
+        .ts-dropdown { background-color: #ffffff !important; border: 1px solid #e4e2e2 !important; color: #1b1c1c !important; border-radius: 0.5rem !important; shadow-lg; font-size: 0.875rem !important; }
+        .ts-dropdown .option:hover, .ts-dropdown .option.active { background-color: #f5f3f3 !important; color: #001b44 !important; font-weight: 500; }
         
         .tab-btn { transition: all 0.3s ease; border-bottom: 2px solid transparent; }
-        .tab-active { border-bottom-color: #06b6d4; color: #06b6d4; font-weight: 600; }
+        .tab-active { border-bottom-color: #001b44; color: #001b44; font-weight: 600; }
         
-        input, select, textarea { outline: none; transition: border-color 0.2s; }
-        input:focus, select:focus { border-color: #06b6d4 !important; }
+        input, select, textarea { outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+        input:focus, select:focus { border-color: #001b44 !important; box-shadow: 0 0 0 2px rgba(0,27,68,0.1) !important;}
 
         @keyframes progress-indeterminate { 0% { transform: translateX(-100%); width: 30%; } 50% { width: 50%; } 100% { transform: translateX(400%); width: 30%; } }
         .animate-progress { animation: progress-indeterminate 1.5s ease-in-out infinite; }
+        
+        /* Logo Image Container */
+        .brand-logo { max-height: 32px; max-width: 32px; object-fit: contain; }
     </style>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -63,345 +129,465 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
-<body class="antialiased overflow-x-hidden">
+<body class="bg-background text-on-background flex h-screen overflow-hidden antialiased">
 
     <!-- LOADING OVERLAY -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-dark-900/80 backdrop-blur-sm z-[9999] flex justify-center items-center hide transition-all duration-300">
-        <div class="bg-dark-800/95 border border-dark-700 shadow-2xl rounded-2xl p-8 flex flex-col items-center max-w-sm w-11/12 text-center">
+    <div id="loadingOverlay" class="fixed inset-0 bg-inverse-surface/50 backdrop-blur-sm z-[9999] flex justify-center items-center hide transition-all duration-300">
+        <div class="bg-surface-container-lowest border border-outline-variant/20 shadow-2xl rounded-2xl p-8 flex flex-col items-center max-w-sm w-11/12 text-center">
             <div class="relative w-16 h-16 mb-4">
-                <div class="absolute inset-0 border-4 border-dark-700 rounded-full"></div>
-                <div class="absolute inset-0 border-4 border-transparent border-t-brand-cyan rounded-full animate-spin duration-700"></div>
-                <div class="absolute inset-2 flex items-center justify-center"><i data-lucide="cloud" class="w-6 h-6 text-brand-cyan animate-pulse"></i></div>
+                <div class="absolute inset-0 border-4 border-surface-container rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-transparent border-t-primary rounded-full animate-spin duration-700"></div>
+                <div class="absolute inset-2 flex items-center justify-center"><span class="material-symbols-outlined text-primary animate-pulse filled">cloud_sync</span></div>
             </div>
-            <h3 class="text-lg font-bold text-white mb-1">Memproses...</h3>
-            <p class="text-xs text-gray-400" id="loadingText">Sinkronisasi Cloud Data</p>
-            <div class="w-full h-1 bg-dark-900 rounded-full mt-5 overflow-hidden relative">
-                <div class="absolute top-0 bottom-0 left-0 bg-brand-cyan animate-progress"></div>
+            <h3 class="text-lg font-extrabold text-on-surface mb-1">Memproses...</h3>
+            <p class="text-xs text-on-surface-variant" id="loadingText">Sinkronisasi Cloud Data</p>
+            <div class="w-full h-1.5 bg-surface-container rounded-full mt-5 overflow-hidden relative">
+                <div class="absolute top-0 bottom-0 left-0 bg-primary animate-progress"></div>
             </div>
         </div>
     </div>
 
     <!-- DESKTOP SIDEBAR -->
-    <aside class="hidden md:flex flex-col w-64 fixed h-screen bg-dark-900 border-r border-dark-700 z-40 transition-all">
-        <div class="p-6 flex items-center border-b border-dark-700">
-            <div class="bg-brand-cyan/20 p-2 rounded-lg mr-3"><i data-lucide="boxes" class="w-6 h-6 text-brand-cyan"></i></div>
+    <aside class="hidden md:flex flex-col w-64 bg-primary text-on-primary shrink-0 z-40 transition-all shadow-xl">
+        <div class="p-6 flex items-center gap-3 mb-1 border-b border-white/10">
+            <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center overflow-hidden" id="desktopLogoContainer">
+                <span class="material-symbols-outlined text-on-primary-container filled text-2xl" id="defaultLogo">inventory_2</span>
+                <!-- Image logo akan disisipkan di sini via JS jika disetting -->
+            </div>
             <div>
-                <h1 class="text-white font-bold tracking-wider text-sm">ERP WAREHOUSE</h1>
-                <p class="text-[10px] text-brand-cyan font-mono">Cloud Native Edition</p>
+                <h1 class="text-lg font-extrabold tracking-tight truncate w-36" id="desktopAppName">ERP WAREHOUSE</h1>
+                <p class="text-[10px] text-on-primary-container font-medium opacity-80 uppercase tracking-widest">Mining Edition</p>
             </div>
         </div>
         
-        <div class="p-4 border-b border-dark-700 flex items-center space-x-3" id="desktopUserInfo"></div>
-
-        <nav class="flex-grow p-4 space-y-2 mt-2">
-            <a href="#" onclick="router('dashboard')" id="navD-dashboard" class="nav-desktop-active flex items-center px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-dark-800 transition text-sm font-medium">
-                <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i> Dashboard
+        <nav class="flex-grow px-4 space-y-2 mt-6">
+            <a href="#" onclick="router('dashboard')" id="navD-dashboard" class="nav-desktop-active flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Dashboard Analitik</span>
             </a>
-            <a href="#" onclick="router('tracking')" id="navD-tracking" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-dark-800 transition text-sm font-medium">
-                <i data-lucide="activity" class="w-5 h-5 mr-3"></i> Tracking Transaksi
+            <a href="#" onclick="router('tracking')" id="navD-tracking" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
+                <span class="material-symbols-outlined">timeline</span>
+                <span>Logistik & Tracking</span>
             </a>
-            <a href="#" onclick="router('stock')" id="navD-stock" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-dark-800 transition text-sm font-medium">
-                <i data-lucide="package-search" class="w-5 h-5 mr-3"></i> Master Stock
+            <a href="#" onclick="router('stock')" id="navD-stock" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
+                <span class="material-symbols-outlined">search_insights</span>
+                <span>Master Inventory</span>
             </a>
-            <a href="#" onclick="router('master')" id="navD-master" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-dark-800 transition text-sm font-medium admin-only hide">
-                <i data-lucide="database-zap" class="w-5 h-5 mr-3"></i> Konfigurasi Sistem
+            <a href="#" onclick="router('master')" id="navD-master" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium admin-only hide">
+                <span class="material-symbols-outlined">admin_panel_settings</span>
+                <span>System Administration</span>
             </a>
         </nav>
-        <div class="p-4 border-t border-dark-700" id="desktopAuthBtn"></div>
+        
+        <div class="p-6 border-t border-white/10" id="desktopAuthBtn"></div>
     </aside>
 
     <!-- MOBILE BOTTOM NAV -->
-    <nav class="md:hidden fixed bottom-0 w-full bg-dark-900/95 backdrop-blur-md border-t border-dark-700 z-50 flex justify-around p-2 pb-safe" id="mobileNav">
-        <a href="#" onclick="router('dashboard')" id="navM-dashboard" class="nav-mobile-active flex flex-col items-center p-2 text-gray-500 transition">
-            <div class="nav-icon-bg"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></div><span class="text-[10px] mt-1 font-medium">Dash</span>
+    <nav class="md:hidden fixed bottom-0 w-full bg-surface-container-lowest/95 backdrop-blur-md border-t border-outline-variant/20 z-50 flex justify-around p-2 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]" id="mobileNav">
+        <a href="#" onclick="router('dashboard')" id="navM-dashboard" class="nav-mobile-active flex flex-col items-center p-2 text-on-surface-variant transition">
+            <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">dashboard</span></div><span class="text-[10px] mt-1 font-medium">Dash</span>
         </a>
-        <a href="#" onclick="router('tracking')" id="navM-tracking" class="flex flex-col items-center p-2 text-gray-500 transition">
-            <div class="nav-icon-bg"><i data-lucide="activity" class="w-5 h-5"></i></div><span class="text-[10px] mt-1 font-medium">Track</span>
+        <a href="#" onclick="router('tracking')" id="navM-tracking" class="flex flex-col items-center p-2 text-on-surface-variant transition">
+            <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">timeline</span></div><span class="text-[10px] mt-1 font-medium">Track</span>
         </a>
-        <a href="#" onclick="router('stock')" id="navM-stock" class="flex flex-col items-center p-2 text-gray-500 transition">
-            <div class="nav-icon-bg"><i data-lucide="package-search" class="w-5 h-5"></i></div><span class="text-[10px] mt-1 font-medium">Stock</span>
+        <a href="#" onclick="router('stock')" id="navM-stock" class="flex flex-col items-center p-2 text-on-surface-variant transition">
+            <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">search_insights</span></div><span class="text-[10px] mt-1 font-medium">Stock</span>
         </a>
-        <a href="#" onclick="router('master')" id="navM-master" class="flex flex-col items-center p-2 text-gray-500 transition admin-only hide">
-            <div class="nav-icon-bg"><i data-lucide="database-zap" class="w-5 h-5"></i></div><span class="text-[10px] mt-1 font-medium">Config</span>
+        <a href="#" onclick="router('master')" id="navM-master" class="flex flex-col items-center p-2 text-on-surface-variant transition admin-only hide">
+            <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">admin_panel_settings</span></div><span class="text-[10px] mt-1 font-medium">Admin</span>
         </a>
-        <a href="#" onclick="openModal('modalMobileMenu')" class="flex flex-col items-center p-2 text-gray-500 transition">
-            <div class="nav-icon-bg"><i data-lucide="menu" class="w-5 h-5"></i></div><span class="text-[10px] mt-1 font-medium">Menu</span>
+        <a href="#" onclick="openModal('modalMobileMenu')" class="flex flex-col items-center p-2 text-on-surface-variant transition">
+            <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">menu</span></div><span class="text-[10px] mt-1 font-medium">Menu</span>
         </a>
     </nav>
 
     <!-- MOBILE EXPANDED MENU -->
-    <div id="modalMobileMenu" class="fixed inset-0 bg-dark-900/95 z-[60] hide flex flex-col items-center justify-center p-6 backdrop-blur-md">
-        <button onclick="closeModal('modalMobileMenu')" class="absolute top-6 right-6 p-2 bg-dark-800 rounded-full text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+    <div id="modalMobileMenu" class="fixed inset-0 bg-inverse-surface/50 z-[60] hide flex flex-col items-center justify-center p-6 backdrop-blur-md">
+        <button onclick="closeModal('modalMobileMenu')" class="absolute top-6 right-6 p-2 bg-surface-container-lowest rounded-full text-on-surface shadow-lg"><span class="material-symbols-outlined">close</span></button>
         <div class="w-full max-w-sm" id="mobileMenuContent"></div>
     </div>
 
-    <!-- MAIN CONTENT AREA -->
-    <main class="md:ml-64 pt-6 px-4 md:px-8 pb-24 md:pb-8 min-h-screen relative">
+    <!-- MAIN CONTENT WRAPPER -->
+    <div class="flex-1 flex flex-col overflow-hidden">
         
-        <header class="md:hidden flex justify-between items-center mb-6 bg-dark-800 p-4 rounded-xl border border-dark-700">
-            <div class="flex items-center"><i data-lucide="boxes" class="w-6 h-6 text-brand-cyan mr-2"></i><h1 class="text-white font-bold text-sm">ERP CLOUD</h1></div>
-            <div class="flex items-center text-[10px] text-brand-green bg-green-900/30 px-2 py-1 rounded-full border border-green-800"><div class="w-1.5 h-1.5 bg-brand-green rounded-full mr-1.5 animate-pulse"></div> FIREBASE</div>
+        <!-- TopNavBar (Desktop) -->
+        <header class="hidden md:flex h-16 bg-surface-container-lowest items-center justify-between px-8 border-b border-outline-variant/20 shrink-0 z-30 shadow-sm">
+            <div class="flex items-center flex-1">
+                <h2 class="text-sm font-bold text-primary mr-4 uppercase tracking-widest opacity-70" id="topNavTitle">Dashboard Analitik</h2>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3 border-l border-outline-variant/30 pl-6" id="desktopUserInfo"></div>
+            </div>
         </header>
 
-        <!-- DASHBOARD SECTION -->
-        <section id="view-dashboard" class="space-y-6 block">
-            <div class="flex flex-col lg:flex-row justify-between lg:items-end space-y-4 lg:space-y-0">
-                <div>
-                    <h2 class="text-2xl font-bold text-white mb-1">Dashboard Analitik</h2>
-                    <p class="text-sm text-gray-400">Monitoring pergerakan logistik alat berat.</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2 bg-dark-800 p-2 rounded-lg border border-dark-700 w-full lg:w-auto">
-                    <input type="date" id="dashStartDate" class="bg-dark-900 border border-dark-700 text-white text-xs rounded px-2 py-1.5 focus:border-brand-cyan outline-none flex-grow lg:flex-grow-0">
-                    <span class="text-gray-500 text-xs">-</span>
-                    <input type="date" id="dashEndDate" class="bg-dark-900 border border-dark-700 text-white text-xs rounded px-2 py-1.5 focus:border-brand-cyan outline-none flex-grow lg:flex-grow-0">
-                    <button onclick="renderDashboard()" class="bg-brand-cyan hover:bg-cyan-600 text-white px-3 py-1.5 rounded text-xs font-medium transition flex items-center justify-center mt-2 lg:mt-0 w-full lg:w-auto"><i data-lucide="filter" class="w-3 h-3 mr-1"></i> Filter</button>
-                    <button onclick="downloadPDF()" class="bg-dark-700 hover:bg-dark-600 text-white px-3 py-1.5 rounded text-xs font-medium transition border border-dark-600 flex items-center justify-center mt-2 lg:mt-0 w-full lg:w-auto"><i data-lucide="file-down" class="w-3 h-3 mr-1"></i> PDF</button>
-                </div>
-            </div>
-
-            <div class="glass-panel rounded-xl p-5 w-full">
-                <div class="flex items-center mb-4 text-sm font-medium text-brand-blue"><i data-lucide="trending-up" class="w-4 h-4 mr-2"></i> Trend Pengeluaran Normal (Qty)</div>
-                <div class="h-64 w-full relative"><canvas id="chartSparepart"></canvas></div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="glass-panel rounded-xl p-5">
-                    <div class="flex items-center text-brand-yellow mb-4 text-sm font-medium"><i data-lucide="wrench" class="w-4 h-4 mr-2"></i> Trend Service/Perbaikan (Qty)</div>
-                    <div class="h-64 relative"><canvas id="chartService"></canvas></div>
-                </div>
-                <div class="glass-panel rounded-xl p-5">
-                    <div class="flex items-center text-brand-purple mb-4 text-sm font-medium"><i data-lucide="layout-grid" class="w-4 h-4 mr-2"></i> Pengeluaran by Dept</div>
-                    <div class="h-64 relative"><canvas id="chartDept"></canvas></div>
-                </div>
-            </div>
-
-            <div class="mt-8 glass-panel rounded-xl p-5" id="pdfTargetArea">
-                <div class="flex items-center text-brand-red text-lg font-medium mb-4"><i data-lucide="alert-triangle" class="w-5 h-5 mr-2"></i> Status Kritis Stok</div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-400 whitespace-nowrap">
-                        <thead class="text-xs text-gray-500 bg-dark-800 border-b border-dark-700 uppercase">
-                            <tr><th class="px-4 py-3">Part Info</th><th class="px-4 py-3">Kategori</th><th class="px-4 py-3 text-center">Status</th><th class="px-4 py-3 text-center">Stok vs Min</th></tr>
-                        </thead>
-                        <tbody id="stockAnalysisTableBody" class="divide-y divide-dark-700"></tbody>
-                    </table>
-                </div>
-                <div class="flex justify-between items-center mt-4 pt-4 border-t border-dark-700">
-                    <div class="text-xs text-gray-500" id="dashPaginationInfo">Menampilkan 0 dari 0 data</div>
-                    <div class="flex space-x-1" id="dashPaginationButtons"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TRACKING SECTION -->
-        <section id="view-tracking" class="space-y-6 hide">
-            <div class="flex flex-col lg:flex-row justify-between lg:items-center space-y-4 lg:space-y-0">
-                <div><h2 class="text-2xl font-bold text-white">Logistik Tracking</h2><p class="text-sm text-gray-400">Pusat pencatatan sirkulasi barang.</p></div>
-                <div class="flex flex-wrap gap-2 admin-only hide">
-                    <button onclick="openModal('modalTxIn')" class="bg-brand-green hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center w-full lg:w-auto justify-center"><i data-lucide="arrow-down-left" class="w-4 h-4 mr-2"></i> Form In (Masuk)</button>
-                    <button onclick="openModal('modalTxOut')" class="bg-brand-blue hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center w-full lg:w-auto justify-center"><i data-lucide="arrow-up-right" class="w-4 h-4 mr-2"></i> Form Out (Keluar)</button>
-                </div>
-            </div>
+        <!-- Main Scrollable Canvas -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 custom-scrollbar bg-background pb-24 md:pb-6">
             
-            <div class="glass-panel rounded-xl p-5">
-                <div class="flex space-x-4 mb-4 border-b border-dark-700 overflow-x-auto">
-                    <button onclick="switchTrackingTab('Normal')" id="tabTx-Normal" class="tab-btn tab-active px-4 py-2 text-sm whitespace-nowrap">Transaksi Normal</button>
-                    <button onclick="switchTrackingTab('Service')" id="tabTx-Service" class="tab-btn px-4 py-2 text-sm text-gray-400 hover:text-white whitespace-nowrap">Service / Repair</button>
-                    <button onclick="switchTrackingTab('Retur')" id="tabTx-Retur" class="tab-btn px-4 py-2 text-sm text-gray-400 hover:text-white whitespace-nowrap">Retur Barang</button>
+            <header class="md:hidden flex justify-between items-center mb-4 bg-primary p-4 rounded-2xl shadow-lg">
+                <div class="flex items-center text-on-primary">
+                    <span class="material-symbols-outlined filled mr-2" id="mobileDefaultLogo">inventory_2</span>
+                    <img id="mobileImgLogo" class="brand-logo mr-2 hide" src="" alt="Logo">
+                    <h1 class="font-extrabold text-sm tracking-wide truncate w-32" id="mobileAppName">ERP CLOUD</h1>
                 </div>
-                <div class="mb-4 relative w-full lg:w-1/3">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i data-lucide="search" class="w-4 h-4 text-gray-500"></i></div>
-                    <input type="text" id="searchTrackingInput" onkeyup="debounce(handleSearchTracking, 300)()" class="w-full pl-10 pr-3 py-2 bg-dark-900 border border-dark-700 rounded-lg text-white text-sm focus:border-brand-cyan" placeholder="Cari Part No, Dept, WO...">
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-400 whitespace-nowrap">
-                        <thead class="text-xs text-gray-500 bg-dark-800 border-b border-dark-700 uppercase">
-                            <tr><th class="px-4 py-3">Tanggal</th><th class="px-4 py-3">In/Out</th><th class="px-4 py-3">Info Part</th><th class="px-4 py-3 text-center">Qty</th><th class="px-4 py-3">Alokasi / Relasi</th><th class="px-4 py-3 text-right superadmin-only hide">Aksi</th></tr>
-                        </thead>
-                        <tbody id="txTableBody" class="divide-y divide-dark-700"></tbody>
-                    </table>
-                </div>
-                <div class="flex justify-between items-center mt-4 pt-4 border-t border-dark-700">
-                    <div class="text-xs text-gray-500" id="txPaginationInfo">Menampilkan 0 dari 0 data</div>
-                    <div class="flex space-x-1" id="txPaginationButtons"></div>
-                </div>
-            </div>
-        </section>
+                <div class="flex items-center text-[10px] text-secondary-fixed bg-secondary-container/20 px-2 py-1 rounded-full border border-secondary-fixed/30 font-bold"><div class="w-1.5 h-1.5 bg-secondary-fixed rounded-full mr-1.5 animate-pulse"></div> FIREBASE</div>
+            </header>
 
-        <!-- STOCK SECTION -->
-        <section id="view-stock" class="space-y-6 hide">
-            <div class="flex flex-col lg:flex-row justify-between lg:items-center space-y-4 lg:space-y-0">
-                <div><h2 class="text-2xl font-bold text-white">Master Stock</h2><p class="text-sm text-gray-400">Pusat data referensi item gudang (Real-Time Cloud).</p></div>
-                <div class="flex flex-wrap gap-2 admin-only hide">
-                    <button onclick="exportToExcel()" class="bg-dark-700 hover:bg-dark-600 text-brand-green px-3 py-2 rounded-lg text-sm font-medium flex items-center border border-dark-600 w-full lg:w-auto justify-center"><i data-lucide="sheet" class="w-4 h-4 mr-2"></i> Export Excel (Opname)</button>
-                    <button onclick="document.getElementById('formStock').reset(); document.getElementById('stkMode').value='NEW'; document.getElementById('stkId').readOnly=false; document.getElementById('stkId').classList.remove('opacity-50'); openModal('modalStock');" class="bg-brand-green hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center w-full lg:w-auto justify-center"><i data-lucide="plus" class="w-4 h-4 mr-2"></i> Item Baru</button>
-                </div>
-            </div>
-            
-            <div class="glass-panel rounded-xl p-5">
-                <div class="flex flex-col lg:flex-row gap-4 mb-4">
-                    <div class="relative w-full lg:w-1/2">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i data-lucide="search" class="w-4 h-4 text-gray-500"></i></div>
-                        <input type="text" id="searchStockInput" onkeyup="debounce(handleSearchStock, 300)()" class="w-full pl-10 pr-3 py-2 bg-dark-900 border border-dark-700 rounded-lg text-white text-sm focus:border-brand-cyan" placeholder="Cari Part No, Nama, Accurate...">
+            <!-- DASHBOARD SECTION (Same as before) -->
+            <section id="view-dashboard" class="space-y-6 block">
+                <div class="flex flex-col lg:flex-row justify-between lg:items-end space-y-4 lg:space-y-0">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-on-surface mb-1">Dashboard Analitik</h2>
+                        <p class="text-sm text-on-surface-variant">Monitoring pergerakan logistik real-time.</p>
                     </div>
-                    <div class="flex w-full lg:w-1/2 gap-2">
-                        <select id="filterKategori" onchange="handleSearchStock()" class="w-1/2 bg-dark-900 border border-dark-700 rounded-lg text-white text-sm px-3 py-2 focus:border-brand-cyan">
-                            <option value="">Semua Kategori</option><option value="SPAREPART">Sparepart</option><option value="LUBRICATE">Lubricate / Oli</option><option value="CONSUMABLE">Consumable</option><option value="FILTER">Filter</option><option value="GET">GET</option><option value="TYRE">Tyre / Ban</option>
-                        </select>
-                        <select id="filterPergerakan" onchange="handleSearchStock()" class="w-1/2 bg-dark-900 border border-dark-700 rounded-lg text-white text-sm px-3 py-2 focus:border-brand-cyan">
-                            <option value="">Semua Pergerakan</option><option value="FAST">Fast Moving</option><option value="SLOW">Slow Moving</option><option value="DEAD">Dead Stock</option>
-                        </select>
+                    <div class="flex flex-wrap items-center gap-2 bg-surface-container-lowest p-2 rounded-2xl border border-outline-variant/20 shadow-sm w-full lg:w-auto">
+                        <input type="date" id="dashStartDate" class="bg-surface-container-low border-none text-on-surface text-xs rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-primary/20 flex-grow lg:flex-grow-0 font-medium">
+                        <span class="text-on-surface-variant material-symbols-outlined text-sm">arrow_forward</span>
+                        <input type="date" id="dashEndDate" class="bg-surface-container-low border-none text-on-surface text-xs rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-primary/20 flex-grow lg:flex-grow-0 font-medium">
+                        <button onclick="renderDashboard()" class="bg-primary hover:bg-primary-fixed-variant text-on-primary px-4 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center w-full lg:w-auto shadow-sm"><span class="material-symbols-outlined text-[16px] mr-1">filter_alt</span> Filter</button>
+                        <button onclick="downloadPDF()" class="bg-surface-container hover:bg-surface-dim text-on-surface px-4 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center w-full lg:w-auto"><span class="material-symbols-outlined text-[16px] mr-1">download</span> PDF</button>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-400 whitespace-nowrap">
-                        <thead class="text-xs text-gray-500 bg-dark-800 border-b border-dark-700 uppercase">
-                            <tr><th class="px-4 py-3">Identitas Part</th><th class="px-4 py-3">Atribut</th><th class="px-4 py-3">Lokasi</th><th class="px-4 py-3">Umur</th><th class="px-4 py-3 text-center">Stok Fisik</th><th class="px-4 py-3 text-right admin-only hide">Aksi</th></tr>
-                        </thead>
-                        <tbody id="stockTableBody" class="divide-y divide-dark-700"></tbody>
-                    </table>
+                <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20 w-full">
+                    <div class="flex items-center mb-4 text-sm font-extrabold text-primary"><span class="material-symbols-outlined mr-2">trending_up</span> Trend Pengeluaran Normal (Qty)</div>
+                    <div class="h-64 w-full relative"><canvas id="chartSparepart"></canvas></div>
                 </div>
-                <div class="flex justify-between items-center mt-4 pt-4 border-t border-dark-700">
-                    <div class="text-xs text-gray-500" id="stkPaginationInfo">Menampilkan 0 dari 0 data</div>
-                    <div class="flex space-x-1" id="stkPaginationButtons"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
+                        <div class="flex items-center text-on-tertiary-container mb-4 text-sm font-extrabold"><span class="material-symbols-outlined mr-2">build</span> Trend Service/Perbaikan (Qty)</div>
+                        <div class="h-64 relative"><canvas id="chartService"></canvas></div>
+                    </div>
+                    <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
+                        <div class="flex items-center text-primary-fixed-variant mb-4 text-sm font-extrabold"><span class="material-symbols-outlined mr-2">grid_view</span> Pengeluaran by Dept</div>
+                        <div class="h-64 relative"><canvas id="chartDept"></canvas></div>
+                    </div>
                 </div>
-            </div>
-        </section>
-        
-        <!-- MASTER DATA SECTION -->
-        <section id="view-master" class="space-y-6 hide">
-            <h2 class="text-2xl font-bold text-white mb-6">Konfigurasi Sistem (Cloud & Backup)</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-panel rounded-xl p-5">
-                    <h3 class="text-lg font-medium text-white mb-4 flex items-center"><i data-lucide="building-2" class="w-5 h-5 mr-2 text-brand-blue"></i> Departemen Alokasi</h3>
-                    <ul id="deptList" class="space-y-3 text-sm text-gray-300 h-48 overflow-y-auto"></ul>
+
+                <div class="mt-8 bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20" id="pdfTargetArea">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center text-error text-lg font-extrabold"><span class="material-symbols-outlined mr-2 filled">warning</span> Status Kritis Stok</div>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
+                        <table class="w-full text-sm text-left whitespace-nowrap">
+                            <thead class="bg-surface-container-low/50 border-b border-outline-variant/20">
+                                <tr>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Part Info</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Kategori</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest text-center">Status</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest text-center">Stok vs Min</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stockAnalysisTableBody" class="divide-y divide-outline-variant/10"></tbody>
+                        </table>
+                    </div>
+                    <div class="flex justify-between items-center mt-4">
+                        <div class="text-xs text-on-surface-variant font-medium" id="dashPaginationInfo">Menampilkan 0 dari 0 data</div>
+                        <div class="flex gap-1" id="dashPaginationButtons"></div>
+                    </div>
                 </div>
-                <div class="glass-panel rounded-xl p-5">
-                    <h3 class="text-lg font-medium text-white mb-4 flex items-center"><i data-lucide="truck" class="w-5 h-5 mr-2 text-brand-yellow"></i> Unit Operasional</h3>
-                    <ul id="unitList" class="space-y-3 text-sm text-gray-300 h-48 overflow-y-auto"></ul>
+            </section>
+
+            <!-- TRACKING SECTION (Same as before) -->
+            <section id="view-tracking" class="space-y-6 hide">
+                <div class="flex flex-col lg:flex-row justify-between lg:items-center space-y-4 lg:space-y-0">
+                    <div><h2 class="text-2xl font-extrabold text-on-surface">Logistik Tracking</h2><p class="text-sm text-on-surface-variant">Pusat pencatatan sirkulasi pergerakan aset.</p></div>
+                    <div class="flex flex-wrap gap-2 admin-only hide">
+                        <button onclick="openModal('modalTxIn')" class="bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary px-4 py-2 rounded-xl text-sm font-bold flex items-center w-full lg:w-auto justify-center shadow-sm"><span class="material-symbols-outlined text-[18px] mr-2">call_received</span> Form In (Masuk)</button>
+                        <button onclick="openModal('modalTxOut')" class="bg-error hover:bg-on-error-container text-on-error px-4 py-2 rounded-xl text-sm font-bold flex items-center w-full lg:w-auto justify-center shadow-sm"><span class="material-symbols-outlined text-[18px] mr-2">call_made</span> Form Out (Keluar)</button>
+                    </div>
                 </div>
-            </div>
+                
+                <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
+                    <div class="flex gap-6 mb-6 border-b border-outline-variant/20 overflow-x-auto pb-1">
+                        <button onclick="switchTrackingTab('Normal')" id="tabTx-Normal" class="tab-btn tab-active pb-2 text-sm whitespace-nowrap text-on-surface-variant hover:text-primary">Transaksi Normal</button>
+                        <button onclick="switchTrackingTab('Service')" id="tabTx-Service" class="tab-btn pb-2 text-sm text-on-surface-variant hover:text-primary whitespace-nowrap">Service / Repair</button>
+                        <button onclick="switchTrackingTab('Retur')" id="tabTx-Retur" class="tab-btn pb-2 text-sm text-on-surface-variant hover:text-primary whitespace-nowrap">Retur Barang</button>
+                    </div>
+                    <div class="mb-4 relative w-full lg:w-1/3">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+                        <input type="text" id="searchTrackingInput" onkeyup="debounce(handleSearchTracking, 300)()" class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low border-none rounded-full text-on-surface text-sm focus:ring-2 focus:ring-primary/20 shadow-inner" placeholder="Cari Part No, Dept, WO...">
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container-low/50">
+                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Tanggal</th>
+                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">In/Out</th>
+                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Info Part</th>
+                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Qty</th>
+                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Alokasi / Relasi</th>
+                                    <th class="px-6 py-4 text-right text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest superadmin-only hide">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="txTableBody" class="divide-y divide-outline-variant/10"></tbody>
+                        </table>
+                    </div>
+                    <div class="flex justify-between items-center mt-4">
+                        <div class="text-xs text-on-surface-variant font-medium" id="txPaginationInfo">Menampilkan 0 dari 0 data</div>
+                        <div class="flex gap-1" id="txPaginationButtons"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- STOCK SECTION (Same as before) -->
+            <section id="view-stock" class="space-y-6 hide">
+                <div class="flex flex-col lg:flex-row justify-between lg:items-center space-y-4 lg:space-y-0">
+                    <div><h2 class="text-2xl font-extrabold text-on-surface">Master Inventory</h2><p class="text-sm text-on-surface-variant">Pusat data referensi item & aset gudang (Real-Time).</p></div>
+                    <div class="flex flex-wrap gap-2 admin-only hide">
+                        <button onclick="exportToExcel()" class="bg-surface-container hover:bg-surface-dim text-secondary px-4 py-2 rounded-xl text-sm font-bold flex items-center justify-center w-full lg:w-auto shadow-sm"><span class="material-symbols-outlined text-[18px] mr-2">description</span> Export Excel (Opname)</button>
+                        <button onclick="document.getElementById('formStock').reset(); document.getElementById('stkMode').value='NEW'; document.getElementById('stkId').readOnly=false; document.getElementById('stkId').classList.remove('opacity-50'); openModal('modalStock');" class="bg-primary hover:bg-primary-fixed-variant text-on-primary px-4 py-2 rounded-xl text-sm font-bold flex items-center justify-center w-full lg:w-auto shadow-sm"><span class="material-symbols-outlined text-[18px] mr-2">add</span> Item Baru</button>
+                    </div>
+                </div>
+                
+                <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
+                    <div class="flex flex-col lg:flex-row gap-4 mb-6">
+                        <div class="relative w-full lg:w-1/2">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+                            <input type="text" id="searchStockInput" onkeyup="debounce(handleSearchStock, 300)()" class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low border-none rounded-full text-on-surface text-sm focus:ring-2 focus:ring-primary/20 shadow-inner" placeholder="Cari Part No, Nama, Accurate...">
+                        </div>
+                        <div class="flex w-full lg:w-1/2 gap-3">
+                            <select id="filterKategori" onchange="handleSearchStock()" class="w-1/2 bg-surface-container-low border-none rounded-xl text-on-surface text-sm px-4 py-2.5 focus:ring-2 focus:ring-primary/20 font-medium cursor-pointer shadow-inner">
+                                <option value="">Semua Kategori</option><option value="SPAREPART">Sparepart</option><option value="LUBRICATE">Lubricate / Oli</option><option value="CONSUMABLE">Consumable</option><option value="FILTER">Filter</option><option value="GET">GET</option><option value="TYRE">Tyre / Ban</option>
+                            </select>
+                            <select id="filterPergerakan" onchange="handleSearchStock()" class="w-1/2 bg-surface-container-low border-none rounded-xl text-on-surface text-sm px-4 py-2.5 focus:ring-2 focus:ring-primary/20 font-medium cursor-pointer shadow-inner">
+                                <option value="">Semua Pergerakan</option><option value="FAST">Fast Moving</option><option value="SLOW">Slow Moving</option><option value="DEAD">Dead Stock</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container-low/50">
+                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Identitas Part</th>
+                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Atribut</th>
+                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Lokasi</th>
+                                    <th class="px-6 py-4 text-left text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Umur</th>
+                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Stok Fisik</th>
+                                    <th class="px-6 py-4 text-right text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest admin-only hide">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stockTableBody" class="divide-y divide-outline-variant/10"></tbody>
+                        </table>
+                    </div>
+                    <div class="flex justify-between items-center mt-4">
+                        <div class="text-xs text-on-surface-variant font-medium" id="stkPaginationInfo">Menampilkan 0 dari 0 data</div>
+                        <div class="flex gap-1" id="stkPaginationButtons"></div>
+                    </div>
+                </div>
+            </section>
             
-            <div class="glass-panel rounded-xl p-5 mt-6 superadmin-only hide border border-dark-700">
-                <h3 class="text-lg font-bold text-brand-cyan mb-2"><i data-lucide="cloud-cog" class="inline w-5 h-5 mr-1 mb-1"></i> Data Center Controls (SuperAdmin)</h3>
-                <p class="text-xs text-gray-400 mb-6">Aplikasi berjalan menggunakan Firebase. Gunakan Google Sheets murni untuk Migrasi (Tarik Data Awal) atau Backup (Simpan Data Aman).</p>
-                <div class="flex flex-col md:flex-row gap-4">
-                    <button onclick="triggerMigrateFromSheets()" class="bg-dark-800 hover:bg-dark-700 border border-brand-yellow text-brand-yellow px-4 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center w-full shadow-lg">
-                        <i data-lucide="download-cloud" class="w-5 h-5 mr-2"></i> Tarik Migrasi Data dari Sheets
-                    </button>
-                    <button onclick="triggerBackupToSheets()" class="bg-brand-cyan hover:bg-cyan-600 text-white px-4 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center w-full shadow-[0_0_15px_rgba(6,182,212,0.4)]">
-                        <i data-lucide="upload-cloud" class="w-5 h-5 mr-2"></i> Backup Database ke Sheets
-                    </button>
+            <!-- SYSTEM ADMINISTRATION SECTION (Redesigned with Sub-Tabs) -->
+            <section id="view-master" class="space-y-6 hide">
+                <h2 class="text-2xl font-extrabold text-on-surface">System Administration</h2>
+                <p class="text-sm text-on-surface-variant mb-6">Pusat kendali konfigurasi Enterprise ERP.</p>
+                
+                <!-- Sub Navigation Tabs for Admin -->
+                <div class="flex gap-6 mb-6 border-b border-outline-variant/20 overflow-x-auto pb-1">
+                    <button onclick="switchAdminTab('DataMaster')" id="tabAdm-DataMaster" class="tab-btn tab-active pb-2 text-sm whitespace-nowrap text-primary font-bold">Data Master</button>
+                    <button onclick="switchAdminTab('UserMgmt')" id="tabAdm-UserMgmt" class="tab-btn pb-2 text-sm text-on-surface-variant hover:text-primary whitespace-nowrap superadmin-only hide">Manajemen User</button>
+                    <button onclick="switchAdminTab('AppConfig')" id="tabAdm-AppConfig" class="tab-btn pb-2 text-sm text-on-surface-variant hover:text-primary whitespace-nowrap superadmin-only hide">Pengaturan Aplikasi</button>
+                    <button onclick="switchAdminTab('SysLogs')" id="tabAdm-SysLogs" class="tab-btn pb-2 text-sm text-on-surface-variant hover:text-primary whitespace-nowrap admin-only hide">System Logs</button>
                 </div>
-            </div>
-        </section>
 
-    </main>
+                <!-- Sub-View: Data Master (Dept & Unit) -->
+                <div id="admView-DataMaster" class="block space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
+                            <h3 class="text-lg font-bold text-on-surface mb-4 flex items-center"><span class="material-symbols-outlined text-primary-fixed-variant mr-2">domain</span> Departemen Alokasi</h3>
+                            <ul id="deptList" class="space-y-3 text-sm text-on-surface-variant h-48 overflow-y-auto pr-2 custom-scrollbar"></ul>
+                        </div>
+                        <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
+                            <h3 class="text-lg font-bold text-on-surface mb-4 flex items-center"><span class="material-symbols-outlined text-on-tertiary-container mr-2">local_shipping</span> Unit Operasional (Aset)</h3>
+                            <ul id="unitList" class="space-y-3 text-sm text-on-surface-variant h-48 overflow-y-auto pr-2 custom-scrollbar"></ul>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Sub-View: User Management -->
+                <div id="admView-UserMgmt" class="hide space-y-6">
+                    <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-bold text-on-surface flex items-center"><span class="material-symbols-outlined text-primary mr-2">manage_accounts</span> Daftar Pengguna Sistem</h3>
+                            <button onclick="document.getElementById('formUser').reset(); document.getElementById('userMode').value='NEW'; document.getElementById('usrUsername').readOnly=false; openModal('modalUser');" class="bg-primary hover:bg-primary-fixed-variant text-on-primary px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-sm"><span class="material-symbols-outlined text-[18px] mr-2">person_add</span> Tambah User</button>
+                        </div>
+                        <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
+                            <table class="w-full border-collapse text-sm text-left whitespace-nowrap">
+                                <thead class="bg-surface-container-low/50">
+                                    <tr><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px]">Username</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px]">Nama Lengkap</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px]">Role / Hak Akses</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px] text-right">Aksi</th></tr>
+                                </thead>
+                                <tbody id="userTableBody" class="divide-y divide-outline-variant/10"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-View: App Configuration -->
+                <div id="admView-AppConfig" class="hide space-y-6">
+                    <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20 max-w-3xl">
+                        <h3 class="text-lg font-bold text-on-surface mb-6 flex items-center"><span class="material-symbols-outlined text-tertiary-fixed-dim mr-2 filled">branding_watermark</span> Enterprise Branding</h3>
+                        <form id="formSettings" onsubmit="saveSettings(event)" class="space-y-5">
+                            <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Nama Aplikasi / Perusahaan</label><input type="text" id="setAppName" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary" placeholder="Contoh: PT. BSS Mining Tbk."></div>
+                            <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">URL Logo (Opsional)</label><input type="url" id="setAppLogo" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary" placeholder="https://domain.com/logo.png"></div>
+                            <div class="pt-4"><button type="submit" id="btnSaveSettings" class="px-6 py-3 bg-primary hover:bg-primary-fixed-variant rounded-xl text-on-primary font-bold transition shadow-md text-sm"><span class="material-symbols-outlined text-[18px] mr-2">save</span> Terapkan Pengaturan</button></div>
+                        </form>
+                    </div>
+
+                    <div class="bg-error-container text-on-error-container rounded-2xl p-8 mt-6 shadow-sm border border-error/20">
+                        <h3 class="text-xl font-extrabold mb-2 flex items-center"><span class="material-symbols-outlined filled mr-2 text-2xl">cloud_sync</span> Google Sheets Data Center</h3>
+                        <p class="text-sm mb-6 max-w-3xl font-medium">Fungsi ini untuk integrasi cadangan ke Google Sheets Backend (Migration & Backup). <br><span class="font-bold text-error">Catatan:</span> Pastikan script Backend (Code.gs) Anda telah diperbarui jika ingin membackup tabel baru (Users, Logs, Settings) secara utuh.</p>
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <button onclick="triggerMigrateFromSheets()" class="bg-surface-container-lowest hover:bg-surface border border-error/30 text-error px-6 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center w-full md:w-auto">
+                                <span class="material-symbols-outlined mr-2">cloud_download</span> Tarik Migrasi (Pull)
+                            </button>
+                            <button onclick="triggerBackupToSheets()" class="bg-error hover:bg-error-container hover:text-on-error-container text-on-error px-6 py-3 rounded-xl text-sm font-bold transition flex items-center justify-center w-full md:w-auto shadow-md">
+                                <span class="material-symbols-outlined mr-2">cloud_upload</span> Jalankan Backup (Push)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-View: System Logs (Audit Trail) -->
+                <div id="admView-SysLogs" class="hide space-y-6">
+                    <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-bold text-on-surface flex items-center"><span class="material-symbols-outlined text-primary mr-2">policy</span> System Audit Trail</h3>
+                            <button onclick="renderLogsTable()" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">refresh</span></button>
+                        </div>
+                        <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
+                            <table class="w-full border-collapse text-sm text-left whitespace-nowrap">
+                                <thead class="bg-surface-container-low/50">
+                                    <tr><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px]">Waktu Sistem</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px]">User (Actor)</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px]">Aksi / Event</th><th class="px-6 py-4 font-extrabold text-on-surface-variant uppercase tracking-widest text-[10px] w-1/2">Detail Aktivitas</th></tr>
+                                </thead>
+                                <tbody id="logsTableBody" class="divide-y divide-outline-variant/10"></tbody>
+                            </table>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <div class="text-xs text-on-surface-variant font-medium" id="logPaginationInfo">Menampilkan 0 data</div>
+                            <div class="flex gap-1" id="logPaginationButtons"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <!-- SEMUA MODAL TRANSAKSI & STOCK (Tetap Sama Seperti Sebelumnya, Saya Singkat untuk Kerapian Logika) -->
     <!-- Modal Form Masuk (IN) -->
-    <div id="modalTxIn" class="fixed inset-0 bg-dark-900/90 z-[70] flex justify-center items-center hide backdrop-blur-sm p-4 overflow-y-auto">
-        <div class="glass-panel p-6 rounded-xl w-full max-w-lg border-t-4 border-t-brand-green my-8">
-            <div class="flex items-center justify-between mb-4"><div class="flex items-center text-white"><i data-lucide="arrow-down-left" class="w-5 h-5 mr-2 text-brand-green"></i><h3 class="text-lg font-bold">Form Masuk (IN)</h3></div><button type="button" onclick="closeModal('modalTxIn')" class="text-gray-500 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-            <form id="formTxIn" onsubmit="saveTransaction(event, 'IN')" class="space-y-4">
+    <div id="modalTxIn" class="fixed inset-0 bg-inverse-surface/60 z-[70] flex justify-center items-center hide backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-surface-container-lowest p-8 rounded-2xl w-full max-w-lg border-t-8 border-t-secondary shadow-2xl my-8">
+            <div class="flex items-center justify-between mb-6"><div class="flex items-center text-on-surface"><span class="material-symbols-outlined mr-2 text-secondary text-3xl">call_received</span><h3 class="text-xl font-extrabold">Form Masuk (IN)</h3></div><button type="button" onclick="closeModal('modalTxIn')" class="text-on-surface-variant hover:text-error bg-surface-container-low p-2 rounded-full"><span class="material-symbols-outlined">close</span></button></div>
+            <form id="formTxIn" onsubmit="saveTransaction(event, 'IN')" class="space-y-5">
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs text-gray-400 mb-1">Jenis Transaksi</label><select id="txInJenis" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"><option value="Normal">Barang Baru (Normal)</option><option value="Retur">Retur Masuk (Pengembalian)</option><option value="Service">Selesai Service Luar</option></select></div>
-                    <div><label class="block text-xs text-gray-400 mb-1">Tanggal</label><input type="date" id="txInDate" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Jenis Transaksi</label><select id="txInJenis" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"><option value="Normal">Barang Baru (Normal)</option><option value="Retur">Retur Masuk (Pengembalian)</option><option value="Service">Selesai Service Luar</option></select></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Tanggal</label><input type="date" id="txInDate" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
                 </div>
-                <div><label class="block text-xs text-gray-400 mb-1">Cari Item Master</label><select id="txInPart" required placeholder="Ketik nama / part..."></select></div>
+                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Cari Item Master</label><select id="txInPart" required placeholder="Ketik nama / part..."></select></div>
                 <div class="grid grid-cols-3 gap-4">
-                    <div class="col-span-1"><label class="block text-xs text-gray-400 mb-1">Qty</label><input type="number" id="txInQty" min="1" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm font-bold"></div>
-                    <div class="col-span-2"><label class="block text-xs text-gray-400 mb-1">Lokasi Gudang</label><input type="text" id="txInLoc" class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"></div>
+                    <div class="col-span-1"><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Qty</label><input type="number" id="txInQty" min="1" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-xl font-extrabold focus:ring-2 focus:ring-secondary"></div>
+                    <div class="col-span-2"><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Lokasi Gudang</label><input type="text" id="txInLoc" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs text-gray-400 mb-1">Vendor / Supplier</label><input type="text" id="txInVendor" class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"></div>
-                    <div><label class="block text-xs text-gray-400 mb-1">No. PO / Bukti</label><input type="text" id="txInPO" class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Vendor / Supplier</label><input type="text" id="txInVendor" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. PO / Bukti</label><input type="text" id="txInPO" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
                 </div>
-                <div><label class="block text-xs text-gray-400 mb-1">No. Work Order (WO) <span class="text-gray-600 text-[10px]">*Opsional</span></label><input type="text" id="txInWO" class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm" placeholder="Contoh: WO-2026-001"></div>
-                <div class="flex justify-end pt-4 mt-6 border-t border-dark-700"><button type="submit" id="btnSubmitIn" class="px-6 py-2 bg-brand-green hover:bg-green-600 rounded-lg text-white font-medium transition w-full shadow-lg">Eksekusi Data Masuk</button></div>
+                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. Work Order (WO) <span class="text-outline text-[10px] lowercase normal-case font-normal">*Opsional</span></label><input type="text" id="txInWO" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary" placeholder="Contoh: WO-2026-001"></div>
+                <div class="flex justify-end pt-4 mt-2"><button type="submit" id="btnSubmitIn" class="px-8 py-3 bg-secondary hover:bg-on-secondary-fixed-variant rounded-xl text-on-secondary font-bold transition w-full shadow-md text-base">Eksekusi Data Masuk</button></div>
             </form>
         </div>
     </div>
 
     <!-- Modal Form Keluar (OUT) -->
-    <div id="modalTxOut" class="fixed inset-0 bg-dark-900/90 z-[70] flex justify-center items-center hide backdrop-blur-sm p-4 overflow-y-auto">
-        <div class="glass-panel p-6 rounded-xl w-full max-w-lg border-t-4 border-t-brand-blue my-8">
-            <div class="flex items-center justify-between mb-4"><div class="flex items-center text-white"><i data-lucide="arrow-up-right" class="w-5 h-5 mr-2 text-brand-blue"></i><h3 class="text-lg font-bold">Form Keluar (OUT)</h3></div><button type="button" onclick="closeModal('modalTxOut')" class="text-gray-500 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-            <form id="formTxOut" onsubmit="saveTransaction(event, 'OUT')" class="space-y-4">
+    <div id="modalTxOut" class="fixed inset-0 bg-inverse-surface/60 z-[70] flex justify-center items-center hide backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-surface-container-lowest p-8 rounded-2xl w-full max-w-lg border-t-8 border-t-error shadow-2xl my-8">
+            <div class="flex items-center justify-between mb-6"><div class="flex items-center text-on-surface"><span class="material-symbols-outlined mr-2 text-error text-3xl">call_made</span><h3 class="text-xl font-extrabold">Form Keluar (OUT)</h3></div><button type="button" onclick="closeModal('modalTxOut')" class="text-on-surface-variant hover:text-error bg-surface-container-low p-2 rounded-full"><span class="material-symbols-outlined">close</span></button></div>
+            <form id="formTxOut" onsubmit="saveTransaction(event, 'OUT')" class="space-y-5">
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs text-gray-400 mb-1">Jenis Transaksi</label><select id="txOutJenis" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"><option value="Normal">Pengeluaran Normal</option><option value="Retur">Retur Keluar (Cacat/Tukar)</option><option value="Service">Kirim Service Luar</option></select></div>
-                    <div><label class="block text-xs text-gray-400 mb-1">Tanggal</label><input type="date" id="txOutDate" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Jenis Transaksi</label><select id="txOutJenis" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-error"><option value="Normal">Pengeluaran Normal</option><option value="Retur">Retur Keluar (Cacat/Tukar)</option><option value="Service">Kirim Service Luar</option></select></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Tanggal</label><input type="date" id="txOutDate" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-error"></div>
                 </div>
-                <div><label class="block text-xs text-brand-yellow mb-1 font-bold">Cari Item Master</label><select id="txOutPart" required placeholder="Ketik nama / part..."></select></div>
+                <div><label class="block text-xs font-bold text-on-tertiary-container mb-1.5 uppercase tracking-wider">Cari Item Master</label><select id="txOutPart" required placeholder="Ketik nama / part..."></select></div>
                 <div class="grid grid-cols-3 gap-4">
-                    <div class="col-span-1"><label class="block text-xs text-brand-red mb-1 font-bold">Qty Keluar</label><input type="number" id="txOutQty" min="1" required class="w-full bg-dark-900 border border-brand-red/50 rounded p-2 text-white text-sm font-bold"></div>
-                    <div class="col-span-2"><label class="block text-xs text-gray-400 mb-1">No. Work Order (WO)</label><input type="text" id="txOutWO" class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm" required placeholder="Wajib diisi..."></div>
+                    <div class="col-span-1"><label class="block text-xs font-bold text-error mb-1.5 uppercase tracking-wider">Qty Keluar</label><input type="number" id="txOutQty" min="1" required class="w-full bg-error-container/30 border border-error/50 rounded-xl p-3 text-error text-xl font-extrabold focus:ring-2 focus:ring-error focus:border-none"></div>
+                    <div class="col-span-2"><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. Work Order (WO)</label><input type="text" id="txOutWO" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-error" required placeholder="Wajib diisi..."></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs text-gray-400 mb-1">Departemen Alokasi</label><select id="txOutDept" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"></select></div>
-                    <div><label class="block text-xs text-gray-400 mb-1">Unit Tujuan</label><select id="txOutUnit" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"></select></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Departemen Alokasi</label><select id="txOutDept" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-error"></select></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Unit Tujuan</label><select id="txOutUnit" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-error"></select></div>
                 </div>
-                <div class="flex justify-end pt-4 mt-6 border-t border-dark-700"><button type="submit" id="btnSubmitOut" class="px-6 py-2 bg-brand-blue hover:bg-blue-600 rounded-lg text-white font-medium transition w-full shadow-lg">Eksekusi Data Keluar</button></div>
+                <div class="flex justify-end pt-4 mt-2"><button type="submit" id="btnSubmitOut" class="px-8 py-3 bg-error hover:bg-on-error-container rounded-xl text-on-error font-bold transition w-full shadow-md text-base">Eksekusi Data Keluar</button></div>
             </form>
         </div>
     </div>
 
     <!-- Modal Master Stock -->
-    <div id="modalStock" class="fixed inset-0 bg-dark-900/90 z-[80] flex justify-center items-center hide backdrop-blur-sm p-4 overflow-y-auto">
-        <div class="glass-panel p-6 rounded-xl w-full max-w-2xl my-8 border border-dark-700">
-            <div class="flex items-center justify-between mb-4 border-b border-dark-700 pb-3"><h3 class="text-lg font-bold text-white flex items-center"><i data-lucide="package-plus" class="w-5 h-5 mr-2 text-brand-cyan"></i> Form Master Item</h3><button type="button" onclick="closeModal('modalStock')" class="text-gray-500 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-            <form id="formStock" onsubmit="saveStock(event)" class="space-y-4">
+    <div id="modalStock" class="fixed inset-0 bg-inverse-surface/60 z-[80] flex justify-center items-center hide backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-surface-container-lowest p-8 rounded-2xl w-full max-w-2xl border-t-8 border-t-primary shadow-2xl my-8">
+            <div class="flex items-center justify-between mb-6 border-b border-outline-variant/20 pb-4"><h3 class="text-xl font-extrabold text-on-surface flex items-center"><span class="material-symbols-outlined mr-2 text-primary text-3xl">library_add</span> Form Master Item</h3><button type="button" onclick="closeModal('modalStock')" class="text-on-surface-variant hover:text-error bg-surface-container-low p-2 rounded-full"><span class="material-symbols-outlined">close</span></button></div>
+            <form id="formStock" onsubmit="saveStock(event)" class="space-y-5">
                 <input type="hidden" id="stkMode" value="NEW"><input type="hidden" id="stkCreatedAt" value="">
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div><label class="block text-xs text-brand-yellow font-bold mb-1">ID Sistem (Unik)</label><input type="text" id="stkId" required class="w-full bg-dark-900 border border-brand-yellow/50 rounded p-2 text-white text-sm font-bold uppercase" placeholder="Contoh: PRT-001"></div>
-                    <div><label class="block text-xs text-gray-400 mb-1">Part Number</label><input type="text" id="stkPartNo" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"></div>
-                    <div><label class="block text-xs text-gray-400 mb-1">Kode Accurate</label><input type="text" id="stkAccurate" class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm" placeholder="Opsional"></div>
+                    <div><label class="block text-xs font-bold text-on-tertiary-container mb-1.5 uppercase tracking-wider">ID Sistem (Unik)</label><input type="text" id="stkId" required class="w-full bg-tertiary-fixed border border-tertiary/20 rounded-xl p-3 text-tertiary text-sm font-bold uppercase focus:ring-2 focus:ring-tertiary" placeholder="Contoh: PRT-001"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Part Number</label><input type="text" id="stkPartNo" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Kode Accurate</label><input type="text" id="stkAccurate" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary" placeholder="Opsional"></div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="block text-xs text-gray-400 mb-1">Nama / Deskripsi Item</label><input type="text" id="stkName" required class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"></div>
-                    <div><label class="block text-xs text-gray-400 mb-1">Brand / Merk</label><input type="text" id="stkBrand" class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Nama / Deskripsi Item</label><input type="text" id="stkName" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Brand / Merk</label><input type="text" id="stkBrand" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary"></div>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-dark-800 p-3 rounded-lg border border-dark-700">
-                    <div><label class="block text-[10px] text-gray-400 mb-1 uppercase tracking-wider">Tipe Unit</label><select id="stkUnitType" required class="w-full bg-dark-900 border border-dark-700 rounded p-1.5 text-white text-xs"><option value="ALL">ALL / Umum</option><option value="KOMATSU">Komatsu</option><option value="CATERPILLAR">Caterpillar</option><option value="HITACHI">Hitachi</option><option value="HINO">Hino</option><option value="MAN">MAN</option><option value="SCANIA">Scania</option><option value="VOLVO">Volvo</option></select></div>
-                    <div><label class="block text-[10px] text-gray-400 mb-1 uppercase tracking-wider">Kategori</label><select id="stkType" required class="w-full bg-dark-900 border border-dark-700 rounded p-1.5 text-white text-xs"><option value="SPAREPART">Sparepart</option><option value="FILTER">Filter</option><option value="GET">GET</option><option value="LUBRICATE">Lubricate / Oli</option><option value="CONSUMABLE">Consumable</option><option value="TYRE">Tyre / Ban</option></select></div>
-                    <div><label class="block text-[10px] text-gray-400 mb-1 uppercase tracking-wider">Pergerakan</label><select id="stkMove" required class="w-full bg-dark-900 border border-dark-700 rounded p-1.5 text-white text-xs"><option value="FAST">Fast Moving</option><option value="SLOW">Slow Moving</option><option value="DEAD">Dead Stock</option></select></div>
-                    <div><label class="block text-[10px] text-gray-400 mb-1 uppercase tracking-wider">Satuan</label><select id="stkUnit" required class="w-full bg-dark-900 border border-dark-700 rounded p-1.5 text-white text-xs"><option value="pcs">Pcs</option><option value="set">Set</option><option value="drum">Drum</option><option value="pail">Pail</option><option value="botol">Botol</option><option value="kotak">Kotak</option><option value="pack">Pack</option><option value="meter">Meter</option><option value="liter">Liter</option><option value="roll">Roll</option></select></div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-surface-container rounded-2xl p-4 border border-outline-variant/30">
+                    <div><label class="block text-[10px] font-extrabold text-on-surface-variant mb-1.5 uppercase tracking-widest">Tipe Unit</label><select id="stkUnitType" required class="w-full bg-surface-container-lowest border-none rounded-lg p-2 text-on-surface text-xs font-medium focus:ring-2 focus:ring-primary"><option value="ALL">ALL / Umum</option><option value="KOMATSU">Komatsu</option><option value="CATERPILLAR">Caterpillar</option><option value="HITACHI">Hitachi</option><option value="HINO">Hino</option><option value="MAN">MAN</option><option value="SCANIA">Scania</option><option value="VOLVO">Volvo</option></select></div>
+                    <div><label class="block text-[10px] font-extrabold text-on-surface-variant mb-1.5 uppercase tracking-widest">Kategori</label><select id="stkType" required class="w-full bg-surface-container-lowest border-none rounded-lg p-2 text-on-surface text-xs font-medium focus:ring-2 focus:ring-primary"><option value="SPAREPART">Sparepart</option><option value="FILTER">Filter</option><option value="GET">GET</option><option value="LUBRICATE">Lubricate / Oli</option><option value="CONSUMABLE">Consumable</option><option value="TYRE">Tyre / Ban</option></select></div>
+                    <div><label class="block text-[10px] font-extrabold text-on-surface-variant mb-1.5 uppercase tracking-widest">Pergerakan</label><select id="stkMove" required class="w-full bg-surface-container-lowest border-none rounded-lg p-2 text-on-surface text-xs font-medium focus:ring-2 focus:ring-primary"><option value="FAST">Fast Moving</option><option value="SLOW">Slow Moving</option><option value="DEAD">Dead Stock</option></select></div>
+                    <div><label class="block text-[10px] font-extrabold text-on-surface-variant mb-1.5 uppercase tracking-widest">Satuan</label><select id="stkUnit" required class="w-full bg-surface-container-lowest border-none rounded-lg p-2 text-on-surface text-xs font-medium focus:ring-2 focus:ring-primary"><option value="pcs">Pcs</option><option value="set">Set</option><option value="drum">Drum</option><option value="pail">Pail</option><option value="botol">Botol</option><option value="kotak">Kotak</option><option value="pack">Pack</option><option value="meter">Liter</option><option value="roll">Roll</option></select></div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-4">
-                    <div><label class="block text-xs text-gray-400 mb-1">Lokasi Rak/Gudang</label><input type="text" id="stkLocation" class="w-full bg-dark-900 border border-dark-700 rounded p-2 text-white text-sm"></div>
-                    <div><label class="block text-xs text-brand-green mb-1 font-bold">Stok Awal/Fisik</label><input type="number" id="stkCurrent" required class="w-full bg-dark-900 border border-brand-green/50 rounded p-2 text-white text-sm font-bold"></div>
-                    <div><label class="block text-xs text-brand-red mb-1 font-bold">Batas Minimum</label><input type="number" id="stkMin" required class="w-full bg-dark-900 border border-brand-red/50 rounded p-2 text-white text-sm font-bold"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Lokasi Rak/Gudang</label><input type="text" id="stkLocation" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary"></div>
+                    <div><label class="block text-xs font-bold text-secondary mb-1.5 uppercase tracking-wider">Stok Awal/Fisik</label><input type="number" id="stkCurrent" required class="w-full bg-secondary-container/30 border border-secondary/30 rounded-xl p-3 text-secondary font-extrabold text-lg focus:ring-2 focus:ring-secondary focus:border-transparent"></div>
+                    <div><label class="block text-xs font-bold text-error mb-1.5 uppercase tracking-wider">Batas Minimum</label><input type="number" id="stkMin" required class="w-full bg-error-container/30 border border-error/30 rounded-xl p-3 text-error font-extrabold text-lg focus:ring-2 focus:ring-error focus:border-transparent"></div>
                 </div>
 
-                <div class="flex justify-end pt-4 border-t border-dark-700 mt-2"><button type="submit" id="btnSubmitStock" class="px-6 py-2.5 bg-brand-cyan hover:bg-cyan-600 rounded-lg text-white font-medium transition shadow-[0_0_15px_rgba(6,182,212,0.3)]">Simpan Master Data</button></div>
+                <div class="flex justify-end pt-4 mt-2"><button type="submit" id="btnSubmitStock" class="px-8 py-3 bg-primary hover:bg-primary-fixed-variant rounded-xl text-on-primary font-bold transition shadow-md text-base">Simpan Master Data</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Form User (NEW FEATURE) -->
+    <div id="modalUser" class="fixed inset-0 bg-inverse-surface/60 z-[80] flex justify-center items-center hide backdrop-blur-sm p-4 overflow-y-auto">
+        <div class="bg-surface-container-lowest p-8 rounded-2xl w-full max-w-md border-t-8 border-t-primary-fixed shadow-2xl my-8">
+            <div class="flex items-center justify-between mb-6"><div class="flex items-center text-on-surface"><span class="material-symbols-outlined mr-2 text-primary-fixed-variant text-3xl">manage_accounts</span><h3 class="text-xl font-extrabold">Form User</h3></div><button type="button" onclick="closeModal('modalUser')" class="text-on-surface-variant hover:text-error bg-surface-container-low p-2 rounded-full"><span class="material-symbols-outlined">close</span></button></div>
+            <form id="formUser" onsubmit="saveUser(event)" class="space-y-5">
+                <input type="hidden" id="userMode" value="NEW">
+                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Username</label><input type="text" id="usrUsername" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary" placeholder="Tanpa spasi"></div>
+                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Password</label><input type="text" id="usrPassword" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary" placeholder="Minimal 6 karakter"></div>
+                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Nama Lengkap</label><input type="text" id="usrName" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary"></div>
+                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Hak Akses (Role)</label><select id="usrRole" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary"><option value="Staff">Warehouse Staff (Viewer/Inputter)</option><option value="Admin">Administrator (Master Data)</option><option value="SuperAdmin">Super Admin (All Access & System)</option></select></div>
+                <div class="flex justify-end pt-4 mt-2"><button type="submit" id="btnSubmitUser" class="px-8 py-3 bg-primary hover:bg-primary-fixed-variant rounded-xl text-on-primary font-bold transition w-full shadow-md text-base">Simpan User</button></div>
             </form>
         </div>
     </div>
 
     <!-- Modal Login -->
-    <div id="modalLogin" class="fixed inset-0 bg-dark-900/95 z-[100] flex justify-center items-center hide backdrop-blur-sm px-4">
-        <div class="glass-panel p-8 rounded-2xl w-full max-w-md border border-dark-700 shadow-2xl">
-            <div class="text-center mb-6"><i data-lucide="fingerprint" class="w-12 h-12 text-brand-cyan mx-auto mb-3"></i><h2 class="text-xl font-bold text-white tracking-widest">SECURE LOGIN</h2></div>
+    <div id="modalLogin" class="fixed inset-0 bg-inverse-surface/80 z-[100] flex justify-center items-center hide backdrop-blur-md px-4">
+        <div class="bg-surface-container-lowest p-10 rounded-[2rem] w-full max-w-md shadow-2xl">
+            <div class="text-center mb-8"><span class="material-symbols-outlined text-5xl text-primary mx-auto mb-4 p-4 bg-primary-fixed rounded-full inline-block">fingerprint</span><h2 class="text-2xl font-extrabold text-on-surface tracking-wide">SECURE LOGIN</h2><p class="text-sm text-on-surface-variant mt-2">Enterprise Logistics Administrator</p></div>
             <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
-                <div><label class="block text-xs font-medium text-gray-400 mb-1">USERNAME</label><input type="text" id="logUser" required class="w-full bg-dark-900 border border-dark-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand-cyan"></div>
-                <div><label class="block text-xs font-medium text-gray-400 mb-1">PASSWORD</label><input type="password" id="logPass" required class="w-full bg-dark-900 border border-dark-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand-cyan"></div>
-                <button type="submit" id="btnSubmitLogin" class="w-full bg-brand-cyan hover:bg-cyan-600 text-white font-medium py-2.5 rounded-lg transition mt-4 shadow-lg">Akses Sistem</button>
-                <div class="pt-4 border-t border-dark-700 mt-4"><p class="text-[10px] text-gray-500 text-center mb-2 uppercase tracking-widest">Sistem Baru? Inisialisasi Database</p><button type="button" onclick="emergencyInitFirebase()" class="w-full bg-dark-700 hover:bg-dark-600 border border-brand-purple/30 text-brand-purple hover:text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center"><i data-lucide="database" class="w-3 h-3 mr-2"></i> SETUP AKUN ADMIN (FIRST RUN)</button></div>
+                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-widest">Username</label><input type="text" id="logUser" required class="w-full bg-surface-container-low border border-outline-variant/50 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"></div>
+                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-widest">Password</label><input type="password" id="logPass" required class="w-full bg-surface-container-low border border-outline-variant/50 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"></div>
+                <button type="submit" id="btnSubmitLogin" class="w-full bg-primary hover:bg-primary-fixed-variant text-on-primary font-bold py-3.5 rounded-xl transition mt-4 shadow-lg text-base">Akses Sistem</button>
+                <div class="pt-6 border-t border-outline-variant/20 mt-6"><button type="button" onclick="emergencyInitFirebase()" class="w-full bg-surface-container hover:bg-surface-dim text-on-surface-variant text-xs font-extrabold py-3 rounded-xl transition flex items-center justify-center uppercase tracking-widest"><span class="material-symbols-outlined text-sm mr-2">database</span> SETUP AKUN ADMIN AWAL</button></div>
             </form>
         </div>
     </div>
 
-    <!-- FOOTER WATERMARK -->
-    <div style="text-align:center; font-size:10px; margin:20px 0; padding-bottom: 80px; color:#4B5563;" class="md:pb-4 md:ml-64">
-        develop by : dermawan.prb@gmail.com | <a href="https://www.linkedin.com/in/dermawan-purba-5b69241a9" target="_blank" style="color:#6B7280; text-decoration:none; border-bottom: 1px dotted #6B7280;">LinkedIn</a>
-    </div>
-
     <script>
-        lucide.createIcons();
-
         // --- 1. CONFIGURATION & STATE ---
         const firebaseConfig = {
             apiKey: "AIzaSyAyfvwSnamOx06PI9CehFjifKg00uBEKoE",
@@ -422,7 +608,7 @@
         
         let currentUser = null;
         let isFirebaseListening = false;
-        let appData = { parts: [], txs: [], depts: [], units: [], users: [] };
+        let appData = { parts: [], txs: [], depts: [], units: [], users: [], logs: [], settings: {} };
         let charts = {};
         let selectSearchIn, selectSearchOut;
 
@@ -431,6 +617,7 @@
         let txCurrentPage = 1, txSearchQuery = "", txActiveTab = "Normal";
         let stkCurrentPage = 1, stkSearchQuery = "";
         let dashCurrentPage = 1, dashAnalysisData = []; 
+        let logCurrentPage = 1;
 
         // --- 2. CORE UTILITIES ---
         function showLoading(show, text="Memproses...") {
@@ -439,7 +626,12 @@
             show ? overlay.classList.remove('hide') : overlay.classList.add('hide');
         }
 
-        function notif(icon, title, text="") { Swal.fire({ icon: icon, title: title, text: text, background: '#1F2937', color: '#fff', confirmButtonColor: '#06b6d4' }); }
+        function notif(icon, title, text="") { 
+            Swal.fire({ 
+                icon: icon, title: title, text: text, background: '#fbf9f8', color: '#1b1c1c', confirmButtonColor: '#001b44',
+                customClass: { popup: 'rounded-2xl', confirmButton: 'rounded-xl font-bold px-6 py-2' }
+            }); 
+        }
 
         function debounce(func, wait) {
             let timeout; return function(...args) { const later = () => { clearTimeout(timeout); func(...args); }; clearTimeout(timeout); timeout = setTimeout(later, wait); };
@@ -457,46 +649,56 @@
                 const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: action, data: payload }), signal: controller.signal });
                 clearTimeout(timeoutId); return await response.json();
             } catch (error) {
-                console.error("Fetch Error:", error); return { success: false, message: "Koneksi ke server (Sheets) terputus/Timeout." };
+                console.error("Fetch Error:", error); return { success: false, message: "Koneksi ke server terputus/Timeout." };
             }
+        }
+
+        // NEW: Core Logging Function
+        async function logAction(actionName, details) {
+            if(!currentUser) return;
+            const logId = 'LOG_' + Date.now();
+            const logData = {
+                id: logId, timestamp: new Date().toISOString(), user: currentUser.username, 
+                nama: currentUser.nama, action: actionName, details: details
+            };
+            try { await fbRoot.child('logs').child(logId).set(logData); } catch(e) { console.error("Log error", e); }
         }
 
         // --- 3. INIT & AUTH ---
         window.onload = () => {
             const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-            document.getElementById('dashStartDate').valueAsDate = firstDay;
+            document.getElementById('dashStartDate').valueAsDate = new Date(today.getFullYear(), today.getMonth(), 1);
             document.getElementById('dashEndDate').valueAsDate = today;
             document.getElementById('txInDate').valueAsDate = today;
             document.getElementById('txOutDate').valueAsDate = today;
             
             checkSession();
-            // Inisialisasi MURNI dari Firebase (Langsung Cloud)
             initFirebaseListeners();
         };
 
         function checkSession() {
             const saved = localStorage.getItem('erp_session');
             if (saved) { currentUser = JSON.parse(saved); applyRoleAccess(); renderAuthBtn(true); } 
-            else { renderAuthBtn(false); applyRoleAccess(); router('dashboard'); } // router dashboard called early to ensure UI draws
+            else { renderAuthBtn(false); applyRoleAccess(); router('dashboard'); }
         }
 
         function renderAuthBtn(isLoggedIn) {
             const dAuth = document.getElementById('desktopAuthBtn'); const dUser = document.getElementById('desktopUserInfo'); const mMenu = document.getElementById('mobileMenuContent');
             if (isLoggedIn) {
-                const roleColor = currentUser.role === 'SuperAdmin' ? 'text-brand-red' : 'text-brand-cyan';
-                dUser.innerHTML = `<div class="bg-dark-800 p-2 rounded-full"><i data-lucide="user" class="w-5 h-5 ${roleColor}"></i></div><div class="overflow-hidden"><p class="text-white text-xs font-bold truncate">${currentUser.nama}</p><p class="text-[10px] ${roleColor} truncate">${currentUser.role}</p></div>`;
+                const roleColor = currentUser.role === 'SuperAdmin' ? 'text-error' : 'text-primary';
+                const roleBg = currentUser.role === 'SuperAdmin' ? 'bg-error-container' : 'bg-primary-fixed';
+                
+                dUser.innerHTML = `<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined text-on-surface-variant">person</span></div><div class="hidden lg:block"><p class="text-sm font-bold text-on-surface">${currentUser.nama}</p><p class="text-[10px] ${roleColor} uppercase tracking-widest font-bold">${currentUser.role}</p></div>`;
                 dUser.classList.remove('hide');
-                dAuth.innerHTML = `<button onclick="logout()" class="w-full flex items-center justify-center px-4 py-2 bg-dark-800 hover:bg-dark-700 rounded-lg text-gray-400 hover:text-white transition text-sm"><i data-lucide="log-out" class="w-4 h-4 mr-2"></i> Keluar Sistem</button>`;
+                dAuth.innerHTML = `<button onclick="logout()" class="w-full flex items-center justify-center px-4 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-on-primary-container transition text-sm font-bold"><span class="material-symbols-outlined mr-2">logout</span> Keluar Sistem</button>`;
                 dAuth.classList.remove('hide');
-                mMenu.innerHTML = `<div class="bg-dark-800 p-4 rounded-xl mb-4 text-center"><i data-lucide="shield-check" class="w-10 h-10 mx-auto ${roleColor} mb-2"></i><p class="text-white font-bold">${currentUser.nama}</p><p class="text-xs ${roleColor}">${currentUser.role}</p></div><button onclick="logout()" class="w-full flex items-center justify-center px-4 py-2 bg-dark-800 hover:bg-dark-700 rounded-lg text-gray-400 hover:text-white transition text-sm"><i data-lucide="log-out" class="w-4 h-4 mr-2"></i> Keluar Sistem</button>`;
+                mMenu.innerHTML = `<div class="bg-surface-container-lowest p-6 rounded-2xl mb-4 text-center border border-outline-variant/20 shadow-sm"><span class="material-symbols-outlined text-4xl ${roleColor} mb-2 p-3 ${roleBg} rounded-full inline-block">shield_person</span><p class="text-on-surface font-extrabold text-lg mt-2">${currentUser.nama}</p><p class="text-xs ${roleColor} font-bold uppercase tracking-widest mt-1">${currentUser.role}</p></div><button onclick="logout()" class="w-full flex items-center justify-center px-4 py-3 bg-surface-container hover:bg-surface-dim rounded-xl text-error font-bold transition text-sm"><span class="material-symbols-outlined mr-2">logout</span> Keluar Sistem</button>`;
             } else {
                 dUser.classList.add('hide');
-                dAuth.innerHTML = `<button onclick="openModal('modalLogin')" class="w-full flex items-center justify-center px-4 py-2 bg-brand-cyan hover:bg-cyan-600 rounded-lg text-white font-bold transition shadow-lg text-sm"><i data-lucide="lock" class="w-4 h-4 mr-2"></i> SECURE LOGIN</button>`;
+                dAuth.innerHTML = `<button onclick="openModal('modalLogin')" class="w-full flex items-center justify-center px-4 py-3 bg-secondary hover:bg-on-secondary-fixed-variant rounded-xl text-on-secondary font-bold transition shadow-lg text-sm"><span class="material-symbols-outlined mr-2">lock</span> SECURE LOGIN</button>`;
                 dAuth.classList.remove('hide');
-                mMenu.innerHTML = `<div class="text-center p-4"><p class="text-gray-400 text-xs mb-4">Anda belum login</p><button onclick="openModal('modalLogin')" class="w-full flex items-center justify-center px-4 py-2 bg-brand-cyan hover:bg-cyan-600 rounded-lg text-white font-bold transition shadow-lg text-sm"><i data-lucide="lock" class="w-4 h-4 mr-2"></i> SECURE LOGIN</button></div>`;
+                mMenu.innerHTML = `<div class="bg-surface-container-lowest p-6 rounded-2xl mb-4 text-center border border-outline-variant/20"><span class="material-symbols-outlined text-4xl text-on-surface-variant mb-2">lock_person</span><p class="text-on-surface-variant text-sm mt-2 font-medium">Anda belum login</p></div><button onclick="openModal('modalLogin')" class="w-full flex items-center justify-center px-4 py-3 bg-primary hover:bg-primary-fixed-variant rounded-xl text-on-primary font-bold transition shadow-md text-sm"><span class="material-symbols-outlined mr-2">lock</span> LOGIN SEKARANG</button>`;
             }
-            lucide.createIcons();
         }
 
         function applyRoleAccess() {
@@ -507,8 +709,7 @@
 
         async function handleLogin(e) {
             e.preventDefault(); 
-            const btnId = 'btnSubmitLogin'; toggleBtnState(btnId, true); showLoading(true, "Verifikasi Cloud Kredensial...");
-            
+            const btnId = 'btnSubmitLogin'; toggleBtnState(btnId, true); showLoading(true, "Verifikasi Kredensial...");
             const userInp = document.getElementById('logUser').value.trim(); const passInp = document.getElementById('logPass').value.trim();
 
             try {
@@ -526,6 +727,7 @@
                     currentUser = foundUser; localStorage.setItem('erp_session', JSON.stringify(currentUser));
                     closeModal('modalLogin'); applyRoleAccess(); document.getElementById('loginForm').reset();
                     renderAuthBtn(true);
+                    logAction('LOGIN', 'User logged into system'); // LOGGING
                     notif('success', 'Akses Diberikan', `Selamat datang kembali, ${foundUser.nama}`);
                     renderStockTable(); renderTrackingTable();
                 } else { notif('error', 'Akses Ditolak', 'Username atau Password tidak valid.'); }
@@ -533,10 +735,13 @@
             finally { toggleBtnState(btnId, false); showLoading(false); }
         }
 
-        function logout() { localStorage.removeItem('erp_session'); currentUser = null; applyRoleAccess(); renderAuthBtn(false); closeModal('modalMobileMenu'); router('dashboard'); notif('info', 'Sesi Berakhir', 'Anda telah keluar dari sistem.'); }
+        function logout() { 
+            if(currentUser) logAction('LOGOUT', 'User logged out of system'); // LOGGING
+            localStorage.removeItem('erp_session'); currentUser = null; applyRoleAccess(); renderAuthBtn(false); closeModal('modalMobileMenu'); router('dashboard'); notif('info', 'Sesi Berakhir', 'Anda telah keluar dari sistem.'); 
+        }
 
         async function emergencyInitFirebase() {
-            const result = await Swal.fire({ title: 'Inisialisasi Master Akun?', text: "Membuat akun 'admin' & 'superadmin' untuk akses perdana.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#a855f7', confirmButtonText: 'Eksekusi Setup', background: '#1F2937', color: '#fff' });
+            const result = await Swal.fire({ title: 'Inisialisasi Master Akun?', text: "Membuat akun 'admin' & 'superadmin' untuk akses perdana.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#001b44', confirmButtonText: 'Eksekusi Setup', background: '#fbf9f8', color: '#1b1c1c' });
             if (!result.isConfirmed) return;
             showLoading(true, "Membangun Skema Awal...");
             try {
@@ -544,12 +749,14 @@
                 updates['users/admin'] = { id: 'U01', username: 'admin', password: 'warehouse123', nama: 'Administrator', role: 'Admin', created_at: new Date().toISOString() };
                 updates['users/superadmin'] = { id: 'U00', username: 'superadmin', password: 'super123', nama: 'Super Admin', role: 'SuperAdmin', created_at: new Date().toISOString() };
                 await fbRoot.update(updates);
-                fetchAPI('setup', {}); // Opsional pastikan Sheet punya header
-                await Swal.fire({ icon: 'success', title: 'Setup Selesai!', html: 'Silakan login:<br><br>User: <b>admin</b> | Pass: <b>warehouse123</b>', background: '#1F2937', color: '#fff' });
+                fetchAPI('setup', {});
+                await Swal.fire({ icon: 'success', title: 'Setup Selesai!', html: 'Silakan login:<br><br>User: <b>admin</b> | Pass: <b>warehouse123</b>', background: '#fbf9f8', color: '#1b1c1c' });
             } catch (error) { notif('error', 'Gagal Setup', error.message); } finally { showLoading(false); }
         }
 
-        // --- 4. NAVIGATION ---
+        // --- 4. NAVIGATION & VIEWS ---
+        const viewTitles = { 'dashboard': 'Dashboard Analitik', 'tracking': 'Logistik Tracking', 'stock': 'Master Inventory', 'master': 'System Administration' };
+
         function router(viewId) {
             ['view-dashboard', 'view-tracking', 'view-stock', 'view-master'].forEach(id => {
                 document.getElementById(id).style.display = 'none'; document.getElementById(id).classList.add('hide');
@@ -559,35 +766,73 @@
             document.getElementById('view-' + viewId).style.display = 'block'; document.getElementById('view-' + viewId).classList.remove('hide');
             const aNavD = document.getElementById('navD-' + viewId); const aNavM = document.getElementById('navM-' + viewId);
             if(aNavD) aNavD.classList.add('nav-desktop-active'); if(aNavM) aNavM.classList.add('nav-mobile-active');
+            
+            const headerTitle = document.getElementById('topNavTitle');
+            if(headerTitle) headerTitle.innerText = viewTitles[viewId];
+
+            if(viewId === 'master') switchAdminTab('DataMaster'); // Default Admin Tab
             closeModal('modalMobileMenu'); if (viewId === 'dashboard') renderDashboard();
         }
 
         function switchTrackingTab(tabName) {
             txActiveTab = tabName;
-            ['Normal', 'Service', 'Retur'].forEach(t => { document.getElementById('tabTx-' + t).classList.remove('tab-active', 'text-brand-cyan'); document.getElementById('tabTx-' + t).classList.add('text-gray-400'); });
-            document.getElementById('tabTx-' + tabName).classList.add('tab-active'); document.getElementById('tabTx-' + tabName).classList.remove('text-gray-400');
+            ['Normal', 'Service', 'Retur'].forEach(t => { 
+                const el = document.getElementById('tabTx-' + t);
+                el.classList.remove('tab-active', 'text-primary'); el.classList.add('text-on-surface-variant'); 
+            });
+            const activeEl = document.getElementById('tabTx-' + tabName);
+            activeEl.classList.add('tab-active', 'text-primary'); activeEl.classList.remove('text-on-surface-variant');
             txCurrentPage = 1; renderTrackingTable();
         }
 
-        // --- 5. FIREBASE REAL-TIME LISTENERS (OPERASIONAL MURNI) ---
+        function switchAdminTab(tabName) {
+            ['DataMaster', 'UserMgmt', 'AppConfig', 'SysLogs'].forEach(t => {
+                const btn = document.getElementById('tabAdm-' + t); const view = document.getElementById('admView-' + t);
+                if(btn) { btn.classList.remove('tab-active', 'text-primary', 'font-bold'); btn.classList.add('text-on-surface-variant'); }
+                if(view) { view.style.display = 'none'; view.classList.add('hide'); }
+            });
+            const aBtn = document.getElementById('tabAdm-' + tabName); const aView = document.getElementById('admView-' + tabName);
+            if(aBtn) { aBtn.classList.add('tab-active', 'text-primary', 'font-bold'); aBtn.classList.remove('text-on-surface-variant'); }
+            if(aView) { aView.style.display = 'block'; aView.classList.remove('hide'); }
+            
+            if(tabName === 'UserMgmt') renderUserTable();
+            if(tabName === 'SysLogs') renderLogsTable();
+        }
+
+        // --- 5. FIREBASE REAL-TIME LISTENERS ---
         function initFirebaseListeners() {
             if (isFirebaseListening) return;
             isFirebaseListening = true;
             
             showLoading(true, "Mengambil Data Engine dari Cloud...");
 
-            // Listener Master Parts
+            // Core App Config / Settings
+            fbRoot.child('settings').on('value', (snapshot) => {
+                if(snapshot.exists()) {
+                    appData.settings = snapshot.val();
+                    applySettings(appData.settings);
+                }
+            });
+
+            // Users & Logs
+            fbRoot.child('users').on('value', (snapshot) => { appData.users = snapshot.exists() ? Object.values(snapshot.val()) : []; if(!document.getElementById('admView-UserMgmt').classList.contains('hide')) renderUserTable(); });
+            fbRoot.child('logs').on('value', (snapshot) => { 
+                appData.logs = snapshot.exists() ? Object.values(snapshot.val()).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)) : []; 
+                if(!document.getElementById('admView-SysLogs').classList.contains('hide')) renderLogsTable(); 
+            });
+
+            // Master Parts
             fbRoot.child('parts').on('value', (snapshot) => {
                 appData.parts = snapshot.exists() ? Object.values(snapshot.val()) : [];
                 populateSelects(); renderStockTable(); renderDashboard();
-                showLoading(false); // Sembunyikan loading setelah parts dimuat pertama kali
+                showLoading(false); 
             });
 
-            // Listener Dept & Unit
+            // Dept & Unit
             fbRoot.child('depts').on('value', (snapshot) => { appData.depts = snapshot.exists() ? Object.values(snapshot.val()) : []; populateSelects(); });
             fbRoot.child('units').on('value', (snapshot) => { appData.units = snapshot.exists() ? Object.values(snapshot.val()) : []; populateSelects(); });
 
-            // Listener Transactions (Combined)
+            // Transactions
             const handleTxUpdate = () => {
                 fbRoot.once('value', (snap) => {
                     const data = snap.val() || {};
@@ -603,60 +848,38 @@
 
         // --- 6. MIGRATION & BACKUP TOOLS ---
         async function triggerMigrateFromSheets() {
-            const confirm = await Swal.fire({ title: 'Tarik Data dari Sheets?', text: "Proses ini akan membaca data di Sheets dan mereplikasinya ke Firebase Cloud. ID yang bentrok akan ditimpa.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#f59e0b', confirmButtonText: 'Ya, Migrasikan!', background: '#1F2937', color: '#fff' });
+            const confirm = await Swal.fire({ title: 'Tarik Data dari Sheets?', text: "Proses ini akan mereplikasi data Sheets ke Firebase Cloud. ID yang bentrok akan ditimpa.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#fbbc00', confirmButtonText: 'Ya, Migrasikan!', background: '#fbf9f8', color: '#1b1c1c' });
             if(!confirm.isConfirmed) return;
-            
             showLoading(true, "Membaca Google Sheets...");
             const res = await fetchAPI('getAllData');
             if(!res.success) { showLoading(false); return notif('error', 'Gagal Baca Sheets', res.message); }
-            
             showLoading(true, "Memproses Data & Push ke Cloud...");
             try {
                 const updates = {};
-                
-                // Format Parts
-                (res.data.parts || []).forEach(p => {
-                    const cleanId = String(p.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `PRT_${Date.now()}`;
-                    if(cleanId) updates[`parts/${cleanId}`] = p;
-                });
-                
-                // Format TxsIn & TxsOut
-                (res.data.txsIn || []).forEach(t => {
-                    const cleanId = String(t.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `TIN_${Date.now()}`;
-                    if(cleanId) updates[`txsIn/${cleanId}`] = t;
-                });
-                (res.data.txsOut || []).forEach(t => {
-                    const cleanId = String(t.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `TOU_${Date.now()}`;
-                    if(cleanId) updates[`txsOut/${cleanId}`] = t;
-                });
-
-                // Format Dept & Units
+                (res.data.parts || []).forEach(p => { const cleanId = String(p.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `PRT_${Date.now()}`; if(cleanId) updates[`parts/${cleanId}`] = p; });
+                (res.data.txsIn || []).forEach(t => { const cleanId = String(t.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `TIN_${Date.now()}`; if(cleanId) updates[`txsIn/${cleanId}`] = t; });
+                (res.data.txsOut || []).forEach(t => { const cleanId = String(t.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `TOU_${Date.now()}`; if(cleanId) updates[`txsOut/${cleanId}`] = t; });
                 (res.data.depts || []).forEach(d => { if(d.id) updates[`depts/${String(d.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_")}`] = d; });
                 (res.data.units || []).forEach(u => { if(u.id) updates[`units/${String(u.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_")}`] = u; });
-
                 await fbRoot.update(updates);
-                showLoading(false);
-                notif('success', 'Migrasi Berhasil', 'Data Sheets telah diimpor utuh ke Firebase.');
-            } catch (err) {
-                showLoading(false); notif('error', 'Migrasi Cloud Gagal', err.message);
-            }
+                logAction('MIGRATE_PULL', 'User pulled data from Google Sheets'); // LOGGING
+                showLoading(false); notif('success', 'Migrasi Berhasil', 'Data Sheets telah diimpor.');
+            } catch (err) { showLoading(false); notif('error', 'Migrasi Cloud Gagal', err.message); }
         }
 
         async function triggerBackupToSheets() {
-            const confirm = await Swal.fire({ title: 'Backup ke Sheets?', text: "Proses ini akan mengirim seluruh database Cloud saat ini ke Google Sheets.", icon: 'info', showCancelButton: true, confirmButtonColor: '#06b6d4', confirmButtonText: 'Mulai Backup', background: '#1F2937', color: '#fff' });
+            const confirm = await Swal.fire({ title: 'Backup ke Sheets?', text: "Proses ini mengirim database Cloud saat ini ke Google Sheets.", icon: 'info', showCancelButton: true, confirmButtonColor: '#001b44', confirmButtonText: 'Mulai Backup', background: '#fbf9f8', color: '#1b1c1c' });
             if(!confirm.isConfirmed) return;
-            
             showLoading(true, "Menyiapkan Data Cloud...");
             try {
-                const snap = await fbRoot.once('value');
-                const firebaseData = snap.val() || {};
-                
+                const snap = await fbRoot.once('value'); const firebaseData = snap.val() || {};
                 showLoading(true, "Menulis Data ke Google Sheets (Bisa memakan waktu)...");
                 const res = await fetchAPI('runFullBackup', firebaseData);
-                
                 showLoading(false);
-                if(res.success) { notif('success', 'Backup Selesai', res.message); } 
-                else { notif('error', 'Gagal Backup', res.message); }
+                if(res.success) { 
+                    logAction('MIGRATE_PUSH', 'User pushed backup to Google Sheets'); // LOGGING
+                    notif('success', 'Backup Selesai', res.message); 
+                } else { notif('error', 'Gagal Backup', res.message); }
             } catch(err) { showLoading(false); notif('error', 'Sistem Error', err.message); }
         }
 
@@ -668,14 +891,94 @@
         }
 
         function createPaginationHtml(currentPage, totalPages, changeFuncStr) {
-            let btnHtml = `<button onclick="${changeFuncStr}(${currentPage - 1})" ${currentPage === 1 ? 'disabled class="px-2 py-1 bg-dark-800 text-dark-700 rounded cursor-not-allowed"' : 'class="px-2 py-1 bg-dark-700 hover:bg-dark-600 text-white rounded transition"'}>&laquo;</button>`;
+            let btnHtml = `<button onclick="${changeFuncStr}(${currentPage - 1})" ${currentPage === 1 ? 'disabled class="px-2 py-1 bg-surface-container text-outline rounded-lg cursor-not-allowed"' : 'class="px-2 py-1 bg-surface-container-high hover:bg-surface-dim text-on-surface rounded-lg transition"'}>&laquo;</button>`;
             let startPage = Math.max(1, currentPage - 2); let endPage = Math.min(totalPages, currentPage + 2);
             for(let i = startPage; i <= endPage; i++) {
-                if(i === currentPage) btnHtml += `<button class="px-3 py-1 bg-brand-cyan text-white rounded text-xs font-bold">${i}</button>`;
-                else btnHtml += `<button onclick="${changeFuncStr}(${i})" class="px-3 py-1 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded text-xs transition">${i}</button>`;
+                if(i === currentPage) btnHtml += `<button class="px-3 py-1 bg-primary text-on-primary rounded-lg text-xs font-bold">${i}</button>`;
+                else btnHtml += `<button onclick="${changeFuncStr}(${i})" class="px-3 py-1 bg-surface-container-high hover:bg-surface-dim text-on-surface-variant rounded-lg text-xs transition">${i}</button>`;
             }
-            btnHtml += `<button onclick="${changeFuncStr}(${currentPage + 1})" ${currentPage === totalPages || totalPages === 0 ? 'disabled class="px-2 py-1 bg-dark-800 text-dark-700 rounded cursor-not-allowed"' : 'class="px-2 py-1 bg-dark-700 hover:bg-dark-600 text-white rounded transition"'}>&raquo;</button>`;
+            btnHtml += `<button onclick="${changeFuncStr}(${currentPage + 1})" ${currentPage === totalPages || totalPages === 0 ? 'disabled class="px-2 py-1 bg-surface-container text-outline rounded-lg cursor-not-allowed"' : 'class="px-2 py-1 bg-surface-container-high hover:bg-surface-dim text-on-surface rounded-lg transition"'}>&raquo;</button>`;
             return btnHtml;
+        }
+
+        // SETTINGS & SYSTEM ADMIN RENDER
+        function applySettings(config) {
+            const defaultName = "ERP WAREHOUSE";
+            const appName = config.appName || defaultName;
+            document.getElementById('desktopAppName').innerText = appName;
+            document.getElementById('mobileAppName').innerText = appName;
+            document.getElementById('docTitle').innerText = appName + " - Cloud Edition";
+            
+            // Populating form values if open
+            if(document.getElementById('setAppName')) document.getElementById('setAppName').value = config.appName || '';
+            if(document.getElementById('setAppLogo')) document.getElementById('setAppLogo').value = config.logoUrl || '';
+
+            // Handle Logo Image
+            const dLogoCont = document.getElementById('desktopLogoContainer');
+            const dDefLogo = document.getElementById('defaultLogo');
+            const mDefLogo = document.getElementById('mobileDefaultLogo');
+            const mImgLogo = document.getElementById('mobileImgLogo');
+
+            if(config.logoUrl && config.logoUrl.trim() !== '') {
+                dDefLogo.classList.add('hide'); mDefLogo.classList.add('hide');
+                let imgD = dLogoCont.querySelector('img');
+                if(!imgD) {
+                    imgD = document.createElement('img'); imgD.className = 'w-full h-full object-cover';
+                    dLogoCont.appendChild(imgD);
+                }
+                imgD.src = config.logoUrl;
+                
+                mImgLogo.src = config.logoUrl; mImgLogo.classList.remove('hide');
+            } else {
+                dDefLogo.classList.remove('hide'); mDefLogo.classList.remove('hide');
+                let imgD = dLogoCont.querySelector('img'); if(imgD) imgD.remove();
+                mImgLogo.classList.add('hide');
+            }
+        }
+
+        async function saveSettings(e) {
+            e.preventDefault(); toggleBtnState('btnSaveSettings', true);
+            const data = { appName: document.getElementById('setAppName').value, logoUrl: document.getElementById('setAppLogo').value };
+            try {
+                await fbRoot.child('settings').set(data);
+                logAction('SETTINGS_UPDATE', `Updated app settings. Name: ${data.appName}`); // LOGGING
+                notif('success', 'Berhasil', 'Pengaturan aplikasi telah disimpan.');
+            } catch(err) { notif('error', 'Gagal', err.message); } finally { toggleBtnState('btnSaveSettings', false); }
+        }
+
+        function renderUserTable() {
+            document.getElementById('userTableBody').innerHTML = appData.users.map(u => {
+                let rClass = u.role === 'SuperAdmin' ? 'text-error font-extrabold' : (u.role === 'Admin' ? 'text-primary font-extrabold' : 'text-on-surface-variant font-bold');
+                return `<tr class="border-b border-outline-variant/10 hover:bg-primary-fixed/20 transition">
+                    <td class="px-6 py-4 font-mono text-sm text-on-surface">${u.username}</td>
+                    <td class="px-6 py-4 text-sm font-bold text-on-surface">${u.nama}</td>
+                    <td class="px-6 py-4 text-xs ${rClass} uppercase tracking-wider">${u.role}</td>
+                    <td class="px-6 py-4 text-right"><button onclick="editUser('${u.username}')" class="text-primary hover:text-primary-container p-2 bg-surface-container rounded-full hover:bg-surface-dim transition"><span class="material-symbols-outlined text-[16px]">edit</span></button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function changeLogPage(page) { logCurrentPage = page; renderLogsTable(); }
+        function renderLogsTable() {
+            const totalItems = appData.logs.length; const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+            if (logCurrentPage > totalPages) logCurrentPage = totalPages;
+            const start = (logCurrentPage - 1) * rowsPerPage; const paginated = appData.logs.slice(start, start + rowsPerPage);
+
+            document.getElementById('logsTableBody').innerHTML = paginated.map(l => {
+                const dt = new Date(l.timestamp);
+                const isLogin = l.action.includes('LOGIN');
+                const isError = l.action.includes('DELETE') || l.action.includes('OUT');
+                let actColor = isError ? 'text-error' : (isLogin ? 'text-secondary' : 'text-primary');
+                
+                return `<tr class="border-b border-outline-variant/10 hover:bg-primary-fixed/20 transition">
+                    <td class="px-6 py-4 text-[11px] font-mono text-on-surface-variant">${dt.toLocaleString('id-ID')}</td>
+                    <td class="px-6 py-4 text-xs font-bold text-on-surface">${l.nama || l.user} <span class="text-[10px] text-outline font-normal">(${l.user})</span></td>
+                    <td class="px-6 py-4 text-[10px] ${actColor} font-extrabold uppercase tracking-wider">${l.action}</td>
+                    <td class="px-6 py-4 text-xs text-on-surface-variant whitespace-normal min-w-[200px]">${l.details}</td>
+                </tr>`;
+            }).join('');
+            document.getElementById('logPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Log`;
+            document.getElementById('logPaginationButtons').innerHTML = createPaginationHtml(logCurrentPage, totalPages, 'changeLogPage');
         }
 
         // STOCK RENDER
@@ -694,18 +997,18 @@
             const start = (stkCurrentPage - 1) * rowsPerPage; const paginated = filtered.slice(start, start + rowsPerPage);
 
             document.getElementById('stockTableBody').innerHTML = paginated.map(p => {
-                const umur = calculateAge(p.created_at); const sClass = p.stock_current <= p.stock_min ? 'text-brand-red font-bold' : 'text-brand-green font-bold';
-                return `<tr class="hover:bg-dark-800 transition border-b border-dark-700">
-                    <td class="px-4 py-3"><div class="font-bold text-white tracking-wide">${p.part_number}</div><div class="text-[10px] text-gray-500 mt-0.5 truncate max-w-[200px]">${p.item_name}</div>${p.kode_accurate ? `<div class="text-[9px] text-brand-cyan mt-1 border border-brand-cyan/30 inline-block px-1 rounded bg-brand-cyan/10">ACC: ${p.kode_accurate}</div>` : ''}</td>
-                    <td class="px-4 py-3"><span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-dark-700 text-gray-300 block w-max mb-1">${p.brand_merk || '-'} | ${p.unit_type || 'ALL'}</span><span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-brand-purple/20 text-brand-purple block w-max">${p.kategori} | ${p.pergerakan}</span></td>
-                    <td class="px-4 py-3 text-xs text-gray-400">${p.lokasi_gudang || '-'}</td><td class="px-4 py-3 text-xs text-brand-yellow font-mono">${umur}</td>
-                    <td class="px-4 py-3 text-center"><div class="${sClass} text-lg">${p.stock_current} <span class="text-[10px] text-gray-500 font-normal uppercase">${p.satuan || '-'}</span></div><div class="text-[9px] text-gray-500">Min: ${p.stock_min}</div></td>
-                    <td class="px-4 py-3 text-right admin-only hide"><button onclick="editStock('${p.id}')" class="text-brand-cyan hover:text-cyan-300 mr-3 p-1"><i data-lucide="edit-3" class="w-4 h-4"></i></button></td>
+                const umur = calculateAge(p.created_at); const sClass = p.stock_current <= p.stock_min ? 'text-error font-extrabold' : 'text-status-in font-extrabold';
+                return `<tr class="hover:bg-primary-fixed/20 transition-colors border-b border-outline-variant/10">
+                    <td class="px-6 py-4"><div class="font-extrabold text-primary tracking-wide text-sm">${p.part_number}</div><div class="text-[11px] font-medium text-on-surface-variant mt-0.5 truncate max-w-[200px]">${p.item_name}</div>${p.kode_accurate ? `<div class="text-[10px] text-on-primary-container mt-1.5 border border-primary-fixed-dim inline-block px-1.5 py-0.5 rounded bg-primary-fixed font-bold">ACC: ${p.kode_accurate}</div>` : ''}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 rounded text-[10px] font-bold bg-surface-container-high text-on-surface-variant block w-max mb-1 border border-outline-variant/30">${p.brand_merk || '-'} | ${p.unit_type || 'ALL'}</span><span class="px-2 py-1 rounded text-[10px] font-bold bg-primary-fixed text-on-primary-fixed-variant block w-max">${p.kategori} | ${p.pergerakan}</span></td>
+                    <td class="px-6 py-4 text-sm font-medium text-on-surface">${p.lokasi_gudang || '-'}</td><td class="px-6 py-4 text-xs text-on-tertiary-container font-mono font-bold">${umur}</td>
+                    <td class="px-6 py-4 text-center"><div class="${sClass} text-xl">${p.stock_current} <span class="text-[10px] text-on-surface-variant font-medium uppercase">${p.satuan || '-'}</span></div><div class="text-[10px] text-on-surface-variant font-medium mt-0.5">Min: ${p.stock_min}</div></td>
+                    <td class="px-6 py-4 text-right admin-only hide"><button onclick="editStock('${p.id}')" class="text-primary hover:text-primary-container p-2 bg-surface-container rounded-full hover:bg-surface-dim transition"><span class="material-symbols-outlined text-[18px]">edit</span></button></td>
                 </tr>`;
             }).join('');
-            document.getElementById('stkPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} dari ${totalItems} Master Item`;
+            document.getElementById('stkPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Master Asset`;
             document.getElementById('stkPaginationButtons').innerHTML = createPaginationHtml(stkCurrentPage, totalPages, 'changeStkPage');
-            applyRoleAccess(); lucide.createIcons();
+            applyRoleAccess();
         }
 
         // TRACKING RENDER
@@ -720,20 +1023,20 @@
             const start = (txCurrentPage - 1) * rowsPerPage; const paginated = filtered.slice(start, start + rowsPerPage);
 
             document.getElementById('txTableBody').innerHTML = paginated.map(t => {
-                const isOut = t.tx_flow === 'OUT'; const colorC = isOut ? 'text-brand-red' : 'text-brand-green'; const sign = isOut ? '-' : '+';
-                let relasi = isOut ? `<span class="text-[10px] text-gray-400 block mb-0.5">Dept: <span class="text-white">${appData.depts.find(d=>d.id===t.dept_id)?.nama_dept||'-'}</span></span><span class="text-[10px] text-gray-400 block">Unit: <span class="text-brand-yellow">${appData.units.find(u=>u.id===t.unit_id)?.nama_unit||'-'}</span></span>` : `<span class="text-[10px] text-gray-400 block mb-0.5">Vend: <span class="text-white">${t.vendor||'-'}</span></span><span class="text-[10px] text-gray-400 block">PO: <span class="text-brand-cyan">${t.no_po||'-'}</span></span>`;
-                return `<tr class="hover:bg-dark-800 transition border-b border-dark-700">
-                    <td class="px-4 py-3 text-xs whitespace-nowrap"><div class="text-white">${new Date(t.date).toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'})}</div><div class="text-[9px] text-gray-500 mt-1 uppercase">Oleh: ${t.user_id||t.user||'?'}</div></td>
-                    <td class="px-4 py-3 text-center"><div class="px-2 py-1 rounded text-[10px] font-bold ${isOut?'bg-brand-red/20 text-brand-red':'bg-brand-green/20 text-brand-green'} inline-block">${t.tx_flow}</div></td>
-                    <td class="px-4 py-3"><div class="font-bold text-gray-200 text-xs">${t.part_number}</div><div class="text-[10px] text-gray-500 mt-0.5 truncate max-w-[200px]">${t.item_name}</div>${t.no_wo ? `<div class="mt-1 text-[9px] bg-dark-700 text-brand-yellow px-1 rounded inline-block border border-dark-600">WO: ${t.no_wo}</div>` : ''}</td>
-                    <td class="px-4 py-3 text-center"><div class="${colorC} font-bold text-lg">${sign}${t.qty}</div></td>
-                    <td class="px-4 py-3 w-1/4">${relasi}</td>
-                    <td class="px-4 py-3 text-right superadmin-only hide"><button onclick="deleteTx('${t.id}', '${t.tx_flow}', '${t.part_id}', ${t.qty})" class="text-brand-red hover:text-red-400 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                const isOut = t.tx_flow === 'OUT'; const colorC = isOut ? 'text-status-out' : 'text-status-in'; const sign = isOut ? '-' : '+';
+                let relasi = isOut ? `<span class="text-[11px] font-medium text-on-surface-variant block mb-0.5">Dept: <span class="text-on-surface font-bold">${appData.depts.find(d=>d.id===t.dept_id)?.nama_dept||'-'}</span></span><span class="text-[11px] font-medium text-on-surface-variant block">Unit: <span class="text-on-tertiary-container font-bold">${appData.units.find(u=>u.id===t.unit_id)?.nama_unit||'-'}</span></span>` : `<span class="text-[11px] font-medium text-on-surface-variant block mb-0.5">Vend: <span class="text-on-surface font-bold">${t.vendor||'-'}</span></span><span class="text-[11px] font-medium text-on-surface-variant block">PO: <span class="text-primary font-bold">${t.no_po||'-'}</span></span>`;
+                return `<tr class="hover:bg-primary-fixed/20 transition-colors border-b border-outline-variant/10">
+                    <td class="px-6 py-4 text-sm whitespace-nowrap"><div class="text-on-surface font-medium">${new Date(t.date).toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'})}</div><div class="text-[10px] font-bold text-outline mt-1 uppercase tracking-wider">Oleh: ${t.user_id||t.user||'?'}</div></td>
+                    <td class="px-6 py-4 text-center"><div class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${isOut?'bg-error-container text-on-error-container border border-error-container':'bg-secondary-container text-on-secondary-container border border-secondary-container'} inline-flex items-center gap-1">${isOut?'<span class="w-1.5 h-1.5 bg-error rounded-full"></span>':'<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>'} ${t.tx_flow}</div></td>
+                    <td class="px-6 py-4"><div class="font-extrabold text-primary text-sm">${t.part_number}</div><div class="text-[11px] font-medium text-on-surface-variant mt-0.5 truncate max-w-[200px]">${t.item_name}</div>${t.no_wo ? `<div class="mt-1.5 text-[10px] bg-surface-container-high text-on-surface font-bold px-1.5 py-0.5 rounded inline-block border border-outline-variant/50">WO: ${t.no_wo}</div>` : ''}</td>
+                    <td class="px-6 py-4 text-center"><div class="${colorC} font-extrabold text-xl">${sign}${t.qty}</div></td>
+                    <td class="px-6 py-4 w-1/4">${relasi}</td>
+                    <td class="px-6 py-4 text-right superadmin-only hide"><button onclick="deleteTx('${t.id}', '${t.tx_flow}', '${t.part_id}', ${t.qty}, '${t.part_number}')" class="text-error hover:text-on-error-container p-2 bg-error-container/30 rounded-full hover:bg-error-container transition"><span class="material-symbols-outlined text-[18px]">delete</span></button></td>
                 </tr>`;
             }).join('');
             document.getElementById('txPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Log`;
             document.getElementById('txPaginationButtons').innerHTML = createPaginationHtml(txCurrentPage, totalPages, 'changeTxPage');
-            applyRoleAccess(); lucide.createIcons();
+            applyRoleAccess();
         }
 
         // DASHBOARD RENDER
@@ -743,8 +1046,8 @@
             if (dashCurrentPage > totalPages) dashCurrentPage = totalPages;
             const start = (dashCurrentPage - 1) * rowsPerPage; const paginated = dashAnalysisData.slice(start, start + rowsPerPage);
             document.getElementById('stockAnalysisTableBody').innerHTML = paginated.map(p => {
-                let stClass = p.stock_current == 0 ? 'text-brand-red bg-red-900/20' : 'text-brand-yellow bg-yellow-900/20'; let stTxt = p.stock_current == 0 ? 'HABIS' : 'KRITIS';
-                return `<tr class="border-b border-dark-700"><td class="px-4 py-3"><div class="text-white text-xs font-bold">${p.part_number}</div><div class="text-[10px] text-gray-500">${p.item_name}</div></td><td class="px-4 py-3 text-xs text-gray-400">${p.kategori}</td><td class="px-4 py-3 text-center"><span class="${stClass} px-2 py-1 rounded text-[10px] font-bold tracking-wider">${stTxt}</span></td><td class="px-4 py-3 text-center text-white font-mono text-xs">${p.stock_current} <span class="text-gray-500 mx-1">/</span> ${p.stock_min}</td></tr>`;
+                let stClass = p.stock_current == 0 ? 'text-on-error-container bg-error-container border border-error/20' : 'text-on-tertiary-container bg-tertiary-fixed border border-tertiary/20'; let stTxt = p.stock_current == 0 ? 'HABIS' : 'KRITIS';
+                return `<tr class="border-b border-outline-variant/10 hover:bg-primary-fixed/20 transition-colors"><td class="px-6 py-4"><div class="text-primary text-sm font-extrabold">${p.part_number}</div><div class="text-[11px] font-medium text-on-surface-variant">${p.item_name}</div></td><td class="px-6 py-4 text-xs font-medium text-on-surface-variant">${p.kategori}</td><td class="px-6 py-4 text-center"><span class="${stClass} px-3 py-1 rounded-full text-[10px] font-extrabold tracking-widest">${stTxt}</span></td><td class="px-6 py-4 text-center text-on-surface font-mono font-bold text-sm">${p.stock_current} <span class="text-outline mx-1 font-normal">/</span> ${p.stock_min}</td></tr>`;
             }).join('');
             document.getElementById('dashPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Item Kritis`;
             document.getElementById('dashPaginationButtons').innerHTML = createPaginationHtml(dashCurrentPage, totalPages, 'changeDashPage');
@@ -759,7 +1062,7 @@
             dashAnalysisData = appData.parts.filter(p => p.stock_current <= p.stock_min);
             dashCurrentPage = 1; renderDashAnalysisTable();
 
-            Chart.defaults.color = '#9ca3af'; Chart.defaults.borderColor = '#1F2937';
+            Chart.defaults.color = '#747781'; Chart.defaults.borderColor = 'rgba(196, 198, 210, 0.3)'; Chart.defaults.font.family = 'Inter';
             const dates = []; let cD = new Date(startDt); while(cD <= endDt) { dates.push(new Date(cD)); cD.setDate(cD.getDate()+1); }
             const labelsMap = dates.map(d => ({ raw: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`, display: d.toLocaleDateString('id-ID',{day:'2-digit',month:'short'}) }));
 
@@ -773,9 +1076,9 @@
             const labelsDept = appData.depts.map(d => d.nama_dept); const dataDept = new Array(appData.depts.length).fill(0);
             txOuts.filter(t => (t.jenis_tx||'Normal') === 'Normal').forEach(t => { const dIdx = appData.depts.findIndex(d => d.id === t.dept_id); if(dIdx !== -1) dataDept[dIdx] += t.qty; });
 
-            if(charts.c1) charts.c1.destroy(); charts.c1 = new Chart(document.getElementById('chartSparepart').getContext('2d'), { type: 'line', data: { labels: labelsMap.map(l=>l.display), datasets: [{ label: 'Pengeluaran Normal', data: dataNormal, borderColor: '#06b6d4', backgroundColor: 'rgba(6, 182, 212, 0.1)', tension: 0.4, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-            if(charts.c2) charts.c2.destroy(); charts.c2 = new Chart(document.getElementById('chartService').getContext('2d'), { type: 'bar', data: { labels: labelsMap.map(l=>l.display), datasets: [{ label: 'Service/Repair', data: dataService, backgroundColor: '#f59e0b', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-            if(charts.c3) charts.c3.destroy(); const colors = ['#3b82f6','#a855f7','#10b981','#ef4444','#06b6d4','#f59e0b']; charts.c3 = new Chart(document.getElementById('chartDept').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: labelsDept, datasets: [{ label: 'Qty', data: dataDept, backgroundColor: labelsDept.map((_,i)=>colors[i%colors.length]), borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            if(charts.c1) charts.c1.destroy(); charts.c1 = new Chart(document.getElementById('chartSparepart').getContext('2d'), { type: 'line', data: { labels: labelsMap.map(l=>l.display), datasets: [{ label: 'Pengeluaran Normal', data: dataNormal, borderColor: '#001b44', backgroundColor: 'rgba(0, 27, 68, 0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#001b44' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            if(charts.c2) charts.c2.destroy(); charts.c2 = new Chart(document.getElementById('chartService').getContext('2d'), { type: 'bar', data: { labels: labelsMap.map(l=>l.display), datasets: [{ label: 'Service/Repair', data: dataService, backgroundColor: '#c39100', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            if(charts.c3) charts.c3.destroy(); const colors = ['#002f6c','#224583','#aec6ff','#006d43','#75f8b3','#c39100']; charts.c3 = new Chart(document.getElementById('chartDept').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: labelsDept, datasets: [{ label: 'Qty', data: dataDept, backgroundColor: labelsDept.map((_,i)=>colors[i%colors.length]), borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
         }
 
         // --- 8. CRUD LOGIC (FIREBASE DIRECT) ---
@@ -804,6 +1107,8 @@
                 updates[`${type === 'IN' ? 'txsIn' : 'txsOut'}/${txId}`] = txData;
 
                 await fbRoot.update(updates);
+                logAction(`TX_${type}`, `${jenisTx} ${qty}x [${partData.part_number}] ${partData.item_name}. WO: ${noWo||'-'}`); // LOGGING
+                
                 closeModal(type === 'IN' ? 'modalTxIn' : 'modalTxOut'); notif('success', 'Berhasil', 'Sirkulasi Logistik terekam ke Cloud.');
                 document.getElementById(type === 'IN' ? 'formTxIn' : 'formTxOut').reset();
                 if(selectSearchIn) selectSearchIn.clear(); if(selectSearchOut) selectSearchOut.clear();
@@ -828,10 +1133,33 @@
             try {
                 if(isNew) { const snap = await fbRoot.child('parts').child(cleanId).once('value'); if(snap.exists()) throw new Error("ID Item sudah digunakan."); }
                 await fbRoot.child('parts').child(cleanId).set(data);
-                closeModal('modalStock'); notif('success', 'Data Master Terpusat', 'Berhasil memperbarui katalog logistik.');
+                logAction(isNew ? 'ADD_MASTER' : 'EDIT_MASTER', `${isNew ? 'Created' : 'Updated'} master data: [${data.part_number}]`); // LOGGING
+                closeModal('modalStock'); notif('success', 'Data Master Terpusat', 'Berhasil memperbarui katalog aset.');
                 document.getElementById('formStock').reset();
             } catch (err) { notif('error', 'Gagal Simpan', err.message); } 
             finally { showLoading(false); toggleBtnState(btnId, false); }
+        }
+
+        async function saveUser(e) {
+            e.preventDefault(); toggleBtnState('btnSubmitUser', true);
+            const username = document.getElementById('usrUsername').value.trim().toLowerCase();
+            const data = {
+                id: 'U' + Date.now().toString().slice(-6),
+                username: username,
+                password: document.getElementById('usrPassword').value,
+                nama: document.getElementById('usrName').value,
+                role: document.getElementById('usrRole').value,
+                created_at: new Date().toISOString()
+            };
+            const isNew = document.getElementById('userMode').value === 'NEW';
+            
+            showLoading(true, "Menyimpan User...");
+            try {
+                if(isNew) { const snap = await fbRoot.child('users').child(username).once('value'); if(snap.exists()) throw new Error("Username sudah terdaftar."); }
+                await fbRoot.child('users').child(username).set(data);
+                logAction(isNew ? 'USER_ADD' : 'USER_EDIT', `${isNew ? 'Created' : 'Modified'} user: ${username} (${data.role})`); // LOGGING
+                closeModal('modalUser'); notif('success', 'Berhasil', 'Data Pengguna berhasil diperbarui.');
+            } catch (err) { notif('error', 'Gagal Simpan', err.message); } finally { showLoading(false); toggleBtnState('btnSubmitUser', false); }
         }
 
         function editStock(id) {
@@ -848,8 +1176,20 @@
             }
         }
 
-        async function deleteTx(id, type, part_id, qty) {
-            const result = await Swal.fire({ title: 'Hapus & Revert Stok?', text: "Hapus permanen log dan stok akan dikembalikan.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', background: '#1F2937', color: '#fff' });
+        function editUser(username) {
+            const u = appData.users.find(x => x.username === username);
+            if(u) {
+                document.getElementById('userMode').value = 'EDIT';
+                const idEl = document.getElementById('usrUsername'); idEl.value = u.username; idEl.readOnly = true;
+                document.getElementById('usrPassword').value = u.password;
+                document.getElementById('usrName').value = u.nama;
+                document.getElementById('usrRole').value = u.role;
+                openModal('modalUser');
+            }
+        }
+
+        async function deleteTx(id, type, part_id, qty, part_no) {
+            const result = await Swal.fire({ title: 'Hapus & Revert Stok?', text: "Hapus permanen log dan stok akan dikembalikan.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ba1a1a', background: '#fbf9f8', color: '#1b1c1c' });
             if (!result.isConfirmed) return;
             showLoading(true, "Reverting Cloud Data...");
             try {
@@ -858,6 +1198,7 @@
                     let currentStock = parseInt(partSnap.val().stock_current); let revertedStock = type === 'IN' ? currentStock - qty : currentStock + qty;
                     let updates = {}; updates[`parts/${part_id}/stock_current`] = revertedStock; updates[`${type === 'IN' ? 'txsIn' : 'txsOut'}/${id}`] = null;
                     await fbRoot.update(updates);
+                    logAction('TX_DELETE', `Reverted ${type} tx for ${part_no}. Restored ${qty} qty.`); // LOGGING
                     notif('success', 'Transaksi Dibatalkan', 'Stok telah diperbarui di Cloud.');
                 } else { throw new Error("Item master tidak ditemukan untuk revert stok."); }
             } catch (err) { notif('error', 'Gagal Revert', err.message); } finally { showLoading(false); }
@@ -872,13 +1213,15 @@
                 const ws = XLSX.utils.json_to_sheet(exportData); ws['!cols'] = [{wch:5}, {wch:20}, {wch:15}, {wch:40}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:10}, {wch:15}, {wch:12}, {wch:15}, {wch:10}, {wch:20}];
                 const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Sheet_Opname");
                 XLSX.writeFile(wb, `Form_Stock_Opname_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.xlsx`);
+                logAction('EXPORT_EXCEL', `User downloaded Master Asset excel`); // LOGGING
                 notif('success', 'Download Selesai', 'File Excel siap.');
             } catch (err) { notif('error', 'Export Gagal', err.message); } finally { showLoading(false); }
         }
 
         function downloadPDF() {
             const element = document.getElementById('pdfTargetArea'); notif('info', 'Menyiapkan Render PDF...', 'Harap tunggu.');
-            html2pdf().set({ margin: 0.5, filename: `Report_Kritis_${new Date().getTime()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#111827' }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save().then(() => Swal.close());
+            logAction('EXPORT_PDF', `User exported critical stock PDF`); // LOGGING
+            html2pdf().set({ margin: 0.5, filename: `Report_Kritis_${new Date().getTime()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save().then(() => Swal.close());
         }
 
         // --- 10. HELPERS ---
@@ -890,7 +1233,7 @@
             document.getElementById('txInPart').innerHTML = partOptions; document.getElementById('txOutPart').innerHTML = partOptions;
             const tsConfig = { create: false, maxOptions: null, sortField: {field: "text", direction: "asc"} }; selectSearchIn = new TomSelect("#txInPart", tsConfig); selectSearchOut = new TomSelect("#txOutPart", tsConfig);
             document.getElementById('txOutDept').innerHTML = appData.depts.map(d => `<option value="${d.id}">${d.nama_dept}</option>`).join(''); document.getElementById('txOutUnit').innerHTML = appData.units.map(u => `<option value="${u.id}">${u.nama_unit}</option>`).join('');
-            document.getElementById('deptList').innerHTML = appData.depts.map(d => `<li class="border-b border-dark-700 pb-2 flex justify-between"><span>${d.nama_dept}</span> <span class="text-xs text-gray-500 font-mono">${d.id}</span></li>`).join(''); document.getElementById('unitList').innerHTML = appData.units.map(u => `<li class="border-b border-dark-700 pb-2 flex justify-between"><span>${u.nama_unit}</span> <span class="text-xs text-gray-500 font-mono">${u.id}</span></li>`).join('');
+            document.getElementById('deptList').innerHTML = appData.depts.map(d => `<li class="border-b border-outline-variant/20 pb-2 flex justify-between"><span>${d.nama_dept}</span> <span class="text-xs text-on-surface-variant font-mono font-medium">${d.id}</span></li>`).join(''); document.getElementById('unitList').innerHTML = appData.units.map(u => `<li class="border-b border-outline-variant/20 pb-2 flex justify-between"><span>${u.nama_unit}</span> <span class="text-xs text-on-surface-variant font-mono font-medium">${u.id}</span></li>`).join('');
         }
     </script>
 </body>
