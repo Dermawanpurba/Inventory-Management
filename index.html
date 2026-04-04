@@ -116,6 +116,15 @@
         @keyframes progress-indeterminate { 0% { transform: translateX(-100%); width: 30%; } 50% { width: 50%; } 100% { transform: translateX(400%); width: 30%; } }
         .animate-progress { animation: progress-indeterminate 1.5s ease-in-out infinite; }
         
+        /* Animasi Transisi Menu Baru */
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-slide {
+            animation: fadeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
         .brand-logo { max-height: 32px; max-width: 32px; object-fit: contain; }
 
         /* Drag Drop Highlight */
@@ -768,11 +777,25 @@
 
         function router(viewId) {
             ['view-dashboard', 'view-po', 'view-tracking', 'view-stock', 'view-master'].forEach(id => {
-                document.getElementById(id).style.display = 'none'; document.getElementById(id).classList.add('hide');
-                const navD = document.getElementById('navD-' + id.split('-')[1]); const navM = document.getElementById('navM-' + id.split('-')[1]);
-                if(navD) navD.classList.remove('nav-desktop-active'); if(navM) navM.classList.remove('nav-mobile-active');
+                const section = document.getElementById(id);
+                if (section) {
+                    section.style.display = 'none'; 
+                    section.classList.add('hide');
+                    section.classList.remove('animate-fade-slide'); // Reset animasi
+                }
+                const navD = document.getElementById('navD-' + id.split('-')[1]); 
+                const navM = document.getElementById('navM-' + id.split('-')[1]);
+                if(navD) navD.classList.remove('nav-desktop-active'); 
+                if(navM) navM.classList.remove('nav-mobile-active');
             });
-            document.getElementById('view-' + viewId).style.display = 'block'; document.getElementById('view-' + viewId).classList.remove('hide');
+            
+            const activeSection = document.getElementById('view-' + viewId);
+            if (activeSection) {
+                activeSection.style.display = 'block'; 
+                activeSection.classList.remove('hide');
+                activeSection.classList.add('animate-fade-slide'); // Trigger animasi
+            }
+
             const aNavD = document.getElementById('navD-' + viewId); const aNavM = document.getElementById('navM-' + viewId);
             if(aNavD) aNavD.classList.add('nav-desktop-active'); if(aNavM) aNavM.classList.add('nav-mobile-active');
             
@@ -1054,10 +1077,26 @@
                 dDefLogo.classList.remove('hide'); mDefLogo.classList.remove('hide'); let imgD = dLogoCont.querySelector('img'); if(imgD) imgD.remove(); mImgLogo.classList.add('hide');
             }
         }
+
         function switchAdminTab(tabName) {
-            ['DataMaster', 'UserMgmt', 'AppConfig', 'SysLogs'].forEach(t => { const btn = document.getElementById('tabAdm-' + t); const view = document.getElementById('admView-' + t); if(btn) { btn.classList.remove('tab-active', 'text-primary', 'font-bold'); btn.classList.add('text-on-surface-variant'); } if(view) { view.style.display = 'none'; view.classList.add('hide'); } });
-            const aBtn = document.getElementById('tabAdm-' + tabName); const aView = document.getElementById('admView-' + tabName);
-            if(aBtn) { aBtn.classList.add('tab-active', 'text-primary', 'font-bold'); aBtn.classList.remove('text-on-surface-variant'); } if(aView) { aView.style.display = 'block'; aView.classList.remove('hide'); }
+            ['DataMaster', 'UserMgmt', 'AppConfig', 'SysLogs'].forEach(t => { 
+                const btn = document.getElementById('tabAdm-' + t); 
+                const view = document.getElementById('admView-' + t); 
+                if(btn) { btn.classList.remove('tab-active', 'text-primary', 'font-bold'); btn.classList.add('text-on-surface-variant'); } 
+                if(view) { 
+                    view.style.display = 'none'; 
+                    view.classList.add('hide'); 
+                    view.classList.remove('animate-fade-slide'); // Reset animasi tab
+                } 
+            });
+            const aBtn = document.getElementById('tabAdm-' + tabName); 
+            const aView = document.getElementById('admView-' + tabName);
+            if(aBtn) { aBtn.classList.add('tab-active', 'text-primary', 'font-bold'); aBtn.classList.remove('text-on-surface-variant'); } 
+            if(aView) { 
+                aView.style.display = 'block'; 
+                aView.classList.remove('hide'); 
+                aView.classList.add('animate-fade-slide'); // Trigger animasi tab
+            }
             if(tabName === 'UserMgmt') renderUserTable(); if(tabName === 'SysLogs') renderLogsTable();
         }
 
