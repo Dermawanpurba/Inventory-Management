@@ -92,20 +92,10 @@
         .hide { display: none !important; }
         
         /* Top Nav Styling */
-        .nav-desktop-active {
-            border-bottom-color: #001b44 !important;
-            color: #001b44 !important;
-            background-color: rgba(0, 27, 68, 0.03);
-        }
+        .nav-desktop-active { border-bottom-color: #001b44 !important; color: #001b44 !important; background-color: rgba(0, 27, 68, 0.03); }
         .nav-desktop-active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
-        .nav-desktop-inactive {
-            border-bottom-color: transparent !important;
-            color: #747781 !important;
-        }
-        .nav-desktop-inactive:hover {
-            background-color: rgba(0, 27, 68, 0.05);
-            color: #001b44 !important;
-        }
+        .nav-desktop-inactive { border-bottom-color: transparent !important; color: #747781 !important; }
+        .nav-desktop-inactive:hover { background-color: rgba(0, 27, 68, 0.05); color: #001b44 !important; }
         
         /* Mobile Nav Styling */
         .nav-mobile-active { color: #001b44; font-weight: 600; }
@@ -116,7 +106,7 @@
         .ts-control { background-color: #f5f3f3 !important; border: 1px solid #e4e2e2 !important; color: #1b1c1c !important; border-radius: 0.5rem !important; padding: 0.6rem 0.75rem !important; font-size: 0.875rem !important; }
         .ts-control input { color: #1b1c1c !important; }
         .ts-control.focus { border-color: #001b44 !important; box-shadow: 0 0 0 1px rgba(0,27,68,0.2) !important; }
-        .ts-dropdown { background-color: #ffffff !important; border: 1px solid #e4e2e2 !important; color: #1b1c1c !important; border-radius: 0.5rem !important; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); font-size: 0.875rem !important; }
+        .ts-dropdown { background-color: #ffffff !important; border: 1px solid #e4e2e2 !important; color: #1b1c1c !important; border-radius: 0.5rem !important; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); font-size: 0.875rem !important; z-index: 9999; }
         .ts-dropdown .option:hover, .ts-dropdown .option.active { background-color: #f5f3f3 !important; color: #001b44 !important; font-weight: 500; }
         
         .tab-btn { transition: all 0.3s ease; border-bottom: 2px solid transparent; }
@@ -412,6 +402,7 @@
                     </div>
                 </div>
 
+                <!-- UPDATE UI UX CHART ECHARTS AREA -->
                 <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20 w-full">
                     <div class="flex items-center mb-4 text-sm font-extrabold text-primary"><span class="material-symbols-outlined mr-2">trending_up</span> Trend Pengeluaran Normal (Qty)</div>
                     <div id="chartSparepart" class="h-80 w-full relative"></div>
@@ -431,6 +422,15 @@
                 <div class="mt-8 bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20" id="pdfTargetArea">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex items-center text-error text-lg font-extrabold"><span class="material-symbols-outlined mr-2 filled">warning</span> Status Kritis Stok</div>
+                        <select id="dashKritisFilter" onchange="renderDashAnalysisTable()" class="bg-surface-container-low border-none rounded-xl text-xs font-bold text-on-surface focus:ring-2 focus:ring-primary shadow-inner">
+                            <option value="">Semua Kategori</option>
+                            <option value="SPAREPART">Sparepart</option>
+                            <option value="LUBRICATE">Lubricate / Oli</option>
+                            <option value="CONSUMABLE">Consumable</option>
+                            <option value="FILTER">Filter</option>
+                            <option value="GET">GET</option>
+                            <option value="TYRE">Tyre / Ban</option>
+                        </select>
                     </div>
                     <div class="overflow-x-auto rounded-xl border border-outline-variant/20">
                         <table class="w-full text-sm text-left">
@@ -677,25 +677,29 @@
         </div>
     </div>
 
-    <!-- Modal Form Keluar (OUT) -->
+    <!-- Modal Form Keluar (OUT) Multi-Item -->
     <div id="modalTxOut" class="fixed inset-0 bg-inverse-surface/60 z-[70] flex justify-center items-center hide backdrop-blur-sm p-4 overflow-y-auto">
-        <div class="bg-surface-container-lowest p-8 rounded-2xl w-full max-w-lg border-t-8 border-t-error shadow-2xl my-8">
+        <div class="bg-surface-container-lowest p-8 rounded-2xl w-full max-w-2xl border-t-8 border-t-error shadow-2xl my-8">
             <div class="flex items-center justify-between mb-6"><div class="flex items-center text-on-surface"><span class="material-symbols-outlined mr-2 text-error text-3xl">call_made</span><h3 class="text-xl font-extrabold">Form Keluar (OUT)</h3></div><button type="button" onclick="closeModal('modalTxOut')" class="text-on-surface-variant hover:text-error bg-surface-container-low p-2 rounded-full"><span class="material-symbols-outlined">close</span></button></div>
-            <form id="formTxOut" onsubmit="saveTransaction(event, 'OUT')" class="space-y-5">
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Jenis Transaksi</label><select id="txOutJenis" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-error"><option value="Normal">Pengeluaran Normal</option><option value="Retur">Retur Keluar (Cacat/Tukar)</option><option value="Service">Kirim Service Luar</option></select></div>
-                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Tanggal</label><input type="date" id="txOutDate" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-error"></div>
+            <form id="formTxOut" onsubmit="saveTransactionOut(event)" class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-outline-variant/20 pb-4">
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Jenis Transaksi</label><select id="txOutJenis" required class="w-full bg-surface-container-low border-none rounded-xl p-2 text-on-surface text-sm focus:ring-2 focus:ring-error"><option value="Normal">Pengeluaran Normal</option><option value="Retur">Retur Keluar (Cacat/Tukar)</option><option value="Service">Kirim Service Luar</option></select></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Tanggal</label><input type="date" id="txOutDate" required class="w-full bg-surface-container-low border-none rounded-xl p-2 text-on-surface text-sm focus:ring-2 focus:ring-error"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. Work Order (WO)</label><input type="text" id="txOutWO" class="w-full bg-surface-container-low border-none rounded-xl p-2 text-on-surface text-sm focus:ring-2 focus:ring-error" required placeholder="Wajib diisi..."></div>
+                    <div class="md:col-span-1"><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Departemen Alokasi</label><select id="txOutDept" required class="w-full bg-surface-container-low border-none rounded-xl p-2 text-on-surface text-sm focus:ring-2 focus:ring-error"></select></div>
+                    <div class="md:col-span-2"><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Unit Tujuan / Aset</label><select id="txOutUnit" required class="w-full bg-surface-container-low border-none rounded-xl p-2 text-on-surface text-sm focus:ring-2 focus:ring-error"></select></div>
                 </div>
-                <div><label class="block text-xs font-bold text-on-tertiary-container mb-1.5 uppercase tracking-wider">Cari Item Master</label><select id="txOutPart" required placeholder="Ketik nama / part..."></select></div>
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="col-span-1"><label class="block text-xs font-bold text-error mb-1.5 uppercase tracking-wider">Qty Keluar</label><input type="number" id="txOutQty" min="1" required class="w-full bg-error-container/30 border border-error/50 rounded-xl p-3 text-error text-xl font-extrabold focus:ring-2 focus:ring-error focus:border-none"></div>
-                    <div class="col-span-2"><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. Work Order (WO)</label><input type="text" id="txOutWO" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-error" required placeholder="Wajib diisi..."></div>
+                
+                <!-- DYNAMIC ITEMS LIST -->
+                <div class="pt-2">
+                    <label class="block text-xs font-bold text-primary mb-2 uppercase tracking-wider">Daftar Barang Keluar</label>
+                    <div id="txOutItemsContainer" class="space-y-3 mb-4 max-h-[35vh] overflow-y-auto custom-scrollbar p-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl">
+                        <!-- Rows akan dimasukkan ke sini oleh JS -->
+                    </div>
+                    <button type="button" onclick="addTxOutRow()" class="text-xs font-bold text-primary bg-primary-fixed hover:bg-primary-fixed-dim px-4 py-2 rounded-xl transition">+ Tambah Barang Lain</button>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Departemen Alokasi</label><select id="txOutDept" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-error"></select></div>
-                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Unit Tujuan</label><select id="txOutUnit" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-error"></select></div>
-                </div>
-                <div class="flex justify-end pt-4 mt-2"><button type="submit" id="btnSubmitOut" class="px-8 py-3 bg-error hover:bg-on-error-container rounded-xl text-on-error font-bold transition w-full shadow-md text-base">Eksekusi Data Keluar</button></div>
+
+                <div class="flex justify-end pt-4 mt-2 border-t border-outline-variant/20"><button type="submit" id="btnSubmitOut" class="px-8 py-3 bg-error hover:bg-on-error-container rounded-xl text-on-error font-bold transition w-full shadow-md text-base">Eksekusi Data Keluar</button></div>
             </form>
         </div>
     </div>
@@ -710,7 +714,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div><label class="block text-xs font-bold text-on-tertiary-container mb-1.5 uppercase tracking-wider">ID Sistem (Unik)</label><input type="text" id="stkId" required class="w-full bg-tertiary-fixed border border-tertiary/20 rounded-xl p-3 text-tertiary text-sm font-bold uppercase focus:ring-2 focus:ring-tertiary" placeholder="Contoh: PRT-001"></div>
                     <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Part Number</label><input type="text" id="stkPartNo" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary"></div>
-                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Kode Accurate</label><input type="text" id="stkAccurate" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary" placeholder="Opsional"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Kode Stock / SKU</label><input type="text" id="stkAccurate" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-primary" placeholder="Opsional"></div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -754,8 +758,8 @@
     <!-- Modal Login dengan Latar Belakang Penuh -->
     <div id="modalLogin" class="fixed inset-0 z-[100] flex hide">
         <!-- Background Image dengan Overlay Gelap -->
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://drive.google.com/uc?export=view&id=1krgACTjDbcUSIPZ5WcRQ3xzSjueV-GGz');">
-            <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-[2px]"></div>
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://lh3.googleusercontent.com/d/1krgACTjDbcUSIPZ5WcRQ3xzSjueV-GGz');">
+            <div class="absolute inset-0 bg-primary/80 mix-blend-multiply"></div>
         </div>
         
         <!-- Area Konten Login -->
@@ -809,7 +813,9 @@
         
         let currentUser = null; let isFirebaseListening = false;
         let appData = { parts: [], txs: [], depts: [], units: [], users: [], logs: [], settings: {}, accuratePO: [], accuratePOLastUpdate: '' };
-        let charts = {}; let selectSearchIn, selectSearchOut;
+        let charts = {}; let selectSearchIn;
+        let windowPartOptionsHTML = ''; // Disimpan agar form OUT multi-item bisa pake ulang
+        let txOutRowCount = 0; // Menghitung jumlah barang di Form Keluar
 
         // Pagination States
         const rowsPerPage = 15;
@@ -1015,7 +1021,10 @@
                 const startDt = new Date(sStr); startDt.setHours(0,0,0,0); const endDt = new Date(eStr); endDt.setHours(23,59,59,999);
                 const txOuts = appData.txs.filter(t => t.tx_flow === 'OUT' && new Date(t.date) >= startDt && new Date(t.date) <= endDt);
 
+                // Update Status Kritis Filter based on selection
+                const dashKritisFilterVal = document.getElementById('dashKritisFilter') ? document.getElementById('dashKritisFilter').value : '';
                 dashAnalysisData = appData.parts.filter(p => p.stock_current <= p.stock_min);
+                if (dashKritisFilterVal) dashAnalysisData = dashAnalysisData.filter(p => p.kategori === dashKritisFilterVal);
                 dashCurrentPage = 1; renderDashAnalysisTable();
 
                 const dates = []; let cD = new Date(startDt); while(cD <= endDt) { dates.push(new Date(cD)); cD.setDate(cD.getDate()+1); }
@@ -1027,6 +1036,9 @@
                     const idx = labelsMap.findIndex(l => l.raw === txDtStr);
                     if(idx !== -1) { if((t.jenis_tx || 'Normal') === 'Normal') dataNormal[idx] += t.qty; if((t.jenis_tx || 'Normal') === 'Service') dataService[idx] += t.qty; }
                 });
+
+                const labelsDept = appData.depts.map(d => d.nama_dept); const dataDept = new Array(appData.depts.length).fill(0);
+                txOuts.filter(t => (t.jenis_tx||'Normal') === 'Normal').forEach(t => { const dIdx = appData.depts.findIndex(d => d.id === t.dept_id); if(dIdx !== -1) dataDept[dIdx] += t.qty; });
 
                 // ECHARTS Implementation for Main Chart
                 const chartDom = document.getElementById('chartSparepart');
@@ -1060,9 +1072,7 @@
 
                 // CHART.JS Implementation for Sub Charts
                 Chart.defaults.color = '#747781'; Chart.defaults.borderColor = 'rgba(196, 198, 210, 0.3)'; Chart.defaults.font.family = 'Inter';
-                const labelsDept = appData.depts.map(d => d.nama_dept); const dataDept = new Array(appData.depts.length).fill(0);
-                txOuts.filter(t => (t.jenis_tx||'Normal') === 'Normal').forEach(t => { const dIdx = appData.depts.findIndex(d => d.id === t.dept_id); if(dIdx !== -1) dataDept[dIdx] += t.qty; });
-
+                
                 if(charts.c2) charts.c2.destroy(); charts.c2 = new Chart(document.getElementById('chartService').getContext('2d'), { type: 'bar', data: { labels: labelsMap.map(l=>l.display), datasets: [{ label: 'Service/Repair', data: dataService, backgroundColor: '#c39100', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
                 if(charts.c3) charts.c3.destroy(); const colors = ['#002f6c','#224583','#aec6ff','#006d43','#75f8b3','#c39100']; charts.c3 = new Chart(document.getElementById('chartDept').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: labelsDept, datasets: [{ label: 'Qty', data: dataDept, backgroundColor: labelsDept.map((_,i)=>colors[i%colors.length]), borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
             } catch(e) { console.error("Dashboard Render Error:", e); }
@@ -1207,27 +1217,30 @@
             document.getElementById('poPaginationButtons').innerHTML = createPaginationHtml(poCurrentPage, totalPages, 'changePOPage');
         }
 
-        // --- PRINT KELUAR/MASUK TRANSACTION LOGIC ---
+        // --- PRINT MULTI-ITEM KELUAR/MASUK LOGIC ---
         function printTransaction(txId, flow) {
-            const tx = appData.txs.find(t => t.id === txId);
-            if(!tx) return notif('error', 'Gagal Cetak', 'Transaksi tidak valid.');
+            const baseTx = appData.txs.find(t => t.id === txId);
+            if(!baseTx) return notif('error', 'Gagal Cetak', 'Transaksi tidak valid.');
             
-            const part = appData.parts.find(p => p.id === tx.part_id);
-            const unit = flow === 'OUT' ? appData.units.find(u => u.id === tx.unit_id) : null;
-            
-            const txDateObj = new Date(tx.date);
+            let txsToPrint = [baseTx];
+            // Temukan semua transaksi dengan NO WO (atau No PO) yang sama pada hari yang sama agar dicetak 1 form
+            if (baseTx.no_wo) {
+                txsToPrint = appData.txs.filter(t => t.tx_flow === flow && t.no_wo === baseTx.no_wo && t.date === baseTx.date);
+            }
+
+            const txDateObj = new Date(baseTx.date);
             const formattedDate = txDateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-            
             document.getElementById('printVal1').innerText = formattedDate;
 
             if (flow === 'OUT') {
+                const baseUnit = appData.units.find(u => u.id === baseTx.unit_id);
                 document.getElementById('printDocTitle').innerText = 'FORM MECHANIC ORDERLIST';
-                document.getElementById('printLabel2').innerText = 'UNIT TYPE';
-                document.getElementById('printVal2').innerText = (part ? part.unit_type : '-') || '-';
+                document.getElementById('printLabel2').innerText = 'UNIT TYPE'; // Opsional, bisa diisi beda
+                document.getElementById('printVal2').innerText = '-';
                 document.getElementById('printLabel3').innerText = 'NO ID (UNIT)';
-                document.getElementById('printVal3').innerText = (unit ? unit.nama_unit : '-') || '-';
+                document.getElementById('printVal3').innerText = (baseUnit ? baseUnit.nama_unit : '-') || '-';
                 document.getElementById('printLabel4').innerText = 'NO WO';
-                document.getElementById('printVal4').innerText = tx.no_wo || '-';
+                document.getElementById('printVal4').innerText = baseTx.no_wo || '-';
                 
                 document.getElementById('printQtyLabel').innerText = 'OUT';
                 document.getElementById('printCol7Label').innerText = 'STOCK CODE';
@@ -1243,11 +1256,11 @@
             } else {
                 document.getElementById('printDocTitle').innerText = 'FORM RECEIVING ITEM (IN)';
                 document.getElementById('printLabel2').innerText = 'VENDOR/SUPPLIER';
-                document.getElementById('printVal2').innerText = tx.vendor || '-';
+                document.getElementById('printVal2').innerText = baseTx.vendor || '-';
                 document.getElementById('printLabel3').innerText = 'NO PO';
-                document.getElementById('printVal3').innerText = tx.no_po || '-';
+                document.getElementById('printVal3').innerText = baseTx.no_po || '-';
                 document.getElementById('printLabel4').innerText = 'NO BUKTI / SJ';
-                document.getElementById('printVal4').innerText = tx.no_wo || '-'; 
+                document.getElementById('printVal4').innerText = baseTx.no_wo || '-'; 
                 
                 document.getElementById('printQtyLabel').innerText = 'IN';
                 document.getElementById('printCol7Label').innerText = 'LOKASI RAK';
@@ -1262,23 +1275,26 @@
                 document.getElementById('printSig4Name').innerText = 'Head Dept. Logistik';
             }
             
-            let rowHtml = `
-            <tr>
-                <td>1</td>
-                <td>${tx.part_number}</td>
-                <td>${tx.item_name}</td>
-                <td class="text-center font-bold">${tx.qty}</td>
-                <td>${part ? part.satuan : '-'}</td>
-                <td>${part ? part.kategori : '-'}</td>
-                <td>${flow === 'OUT' ? ((part && part.kode_accurate) ? part.kode_accurate : '-') : ((part && part.lokasi_gudang) ? part.lokasi_gudang : '-')}</td>
-                <td class="text-center">${part ? part.stock_current : '-'}</td>
-            </tr>`;
+            let rowHtml = '';
+            txsToPrint.forEach((tx, idx) => {
+                const part = appData.parts.find(p => p.id === tx.part_id);
+                rowHtml += `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${tx.part_number}</td>
+                    <td>${tx.item_name}</td>
+                    <td class="text-center font-bold">${tx.qty}</td>
+                    <td>${part ? part.satuan : '-'}</td>
+                    <td>${part ? part.kategori : '-'}</td>
+                    <td>${flow === 'OUT' ? ((part && part.kode_accurate) ? part.kode_accurate : '-') : ((part && part.lokasi_gudang) ? part.lokasi_gudang : '-')}</td>
+                    <td class="text-center">${part ? part.stock_current : '-'}</td>
+                </tr>`;
+            });
             
             document.getElementById('printTableBody').innerHTML = rowHtml;
-            const now = new Date();
-            document.getElementById('printTime').innerText = `${String(now.getHours()).padStart(2, '0')}.${String(now.getMinutes()).padStart(2, '0')}`;
+            const now = new Date(); document.getElementById('printTime').innerText = `${String(now.getHours()).padStart(2, '0')}.${String(now.getMinutes()).padStart(2, '0')}`;
             
-            logAction('PRINT_DOC', `User printed document for TX: ${tx.id} (${flow})`);
+            logAction('PRINT_DOC', `User printed document for WO: ${baseTx.no_wo} (${flow})`);
             window.print();
         }
 
@@ -1290,37 +1306,26 @@
             } else {
                 ws_data = [['Part Number', 'Qty', 'Tanggal (YYYY-MM-DD)', 'Jenis (Normal/Retur/Service)', 'No WO', 'ID Departemen', 'ID Unit']];
             }
-            const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Template_" + type);
-            XLSX.writeFile(wb, `Template_Mass_Upload_${type}.xlsx`);
+            const ws = XLSX.utils.aoa_to_sheet(ws_data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Template_" + type); XLSX.writeFile(wb, `Template_Mass_Upload_${type}.xlsx`);
         }
 
         function handleMassUploadSubmit(e) {
-            e.preventDefault();
-            const fileInput = document.getElementById('massUploadFile');
-            const type = document.getElementById('massUploadType').value;
-            const file = fileInput.files[0];
+            e.preventDefault(); const fileInput = document.getElementById('massUploadFile'); const type = document.getElementById('massUploadType').value; const file = fileInput.files[0];
             if(!file) return notif('error', 'Pilih File', 'Silakan pilih file Excel terlebih dahulu.');
             
-            showLoading(true, "Membaca dan Memproses File Excel...");
-            toggleBtnState('btnSubmitMass', true);
+            showLoading(true, "Membaca dan Memproses File Excel..."); toggleBtnState('btnSubmitMass', true);
 
             const reader = new FileReader();
             reader.onload = async (event) => {
                 try {
-                    const data = new Uint8Array(event.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
-                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const rows = XLSX.utils.sheet_to_json(sheet, {defval: ""});
-                    
+                    const data = new Uint8Array(event.target.result); const workbook = XLSX.read(data, {type: 'array'});
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]]; const rows = XLSX.utils.sheet_to_json(sheet, {defval: ""});
                     if(rows.length === 0) throw new Error("File Excel kosong atau format tidak sesuai template.");
 
                     let updates = {}; let errors = []; let successCount = 0; let currentStocks = {}; 
 
                     for(let i=0; i<rows.length; i++) {
-                        const row = rows[i];
-                        const partNo = String(row['Part Number'] || '').trim();
+                        const row = rows[i]; const partNo = String(row['Part Number'] || '').trim();
                         if(!partNo) continue; 
 
                         const part = appData.parts.find(p => p.part_number === partNo);
@@ -1334,22 +1339,17 @@
 
                         const jenisTx = row['Jenis (Normal/Retur/Service)'] || 'Normal';
                         const txId = (type === 'IN' ? 'TIN' : 'TOU') + Date.now() + i;
-                        const isoDate = new Date().toISOString();
-                        const txDateRaw = row['Tanggal (YYYY-MM-DD)'];
+                        const isoDate = new Date().toISOString(); const txDateRaw = row['Tanggal (YYYY-MM-DD)'];
                         
                         let txDate = new Date().toISOString().split('T')[0];
                         if(txDateRaw) {
                             if(!isNaN(txDateRaw) && typeof txDateRaw === 'number') {
-                                const excelEpoch = new Date(1899, 11, 30);
-                                const d = new Date(excelEpoch.getTime() + txDateRaw * 86400000);
-                                txDate = d.toISOString().split('T')[0];
+                                const excelEpoch = new Date(1899, 11, 30); const d = new Date(excelEpoch.getTime() + txDateRaw * 86400000); txDate = d.toISOString().split('T')[0];
                             } else { txDate = String(txDateRaw); }
                         }
 
                         if (type === 'OUT') {
-                            if (jenisTx !== 'Retur' && currentStocks[partId] < qty) {
-                                errors.push(`Baris ${i+2}: Part [${partNo}] stok (Sisa: ${currentStocks[partId]}) tidak cukup.`); continue;
-                            }
+                            if (jenisTx !== 'Retur' && currentStocks[partId] < qty) { errors.push(`Baris ${i+2}: Part [${partNo}] stok (Sisa: ${currentStocks[partId]}) tidak cukup.`); continue; }
                             currentStocks[partId] -= qty;
                             let txData = { id: txId, part_id: partId, qty: qty, date: txDate, jenis_tx: jenisTx, no_wo: String(row['No WO']||'').trim(), user_id: currentUser.username, timestamp: isoDate, part_number: part.part_number, item_name: part.item_name, dept_id: String(row['ID Departemen']||'').trim(), unit_id: String(row['ID Unit']||'').trim() };
                             updates[`txsOut/${txId}`] = txData;
@@ -1359,22 +1359,13 @@
                             updates[`txsIn/${txId}`] = txData;
                             if(txData.lokasi_gudang) updates[`parts/${partId}/lokasi_gudang`] = txData.lokasi_gudang;
                         }
-                        updates[`parts/${partId}/stock_current`] = currentStocks[partId];
-                        successCount++;
+                        updates[`parts/${partId}/stock_current`] = currentStocks[partId]; successCount++;
                     }
 
-                    if(successCount > 0) {
-                        await fbRoot.update(updates);
-                        logAction('MASS_UPLOAD', `Uploaded ${successCount} ${type} transactions via Excel.`);
-                    }
-
+                    if(successCount > 0) { await fbRoot.update(updates); logAction('MASS_UPLOAD', `Uploaded ${successCount} ${type} transactions via Excel.`); }
                     closeModal('modalMassUpload');
                     if(errors.length > 0) {
-                        Swal.fire({
-                            title: 'Diproses Sebagian',
-                            html: `Berhasil diproses: <b>${successCount}</b> Transaksi<br>Gagal / Ditolak:<br><div class="text-left text-xs max-h-32 overflow-y-auto text-error font-mono mt-2 bg-error-container p-2 rounded">${errors.join('<br>')}</div>`,
-                            icon: 'warning', background: '#fbf9f8', color: '#1b1c1c', confirmButtonColor: '#001b44'
-                        });
+                        Swal.fire({ title: 'Diproses Sebagian', html: `Berhasil diproses: <b>${successCount}</b> Transaksi<br>Gagal / Ditolak:<br><div class="text-left text-xs max-h-32 overflow-y-auto text-error font-mono mt-2 bg-error-container p-2 rounded">${errors.join('<br>')}</div>`, icon: 'warning', background: '#fbf9f8', color: '#1b1c1c', confirmButtonColor: '#001b44' });
                     } else { notif('success', 'Berhasil', `Semua ${successCount} transaksi berhasil diunggah.`); }
                 } catch(error) { console.error(error); notif('error', 'Gagal Eksekusi', error.message); } 
                 finally { showLoading(false); toggleBtnState('btnSubmitMass', false); fileInput.value = ''; }
@@ -1392,7 +1383,9 @@
         function renderStockTable() {
             const fKat = document.getElementById('filterKategori').value; const fMov = document.getElementById('filterPergerakan').value;
             let filtered = appData.parts;
-            if (stkSearchQuery) { filtered = filtered.filter(p => `${p.part_number} ${p.item_name} ${p.kode_accurate||''}`.toLowerCase().includes(stkSearchQuery)); }
+            if (stkSearchQuery) { 
+                filtered = filtered.filter(p => `${p.part_number} ${p.item_name} ${p.kode_accurate||''} ${p.brand_merk||''} ${p.unit_type||''}`.toLowerCase().includes(stkSearchQuery)); 
+            }
             if (fKat) filtered = filtered.filter(p => p.kategori === fKat);
             if (fMov) filtered = filtered.filter(p => p.pergerakan === fMov);
 
@@ -1403,7 +1396,7 @@
             document.getElementById('stockTableBody').innerHTML = paginated.map(p => {
                 const umur = calculateAge(p.created_at); const sClass = p.stock_current <= p.stock_min ? 'text-error font-extrabold' : 'text-status-in font-extrabold';
                 return `<tr class="hover:bg-primary-fixed/20 transition-colors border-b border-outline-variant/10">
-                    <td class="px-6 py-4"><div class="font-extrabold text-primary tracking-wide text-sm">${p.part_number}</div><div class="text-[11px] font-medium text-on-surface-variant mt-0.5 whitespace-normal break-words max-w-xs">${p.item_name}</div>${p.kode_accurate ? `<div class="text-[10px] text-on-primary-container mt-1.5 border border-primary-fixed-dim inline-block px-1.5 py-0.5 rounded bg-primary-fixed font-bold">ACC: ${p.kode_accurate}</div>` : ''}</td>
+                    <td class="px-6 py-4"><div class="font-extrabold text-primary tracking-wide text-sm">${p.part_number}</div><div class="text-[11px] font-medium text-on-surface-variant mt-0.5 whitespace-normal break-words max-w-xs">${p.item_name}</div>${p.kode_accurate ? `<div class="text-[10px] text-on-primary-container mt-1.5 border border-primary-fixed-dim inline-block px-1.5 py-0.5 rounded bg-primary-fixed font-bold">SKU: ${p.kode_accurate}</div>` : ''}</td>
                     <td class="px-6 py-4"><span class="px-2 py-1 rounded text-[10px] font-bold bg-surface-container-high text-on-surface-variant block w-max mb-1 border border-outline-variant/30">${p.brand_merk || '-'} | ${p.unit_type || 'ALL'}</span><span class="px-2 py-1 rounded text-[10px] font-bold bg-primary-fixed text-on-primary-fixed-variant block w-max">${p.kategori} | ${p.pergerakan}</span></td>
                     <td class="px-6 py-4 text-sm font-medium text-on-surface">${p.lokasi_gudang || '-'}</td><td class="px-6 py-4 text-xs text-on-tertiary-container font-mono font-bold">${umur}</td>
                     <td class="px-6 py-4 text-center"><div class="${sClass} text-xl">${p.stock_current} <span class="text-[10px] text-on-surface-variant font-medium uppercase">${p.satuan || '-'}</span></div><div class="text-[10px] text-on-surface-variant font-medium mt-0.5">Min: ${p.stock_min}</div></td>
@@ -1428,7 +1421,7 @@
                 return `<tr class="hover:bg-primary-fixed/20 transition-colors border-b border-outline-variant/10">
                     <td class="px-6 py-4 text-sm whitespace-nowrap"><div class="text-on-surface font-medium">${new Date(t.date).toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'})}</div><div class="text-[10px] font-bold text-outline mt-1 uppercase tracking-wider">Oleh: ${t.user_id||t.user||'?'}</div></td>
                     <td class="px-6 py-4 text-center"><div class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${isOut?'bg-error-container text-on-error-container border border-error-container':'bg-secondary-container text-on-secondary-container border border-secondary-container'} inline-flex items-center gap-1">${isOut?'<span class="w-1.5 h-1.5 bg-error rounded-full"></span>':'<span class="w-1.5 h-1.5 bg-secondary rounded-full"></span>'} ${t.tx_flow}</div></td>
-                    <td class="px-6 py-4"><div class="font-extrabold text-primary text-sm">${t.part_number}</div><div class="text-[11px] font-medium text-on-surface-variant mt-0.5 whitespace-normal break-words max-w-xs">${t.item_name}</div>${t.no_wo ? `<div class="mt-1.5 text-[10px] bg-surface-container-high text-on-surface font-bold px-1.5 py-0.5 rounded inline-block border border-outline-variant/50">WO: ${t.no_wo}</div>` : ''}</td>
+                    <td class="px-6 py-4"><div class="font-extrabold text-primary text-sm">${t.part_number}</div><div class="text-[11px] font-medium text-on-surface-variant mt-0.5 whitespace-normal break-words max-w-xs">${t.item_name}</div>${t.no_wo ? `<div class="mt-1.5 text-[10px] bg-surface-container-high text-on-surface font-bold px-1.5 py-0.5 rounded inline-block border border-outline-variant/50">WO/SJ: ${t.no_wo}</div>` : ''}</td>
                     <td class="px-6 py-4 text-center"><div class="${colorC} font-extrabold text-xl">${sign}${t.qty}</div></td>
                     <td class="px-6 py-4 w-1/4">${relasi}</td>
                     <td class="px-6 py-4 text-right whitespace-nowrap">
@@ -1440,6 +1433,93 @@
             document.getElementById('txPaginationInfo').innerText = `Menampilkan ${totalItems===0?0:start+1}-${Math.min(start+rowsPerPage, totalItems)} Log`;
             document.getElementById('txPaginationButtons').innerHTML = createPaginationHtml(txCurrentPage, totalPages, 'changeTxPage');
             applyRoleAccess();
+        }
+
+        // -- MANAJEMEN MULTI-ITEM BARANG KELUAR --
+        function addTxOutRow() {
+            txOutRowCount++;
+            const rowId = `txOutRow_${txOutRowCount}`;
+            const html = `
+                <div id="${rowId}" class="flex gap-2 items-start bg-surface-container p-3 rounded-xl mb-2">
+                    <div class="flex-1">
+                        <label class="text-[10px] uppercase font-bold text-on-surface-variant mb-1 block tracking-wider">Pilih Part/Barang</label>
+                        <select class="txOutPartSelect" required>${windowPartOptionsHTML}</select>
+                    </div>
+                    <div class="w-24 shrink-0">
+                        <label class="text-[10px] uppercase font-bold text-on-surface-variant mb-1 block tracking-wider">Qty</label>
+                        <input type="number" class="txOutQtyInput w-full rounded-xl border-none text-error font-extrabold focus:ring-2 focus:ring-error" min="1" required>
+                    </div>
+                    <div class="pt-5 shrink-0">
+                        <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-error p-2 hover:bg-error-container rounded-full mt-0.5"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('txOutItemsContainer').insertAdjacentHTML('beforeend', html);
+            const newSelect = document.querySelector(`#${rowId} .txOutPartSelect`);
+            new TomSelect(newSelect, { create: false, maxOptions: null, sortField: {field: "text", direction: "asc"} });
+        }
+
+        async function saveTransactionOut(e) {
+            e.preventDefault();
+            const rows = document.querySelectorAll('#txOutItemsContainer > div');
+            if(rows.length === 0) return notif('warning', 'Kosong', 'Harap tambahkan minimal 1 barang terlebih dahulu.');
+
+            toggleBtnState('btnSubmitOut', true); showLoading(true, "Mengeksekusi Transaksi Cloud...");
+            
+            const jenisTx = document.getElementById('txOutJenis').value;
+            const txDate = document.getElementById('txOutDate').value;
+            const noWo = document.getElementById('txOutWO').value.trim();
+            const deptId = document.getElementById('txOutDept').value;
+            const unitId = document.getElementById('txOutUnit').value;
+            const isoDate = new Date().toISOString();
+
+            let batchUpdates = {}; let errors = [];
+            let tempStock = {}; 
+            appData.parts.forEach(p => tempStock[p.id] = parseInt(p.stock_current || 0));
+
+            const txsToProcess = [];
+
+            // Validation Pass
+            for(let i=0; i<rows.length; i++) {
+                const selectEl = rows[i].querySelector('.txOutPartSelect');
+                const qtyEl = rows[i].querySelector('.txOutQtyInput');
+                const partId = selectEl.value;
+                const qty = parseInt(qtyEl.value);
+                
+                if(!partId || qty <= 0) { errors.push(`Baris ${i+1}: Data tidak valid.`); continue; }
+                const part = appData.parts.find(p => p.id === partId);
+                if(!part) continue;
+
+                if (jenisTx !== 'Retur' && tempStock[partId] < qty) {
+                    errors.push(`Stok [${part.part_number}] kurang! (Sisa: ${tempStock[partId]})`);
+                } else {
+                    tempStock[partId] -= qty;
+                    const txId = 'TOU' + Date.now() + '_' + i;
+                    txsToProcess.push({ txId: txId, part: part, qty: qty });
+                }
+            }
+
+            if(errors.length > 0) {
+                showLoading(false); toggleBtnState('btnSubmitOut', false);
+                return Swal.fire({ title: 'Transaksi Ditolak', html: `<div class="text-left text-xs max-h-32 overflow-y-auto text-error font-mono bg-error-container p-3 rounded">${errors.join('<br>')}</div>`, icon: 'error', background: '#fbf9f8', color: '#1b1c1c', confirmButtonColor: '#001b44' });
+            }
+
+            // Execution Pass
+            txsToProcess.forEach(t => {
+                const txData = { id: t.txId, part_id: t.part.id, qty: t.qty, date: txDate, jenis_tx: jenisTx, no_wo: noWo, user_id: currentUser.username, timestamp: isoDate, part_number: t.part.part_number, item_name: t.part.item_name, dept_id: deptId, unit_id: unitId };
+                batchUpdates[`txsOut/${t.txId}`] = txData;
+                batchUpdates[`parts/${t.part.id}/stock_current`] = tempStock[t.part.id];
+            });
+
+            try {
+                await fbRoot.update(batchUpdates);
+                logAction('TX_OUT_BATCH', `${jenisTx} WO: ${noWo} (${txsToProcess.length} items)`);
+                closeModal('modalTxOut'); notif('success', 'Berhasil', 'Seluruh barang keluar terekam ke Cloud.');
+                document.getElementById('formTxOut').reset();
+                document.getElementById('txOutItemsContainer').innerHTML = ''; // Reset form items
+                addTxOutRow(); // Add 1 empty row back
+            } catch (err) { notif('error', 'Gagal Menyimpan', err.message); }
+            finally { showLoading(false); toggleBtnState('btnSubmitOut', false); }
         }
 
         async function saveTransaction(e, type) {
@@ -1533,26 +1613,13 @@
         // --- ADMIN, SETTINGS & MIGRATIONS ---
         function applySettings(config) {
             const appName = config.appName || "ERP WAREHOUSE";
-            
-            // Ubah ID sesuai struktur HTML yang baru: desktopAppName dan mobileAppName disatukan ke appNameDisplay
-            const appNameDisplay = document.getElementById('appNameDisplay');
-            if(appNameDisplay) appNameDisplay.innerText = appName;
-            
-            const docTitle = document.getElementById('docTitle');
-            if(docTitle) docTitle.innerText = appName + " - Enterprise";
-            
-            if(document.getElementById('setAppName')) document.getElementById('setAppName').value = config.appName || ''; 
-            if(document.getElementById('setAppLogo')) document.getElementById('setAppLogo').value = config.logoUrl || '';
-            
-            const defaultLogo = document.getElementById('defaultLogo'); 
-            const imgLogo = document.getElementById('imgLogo');
-            
+            const appNameDisplay = document.getElementById('appNameDisplay'); if(appNameDisplay) appNameDisplay.innerText = appName;
+            const docTitle = document.getElementById('docTitle'); if(docTitle) docTitle.innerText = appName + " - Enterprise";
+            if(document.getElementById('setAppName')) document.getElementById('setAppName').value = config.appName || ''; if(document.getElementById('setAppLogo')) document.getElementById('setAppLogo').value = config.logoUrl || '';
+            const dLogoCont = document.getElementById('desktopLogoContainer'); const dDefLogo = document.getElementById('defaultLogo'); const mDefLogo = document.getElementById('mobileDefaultLogo'); const mImgLogo = document.getElementById('mobileImgLogo');
             if(config.logoUrl) {
                 if(defaultLogo) defaultLogo.classList.add('hide'); 
-                if(imgLogo) {
-                    imgLogo.src = config.logoUrl;
-                    imgLogo.classList.remove('hide');
-                }
+                if(imgLogo) { imgLogo.src = config.logoUrl; imgLogo.classList.remove('hide'); }
             } else {
                 if(defaultLogo) defaultLogo.classList.remove('hide'); 
                 if(imgLogo) imgLogo.classList.add('hide');
@@ -1561,13 +1628,11 @@
 
         function switchAdminTab(tabName) {
             ['DataMaster', 'UserMgmt', 'AppConfig', 'SysLogs'].forEach(t => { 
-                const btn = document.getElementById('tabAdm-' + t); 
-                const view = document.getElementById('admView-' + t); 
+                const btn = document.getElementById('tabAdm-' + t); const view = document.getElementById('admView-' + t); 
                 if(btn) { btn.classList.remove('tab-active', 'text-primary', 'font-bold'); btn.classList.add('text-on-surface-variant'); } 
                 if(view) { view.style.display = 'none'; view.classList.add('hide'); view.classList.remove('animate-fade-slide'); } 
             });
-            const aBtn = document.getElementById('tabAdm-' + tabName); 
-            const aView = document.getElementById('admView-' + tabName);
+            const aBtn = document.getElementById('tabAdm-' + tabName); const aView = document.getElementById('admView-' + tabName);
             if(aBtn) { aBtn.classList.add('tab-active', 'text-primary', 'font-bold'); aBtn.classList.remove('text-on-surface-variant'); } 
             if(aView) { aView.style.display = 'block'; aView.classList.remove('hide'); aView.classList.add('animate-fade-slide'); }
             if(tabName === 'UserMgmt') renderUserTable(); if(tabName === 'SysLogs') renderLogsTable();
@@ -1576,12 +1641,10 @@
         async function triggerMigrateFromSheets() {
             const confirm = await Swal.fire({ title: 'Tarik Data dari Sheets?', text: "Proses ini akan mereplikasi data Sheets ke Firebase Cloud.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#fbbc00', confirmButtonText: 'Ya, Migrasikan!', background: '#fbf9f8', color: '#1b1c1c' });
             if(!confirm.isConfirmed) return;
-            
             try {
                 showLoading(true, "Membaca Google Sheets (Membutuhkan waktu)..."); 
                 const res = await fetchAPI('getAllData'); 
                 if(!res.success) throw new Error(res.message);
-                
                 showLoading(true, "Memproses Data & Push ke Cloud...");
                 const updates = {};
                 (res.data.parts || []).forEach(p => { const cleanId = String(p.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `PRT_${Date.now()}`; if(cleanId) updates[`parts/${cleanId}`] = p; });
@@ -1589,40 +1652,20 @@
                 (res.data.txsOut || []).forEach(t => { const cleanId = String(t.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `TOU_${Date.now()}`; if(cleanId) updates[`txsOut/${cleanId}`] = t; });
                 (res.data.depts || []).forEach(d => { if(d.id) updates[`depts/${String(d.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_")}`] = d; });
                 (res.data.units || []).forEach(u => { if(u.id) updates[`units/${String(u.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_")}`] = u; });
-                
-                await fbRoot.update(updates); 
-                logAction('MIGRATE_PULL', 'User pulled data from Google Sheets'); 
-                notif('success', 'Migrasi Berhasil', 'Data Sheets telah diimpor.');
-            } catch (err) { 
-                notif('error', 'Migrasi Cloud Gagal', err.message); 
-            } finally {
-                showLoading(false); 
-            }
+                await fbRoot.update(updates); logAction('MIGRATE_PULL', 'User pulled data from Google Sheets'); notif('success', 'Migrasi Berhasil', 'Data Sheets telah diimpor.');
+            } catch (err) { notif('error', 'Migrasi Cloud Gagal', err.message); } finally { showLoading(false); }
         }
 
         async function triggerBackupToSheets() {
             const confirm = await Swal.fire({ title: 'Backup ke Sheets?', text: "Proses ini mengirim database Cloud saat ini ke Google Sheets.", icon: 'info', showCancelButton: true, confirmButtonColor: '#001b44', confirmButtonText: 'Mulai Backup', background: '#fbf9f8', color: '#1b1c1c' });
             if(!confirm.isConfirmed) return; 
-            
             try {
                 showLoading(true, "Menyiapkan Data Cloud...");
-                const snap = await fbRoot.once('value'); 
-                const firebaseData = snap.val() || {}; 
-                
+                const snap = await fbRoot.once('value'); const firebaseData = snap.val() || {}; 
                 showLoading(true, "Menulis Data ke Google Sheets (Bisa memakan waktu)...");
                 const res = await fetchAPI('runFullBackup', firebaseData); 
-                
-                if(res.success) { 
-                    logAction('MIGRATE_PUSH', 'User pushed backup to Google Sheets'); 
-                    notif('success', 'Backup Selesai', res.message); 
-                } else { 
-                    throw new Error(res.message); 
-                }
-            } catch(err) { 
-                notif('error', 'Sistem Error', err.message); 
-            } finally {
-                showLoading(false);
-            }
+                if(res.success) { logAction('MIGRATE_PUSH', 'User pushed backup to Google Sheets'); notif('success', 'Backup Selesai', res.message); } else { throw new Error(res.message); }
+            } catch(err) { notif('error', 'Sistem Error', err.message); } finally { showLoading(false); }
         }
 
         function renderUserTable() {
@@ -1662,38 +1705,19 @@
             if(u) { document.getElementById('userMode').value = 'EDIT'; document.getElementById('usrUsername').value = u.username; document.getElementById('usrUsername').readOnly = true; document.getElementById('usrPassword').value = u.password; document.getElementById('usrName').value = u.nama; document.getElementById('usrRole').value = u.role; openModal('modalUser'); }
         }
 
-        // --- OTHER UTILS ---
-        function exportToExcel() {
-            if(!appData.parts || appData.parts.length === 0) return notif('warning', 'Data Kosong', 'Tidak ada data stok.'); showLoading(true, "Menyiapkan File Excel...");
-            try {
-                const exportData = appData.parts.map((p, index) => ({ 'No': index + 1, 'Part Number': p.part_number, 'Kode Accurate': p.kode_accurate || '-', 'Nama / Deskripsi': p.item_name, 'Brand': p.brand_merk || '-', 'Tipe Unit': p.unit_type || '-', 'Kategori': p.kategori, 'Pergerakan': p.pergerakan, 'Satuan': p.satuan, 'Lokasi': p.lokasi_gudang || '-', 'Stok Sistem': p.stock_current, 'Stok Fisik Aktual': '', 'Selisih': '', 'Keterangan': '' }));
-                const ws = XLSX.utils.json_to_sheet(exportData); ws['!cols'] = [{wch:5}, {wch:20}, {wch:15}, {wch:40}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:10}, {wch:15}, {wch:12}, {wch:15}, {wch:10}, {wch:20}];
-                const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Sheet_Opname");
-                XLSX.writeFile(wb, `Form_Stock_Opname_${new Date().toLocaleDateString('id-ID').replace(/\//g,'-')}.xlsx`);
-                logAction('EXPORT_EXCEL', `User downloaded Master Asset excel`); notif('success', 'Download Selesai', 'File Excel siap.');
-            } catch (err) { notif('error', 'Export Gagal', err.message); } finally { showLoading(false); }
-        }
-
-        function downloadPDF() {
-            const element = document.getElementById('pdfTargetArea'); notif('info', 'Menyiapkan Render PDF...', 'Harap tunggu.');
-            logAction('EXPORT_PDF', `User exported critical stock PDF`);
-            html2pdf().set({ margin: 0.5, filename: `Report_Kritis_${new Date().getTime()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save().then(() => Swal.close());
-        }
-
-        function openModal(id) { document.getElementById(id).classList.remove('hide'); } 
+        function openModal(id) { 
+            document.getElementById(id).classList.remove('hide'); 
+            // Initialize multi-item for OUT if opened
+            if (id === 'modalTxOut') { document.getElementById('txOutItemsContainer').innerHTML = ''; addTxOutRow(); }
+        } 
         function closeModal(id) { document.getElementById(id).classList.add('hide'); }
         
         function populateSelects() {
-            if(selectSearchIn) selectSearchIn.destroy(); if(selectSearchOut) selectSearchOut.destroy();
-            const partOptions = `<option value="">Ketik untuk mencari (ID/Part/Nama)...</option>` + appData.parts.map(p => `<option value="${p.id}">[${p.part_number}] ${p.item_name} - Stok: ${p.stock_current} ${p.satuan||''}</option>`).join('');
+            if(selectSearchIn) selectSearchIn.destroy(); 
+            windowPartOptionsHTML = `<option value="">Ketik SKU / Part Number / Nama...</option>` + appData.parts.map(p => `<option value="${p.id}">[${p.kode_accurate||'NO-SKU'}] ${p.part_number} - ${p.item_name} (${p.brand_merk||'-'} | ${p.unit_type||'-'}) - Stok: ${p.stock_current} ${p.satuan||''}</option>`).join('');
             
-            const elIn = document.getElementById('txInPart'); const elOut = document.getElementById('txOutPart');
-            if(elIn) elIn.innerHTML = partOptions; 
-            if(elOut) elOut.innerHTML = partOptions;
-            
-            const tsConfig = { create: false, maxOptions: null, sortField: {field: "text", direction: "asc"} }; 
-            if(elIn) selectSearchIn = new TomSelect("#txInPart", tsConfig); 
-            if(elOut) selectSearchOut = new TomSelect("#txOutPart", tsConfig);
+            const elIn = document.getElementById('txInPart'); 
+            if(elIn) { elIn.innerHTML = windowPartOptionsHTML; selectSearchIn = new TomSelect("#txInPart", { create: false, maxOptions: null, sortField: {field: "text", direction: "asc"} }); }
             
             document.getElementById('txOutDept').innerHTML = appData.depts.map(d => `<option value="${d.id}">${d.nama_dept}</option>`).join(''); document.getElementById('txOutUnit').innerHTML = appData.units.map(u => `<option value="${u.id}">${u.nama_unit}</option>`).join('');
             document.getElementById('deptList').innerHTML = appData.depts.map(d => `<li class="border-b border-outline-variant/20 pb-2 flex justify-between"><span>${d.nama_dept}</span> <span class="text-xs text-on-surface-variant font-mono font-medium">${d.id}</span></li>`).join(''); document.getElementById('unitList').innerHTML = appData.units.map(u => `<li class="border-b border-outline-variant/20 pb-2 flex justify-between"><span>${u.nama_unit}</span> <span class="text-xs text-on-surface-variant font-mono font-medium">${u.id}</span></li>`).join('');
