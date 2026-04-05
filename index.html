@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title id="docTitle">Warehouse ERP - Cloud Edition</title>
+    <title id="docTitle">Warehouse ERP - Enterprise</title>
     
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -82,10 +82,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         h1, h2, h3, h4, h5, h6 { font-family: 'Manrope', sans-serif; }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
         .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -94,8 +91,23 @@
 
         .hide { display: none !important; }
         
-        .nav-desktop-active { background-color: #002f6c; color: #ffffff; }
+        /* Top Nav Styling */
+        .nav-desktop-active {
+            border-bottom-color: #001b44 !important;
+            color: #001b44 !important;
+            background-color: rgba(0, 27, 68, 0.03);
+        }
         .nav-desktop-active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
+        .nav-desktop-inactive {
+            border-bottom-color: transparent !important;
+            color: #747781 !important;
+        }
+        .nav-desktop-inactive:hover {
+            background-color: rgba(0, 27, 68, 0.05);
+            color: #001b44 !important;
+        }
+        
+        /* Mobile Nav Styling */
         .nav-mobile-active { color: #001b44; font-weight: 600; }
         .nav-mobile-active .nav-icon-bg { background-color: #d8e2ff; padding: 4px; border-radius: 9999px; }
         .nav-mobile-active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
@@ -116,11 +128,7 @@
         @keyframes progress-indeterminate { 0% { transform: translateX(-100%); width: 30%; } 50% { width: 50%; } 100% { transform: translateX(400%); width: 30%; } }
         .animate-progress { animation: progress-indeterminate 1.5s ease-in-out infinite; }
         
-        /* Animasi Transisi Menu Baru */
-        @keyframes fadeSlideIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-slide { animation: fadeSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 
         .brand-logo { max-height: 32px; max-width: 32px; object-fit: contain; }
@@ -139,6 +147,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     
@@ -201,88 +210,100 @@
         </div>
     </div>
 
-    <!-- DESKTOP SIDEBAR -->
-    <aside class="hidden md:flex flex-col w-64 bg-primary text-on-primary shrink-0 z-40 transition-all shadow-xl">
-        <div class="p-6 flex items-center gap-3 mb-1 border-b border-white/10">
-            <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center overflow-hidden" id="desktopLogoContainer">
-                <span class="material-symbols-outlined text-on-primary-container filled text-2xl" id="defaultLogo">inventory_2</span>
-            </div>
-            <div>
-                <h1 class="text-lg font-extrabold tracking-tight truncate w-36" id="desktopAppName">ERP WAREHOUSE</h1>
-                <p class="text-[10px] text-on-primary-container font-medium opacity-80 uppercase tracking-widest">Mining Edition</p>
+    <!-- THIN DARK SIDEBAR (KOSONGAN SEPERTI REFERENSI) -->
+    <aside class="hidden lg:flex w-[72px] bg-[#0a0f1c] flex-col items-center py-6 border-r border-gray-800 shrink-0 z-50">
+        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white mb-8 shadow-lg cursor-pointer hover:bg-primary-fixed-variant transition">
+            <span class="material-symbols-outlined text-[20px] filled">inventory_2</span>
+        </div>
+        <div class="flex-1 flex flex-col gap-6">
+            <div class="w-10 h-10 rounded-full bg-[#1a2133] flex items-center justify-center text-primary-fixed-dim cursor-pointer hover:text-white transition" title="Home">
+                <span class="material-symbols-outlined text-[20px]">home</span>
             </div>
         </div>
-        
-        <nav class="flex-grow px-4 space-y-2 mt-6">
-            <a href="#" onclick="router('dashboard')" id="navD-dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
-                <span class="material-symbols-outlined">dashboard</span><span>Dashboard Analitik</span>
-            </a>
-            <a href="#" onclick="router('po')" id="navD-po" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
-                <span class="material-symbols-outlined">local_shipping</span><span>Status Order & PO</span>
-            </a>
-            <a href="#" onclick="router('tracking')" id="navD-tracking" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
-                <span class="material-symbols-outlined">timeline</span><span>Logistik & Tracking</span>
-            </a>
-            <a href="#" onclick="router('stock')" id="navD-stock" class="nav-desktop-active flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium">
-                <span class="material-symbols-outlined">search_insights</span><span>Master Inventory</span>
-            </a>
-            <a href="#" onclick="router('master')" id="navD-master" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-primary-container hover:bg-white/5 transition-colors text-sm font-medium admin-only hide">
-                <span class="material-symbols-outlined">admin_panel_settings</span><span>System Administration</span>
-            </a>
-        </nav>
-        <div class="p-6 border-t border-white/10" id="desktopAuthBtn"></div>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-white cursor-pointer transition">
+            <span class="material-symbols-outlined text-[20px]">settings</span>
+        </div>
     </aside>
 
-    <!-- MOBILE BOTTOM NAV -->
-    <nav class="md:hidden fixed bottom-0 w-full bg-surface-container-lowest/95 backdrop-blur-md border-t border-outline-variant/20 z-50 flex justify-around p-2 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]" id="mobileNav">
-        <a href="#" onclick="router('dashboard')" id="navM-dashboard" class="flex flex-col items-center p-2 text-on-surface-variant transition">
-            <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">dashboard</span></div><span class="text-[10px] mt-1 font-medium">Dash</span>
-        </a>
-        <a href="#" onclick="router('po')" id="navM-po" class="flex flex-col items-center p-2 text-on-surface-variant transition">
-            <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">local_shipping</span></div><span class="text-[10px] mt-1 font-medium">Order</span>
-        </a>
-        <a href="#" onclick="router('tracking')" id="navM-tracking" class="flex flex-col items-center p-2 text-on-surface-variant transition">
-            <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">timeline</span></div><span class="text-[10px] mt-1 font-medium">Track</span>
-        </a>
-        <a href="#" onclick="router('stock')" id="navM-stock" class="nav-mobile-active flex flex-col items-center p-2 text-on-surface-variant transition">
-            <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">search_insights</span></div><span class="text-[10px] mt-1 font-medium">Stock</span>
-        </a>
-        <a href="#" onclick="openModal('modalMobileMenu')" class="flex flex-col items-center p-2 text-on-surface-variant transition">
-            <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">menu</span></div><span class="text-[10px] mt-1 font-medium">Menu</span>
-        </a>
-    </nav>
-
-    <!-- MOBILE EXPANDED MENU -->
-    <div id="modalMobileMenu" class="fixed inset-0 bg-inverse-surface/50 z-[60] hide flex flex-col items-center justify-center p-6 backdrop-blur-md">
-        <button onclick="closeModal('modalMobileMenu')" class="absolute top-6 right-6 p-2 bg-surface-container-lowest rounded-full text-on-surface shadow-lg"><span class="material-symbols-outlined">close</span></button>
-        <div class="w-full max-w-sm" id="mobileMenuContent"></div>
-    </div>
-
-    <!-- MAIN CONTENT WRAPPER -->
+    <!-- MAIN WRAPPER LAYER -->
     <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- TopNavBar (Desktop) -->
-        <header class="hidden md:flex h-16 bg-surface-container-lowest items-center justify-between px-8 border-b border-outline-variant/20 shrink-0 z-30 shadow-sm">
-            <div class="flex items-center flex-1">
-                <h2 class="text-sm font-bold text-primary mr-4 uppercase tracking-widest opacity-70" id="topNavTitle">Master Inventory</h2>
+        
+        <!-- GLOBAL TOP NAVIGATION BAR -->
+        <header class="flex h-[72px] bg-surface-container-lowest items-center justify-between px-4 lg:px-8 border-b border-outline-variant/20 shrink-0 z-40 shadow-sm relative">
+            <div class="flex items-center h-full">
+                
+                <!-- Branding / Logo -->
+                <div class="flex items-center gap-3 mr-8 lg:ml-0">
+                    <div class="lg:hidden w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center overflow-hidden">
+                        <span class="material-symbols-outlined text-on-primary-container filled text-2xl" id="defaultLogoMobile">inventory_2</span>
+                    </div>
+                    <img id="imgLogo" class="brand-logo hide" src="" alt="Logo">
+                    <div>
+                        <h1 class="text-lg font-extrabold tracking-tight truncate w-32 md:w-auto text-primary" id="appNameDisplay">ERP WAREHOUSE</h1>
+                        <p class="hidden md:block text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Mining Edition</p>
+                    </div>
+                    <!-- Cloud Status Indicator (Mobile) -->
+                    <div class="lg:hidden flex items-center text-[10px] text-secondary-fixed bg-secondary-container/20 px-2 py-1 rounded-full border border-secondary-fixed/30 font-bold ml-2">
+                        <div class="w-1.5 h-1.5 bg-secondary-fixed rounded-full mr-1.5 animate-pulse"></div> DB
+                    </div>
+                </div>
+
+                <!-- Desktop Nav Links -->
+                <nav class="hidden lg:flex items-center h-full gap-1" id="desktopNavLinks">
+                    <a href="#" onclick="router('dashboard')" id="navD-dashboard" class="h-full flex items-center gap-2 px-4 border-b-[3px] nav-desktop-inactive transition-all font-bold text-sm">
+                        <span class="material-symbols-outlined text-[20px]">dashboard</span> Analitik
+                    </a>
+                    <a href="#" onclick="router('po')" id="navD-po" class="h-full flex items-center gap-2 px-4 border-b-[3px] nav-desktop-inactive transition-all font-bold text-sm">
+                        <span class="material-symbols-outlined text-[20px]">local_shipping</span> Status Order & PO
+                    </a>
+                    <a href="#" onclick="router('tracking')" id="navD-tracking" class="h-full flex items-center gap-2 px-4 border-b-[3px] nav-desktop-inactive transition-all font-bold text-sm">
+                        <span class="material-symbols-outlined text-[20px]">timeline</span> Logistik
+                    </a>
+                    <a href="#" onclick="router('stock')" id="navD-stock" class="h-full flex items-center gap-2 px-4 border-b-[3px] nav-desktop-inactive transition-all font-bold text-sm">
+                        <span class="material-symbols-outlined text-[20px]">search_insights</span> Inventory
+                    </a>
+                    <a href="#" onclick="router('master')" id="navD-master" class="h-full flex items-center gap-2 px-4 border-b-[3px] nav-desktop-inactive transition-all font-bold text-sm admin-only hide">
+                        <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span> System
+                    </a>
+                </nav>
             </div>
-            <div class="flex items-center gap-6">
-                <div class="flex items-center gap-3 border-l border-outline-variant/30 pl-6" id="desktopUserInfo"></div>
+
+            <!-- Right Side: User Profile & Actions -->
+            <div class="flex items-center gap-4 h-full">
+                <div id="desktopUserInfo" class="flex items-center gap-3 border-l border-outline-variant/30 pl-6 h-full"></div>
+                <div id="desktopAuthBtn"></div>
             </div>
         </header>
 
-        <!-- Main Scrollable Canvas -->
-        <main class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 custom-scrollbar bg-background pb-24 md:pb-6">
-            
-            <header class="md:hidden flex justify-between items-center mb-4 bg-primary p-4 rounded-2xl shadow-lg">
-                <div class="flex items-center text-on-primary">
-                    <span class="material-symbols-outlined filled mr-2" id="mobileDefaultLogo">inventory_2</span>
-                    <img id="mobileImgLogo" class="brand-logo mr-2 hide" src="" alt="Logo">
-                    <h1 class="font-extrabold text-sm tracking-wide truncate w-32" id="mobileAppName">ERP CLOUD</h1>
-                </div>
-                <div class="flex items-center text-[10px] text-secondary-fixed bg-secondary-container/20 px-2 py-1 rounded-full border border-secondary-fixed/30 font-bold"><div class="w-1.5 h-1.5 bg-secondary-fixed rounded-full mr-1.5 animate-pulse"></div> FIREBASE</div>
-            </header>
+        <!-- MOBILE BOTTOM NAV -->
+        <nav class="lg:hidden fixed bottom-0 w-full bg-surface-container-lowest/95 backdrop-blur-md border-t border-outline-variant/20 z-50 flex justify-around p-2 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]" id="mobileNav">
+            <a href="#" onclick="router('dashboard')" id="navM-dashboard" class="flex flex-col items-center p-2 text-on-surface-variant transition">
+                <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">dashboard</span></div><span class="text-[10px] mt-1 font-medium">Dash</span>
+            </a>
+            <a href="#" onclick="router('po')" id="navM-po" class="flex flex-col items-center p-2 text-on-surface-variant transition">
+                <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">local_shipping</span></div><span class="text-[10px] mt-1 font-medium">Order</span>
+            </a>
+            <a href="#" onclick="router('tracking')" id="navM-tracking" class="flex flex-col items-center p-2 text-on-surface-variant transition">
+                <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">timeline</span></div><span class="text-[10px] mt-1 font-medium">Track</span>
+            </a>
+            <a href="#" onclick="router('stock')" id="navM-stock" class="nav-mobile-active flex flex-col items-center p-2 text-on-surface-variant transition">
+                <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">search_insights</span></div><span class="text-[10px] mt-1 font-medium">Stock</span>
+            </a>
+            <a href="#" onclick="openModal('modalMobileMenu')" class="flex flex-col items-center p-2 text-on-surface-variant transition">
+                <div class="nav-icon-bg"><span class="material-symbols-outlined text-xl">menu</span></div><span class="text-[10px] mt-1 font-medium">Menu</span>
+            </a>
+        </nav>
 
-            <!-- ADMIN QUICK ACTIONS -->
+        <!-- MOBILE EXPANDED MENU -->
+        <div id="modalMobileMenu" class="fixed inset-0 bg-inverse-surface/50 z-[60] hide flex flex-col items-center justify-center p-6 backdrop-blur-md">
+            <button onclick="closeModal('modalMobileMenu')" class="absolute top-6 right-6 p-2 bg-surface-container-lowest rounded-full text-on-surface shadow-lg"><span class="material-symbols-outlined">close</span></button>
+            <div class="w-full max-w-sm" id="mobileMenuContent"></div>
+        </div>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 custom-scrollbar bg-background pb-24 md:pb-8 relative">
+            
+            <!-- ADMIN QUICK ACTIONS (Dashboard top) -->
             <div id="adminQuickActions" class="admin-only hide bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20 w-full mb-6">
                 <h3 class="text-lg font-bold text-primary mb-4 flex items-center"><span class="material-symbols-outlined mr-2">speed</span> Admin Quick Actions</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -299,7 +320,7 @@
             </div>
 
             <!-- SECTION PO TRACKING (ACCURATE) -->
-            <section id="view-po" class="space-y-6 hide">
+            <section id="view-po" class="space-y-6 hide animate-fade-slide">
                 <div class="flex flex-col lg:flex-row justify-between lg:items-center space-y-4 lg:space-y-0">
                     <div>
                         <h2 class="text-2xl font-extrabold text-on-surface">Status Pemesanan (PO) & Outstanding</h2>
@@ -358,11 +379,11 @@
                         <table class="w-full border-collapse text-left">
                             <thead>
                                 <tr class="bg-surface-container-low/50">
-                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Dokumen Pemesanan</th>
-                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest w-1/3">Informasi Part/Barang</th>
-                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Progress (Rcv vs Order)</th>
-                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Outstanding</th>
-                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Status</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Dokumen Pemesanan</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest w-1/3 whitespace-nowrap">Informasi Part/Barang</th>
+                                    <th class="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Progress (Rcv vs Order)</th>
+                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Outstanding</th>
+                                    <th class="px-6 py-4 text-center text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest whitespace-nowrap">Status</th>
                                 </tr>
                             </thead>
                             <tbody id="poTableBody" class="divide-y divide-outline-variant/10"></tbody>
@@ -376,7 +397,7 @@
             </section>
 
             <!-- DASHBOARD SECTION -->
-            <section id="view-dashboard" class="space-y-6 hide">
+            <section id="view-dashboard" class="space-y-6 hide animate-fade-slide">
                 <div class="flex flex-col lg:flex-row justify-between lg:items-end space-y-4 lg:space-y-0">
                     <div>
                         <h2 class="text-2xl font-extrabold text-on-surface mb-1">Dashboard Analitik</h2>
@@ -393,7 +414,7 @@
 
                 <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20 w-full">
                     <div class="flex items-center mb-4 text-sm font-extrabold text-primary"><span class="material-symbols-outlined mr-2">trending_up</span> Trend Pengeluaran Normal (Qty)</div>
-                    <div class="h-64 w-full relative"><canvas id="chartSparepart"></canvas></div>
+                    <div id="chartSparepart" class="h-80 w-full relative"></div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -432,7 +453,7 @@
             </section>
 
             <!-- TRACKING SECTION (Internal Transaksi) -->
-            <section id="view-tracking" class="space-y-6 hide">
+            <section id="view-tracking" class="space-y-6 hide animate-fade-slide">
                 <div class="flex flex-col lg:flex-row justify-between lg:items-center space-y-4 lg:space-y-0">
                     <div><h2 class="text-2xl font-extrabold text-on-surface">Logistik Tracking</h2><p class="text-sm text-on-surface-variant">Pusat pencatatan sirkulasi pergerakan aset gudang.</p></div>
                     <div class="flex flex-wrap gap-2 admin-only hide">
@@ -474,7 +495,7 @@
             </section>
 
             <!-- STOCK SECTION -->
-            <section id="view-stock" class="space-y-6 hide">
+            <section id="view-stock" class="space-y-6 block animate-fade-slide">
                 <div class="flex flex-col lg:flex-row justify-between lg:items-center space-y-4 lg:space-y-0">
                     <div><h2 class="text-2xl font-extrabold text-on-surface">Master Inventory</h2><p class="text-sm text-on-surface-variant">Pusat data referensi item & aset gudang.</p></div>
                     <div class="flex flex-wrap gap-2 admin-only hide">
@@ -522,7 +543,7 @@
             </section>
             
             <!-- SYSTEM ADMINISTRATION SECTION -->
-            <section id="view-master" class="space-y-6 hide">
+            <section id="view-master" class="space-y-6 hide animate-fade-slide">
                 <h2 class="text-2xl font-extrabold text-on-surface">System Administration</h2>
                 <p class="text-sm text-on-surface-variant mb-6">Pusat kendali konfigurasi Enterprise ERP.</p>
                 
@@ -534,7 +555,7 @@
                 </div>
 
                 <!-- Sub-Views -->
-                <div id="admView-DataMaster" class="block space-y-6">
+                <div id="admView-DataMaster" class="block space-y-6 animate-fade-slide">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
                             <h3 class="text-lg font-bold text-on-surface mb-4 flex items-center"><span class="material-symbols-outlined text-primary-fixed-variant mr-2">domain</span> Departemen Alokasi</h3>
@@ -547,7 +568,7 @@
                     </div>
                 </div>
 
-                <div id="admView-UserMgmt" class="hide space-y-6">
+                <div id="admView-UserMgmt" class="hide space-y-6 animate-fade-slide">
                     <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="text-lg font-bold text-on-surface flex items-center"><span class="material-symbols-outlined text-primary mr-2">manage_accounts</span> Daftar Pengguna Sistem</h3>
@@ -564,7 +585,7 @@
                     </div>
                 </div>
 
-                <div id="admView-AppConfig" class="hide space-y-6">
+                <div id="admView-AppConfig" class="hide space-y-6 animate-fade-slide">
                     <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20 max-w-3xl">
                         <h3 class="text-lg font-bold text-on-surface mb-6 flex items-center"><span class="material-symbols-outlined text-tertiary-fixed-dim mr-2 filled">branding_watermark</span> Enterprise Branding</h3>
                         <form id="formSettings" onsubmit="saveSettings(event)" class="space-y-5">
@@ -575,7 +596,7 @@
                     </div>
                 </div>
 
-                <div id="admView-SysLogs" class="hide space-y-6">
+                <div id="admView-SysLogs" class="hide space-y-6 animate-fade-slide">
                     <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="text-lg font-bold text-on-surface flex items-center"><span class="material-symbols-outlined text-primary mr-2">policy</span> System Audit Trail</h3>
@@ -650,7 +671,7 @@
                     <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Vendor / Supplier</label><input type="text" id="txInVendor" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
                     <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. PO / Bukti</label><input type="text" id="txInPO" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
                 </div>
-                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. Work Order / Surat Jalan <span class="text-outline text-[10px] lowercase normal-case font-normal">*Opsional</span></label><input type="text" id="txInWO" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary" placeholder="Contoh: SJ-2026-001"></div>
+                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. Surat Jalan <span class="text-outline text-[10px] lowercase normal-case font-normal">*Opsional</span></label><input type="text" id="txInWO" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary" placeholder="Contoh: SJ-2026-001"></div>
                 <div class="flex justify-end pt-4 mt-2"><button type="submit" id="btnSubmitIn" class="px-8 py-3 bg-secondary hover:bg-on-secondary-fixed-variant rounded-xl text-on-secondary font-bold transition w-full shadow-md text-base">Eksekusi Data Masuk</button></div>
             </form>
         </div>
@@ -730,16 +751,46 @@
         </div>
     </div>
 
-    <!-- Modal Login -->
-    <div id="modalLogin" class="fixed inset-0 bg-inverse-surface/80 z-[100] flex justify-center items-center hide backdrop-blur-md px-4">
-        <div class="bg-surface-container-lowest p-10 rounded-[2rem] w-full max-w-md shadow-2xl">
-            <div class="text-center mb-8"><span class="material-symbols-outlined text-5xl text-primary mx-auto mb-4 p-4 bg-primary-fixed rounded-full inline-block">fingerprint</span><h2 class="text-2xl font-extrabold text-on-surface tracking-wide">SECURE LOGIN</h2><p class="text-sm text-on-surface-variant mt-2">Enterprise Logistics Administrator</p></div>
-            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
-                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-widest">Username</label><input type="text" id="logUser" required class="w-full bg-surface-container-low border border-outline-variant/50 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"></div>
-                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-widest">Password</label><input type="password" id="logPass" required class="w-full bg-surface-container-low border border-outline-variant/50 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"></div>
-                <button type="submit" id="btnSubmitLogin" class="w-full bg-primary hover:bg-primary-fixed-variant text-on-primary font-bold py-3.5 rounded-xl transition mt-4 shadow-lg text-base">Akses Sistem</button>
-                <div class="pt-6 border-t border-outline-variant/20 mt-6"><button type="button" onclick="emergencyInitFirebase()" class="w-full bg-surface-container hover:bg-surface-dim text-on-surface-variant text-xs font-extrabold py-3 rounded-xl transition flex items-center justify-center uppercase tracking-widest"><span class="material-symbols-outlined text-sm mr-2">database</span> SETUP AKUN ADMIN AWAL</button></div>
-            </form>
+    <!-- Modal Login dengan Latar Belakang Penuh -->
+    <div id="modalLogin" class="fixed inset-0 z-[100] flex hide">
+        <!-- Background Image dengan Overlay Gelap -->
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://drive.google.com/uc?export=view&id=1krgACTjDbcUSIPZ5WcRQ3xzSjueV-GGz');">
+            <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-[2px]"></div>
+        </div>
+        
+        <!-- Area Konten Login -->
+        <div class="relative z-10 w-full h-full flex flex-col lg:flex-row items-center justify-center lg:justify-evenly p-6 overflow-y-auto">
+            
+            <!-- Teks Sambutan (Kiri) -->
+            <div class="text-white text-center lg:text-left max-w-lg mb-10 lg:mb-0 mt-8 lg:mt-0 px-4">
+                <span class="material-symbols-outlined text-6xl mb-4 opacity-90">inventory_2</span>
+                <h1 class="text-4xl lg:text-5xl font-extrabold mb-4 tracking-tight leading-tight drop-shadow-lg">Warehouse ERP <br><span class="text-primary-fixed">Enterprise Edition</span></h1>
+                <p class="text-lg text-white/90 font-medium drop-shadow-md">Sistem manajemen logistik terintegrasi. Pantau sirkulasi barang, pengadaan, dan inventaris secara real-time.</p>
+            </div>
+            
+            <!-- Kotak Login (Kanan) -->
+            <div class="bg-surface-container-lowest p-10 rounded-[2rem] w-full max-w-md shadow-2xl shrink-0">
+                <div class="text-center mb-8">
+                    <span class="material-symbols-outlined text-5xl text-primary mx-auto mb-4 p-4 bg-primary-fixed rounded-full inline-block">fingerprint</span>
+                    <h2 class="text-2xl font-extrabold text-on-surface tracking-wide">SECURE LOGIN</h2>
+                    <p class="text-sm text-on-surface-variant mt-2">Masuk untuk mengakses sistem</p>
+                </div>
+                <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-widest">Username</label>
+                        <input type="text" id="logUser" required class="w-full bg-surface-container-low border border-outline-variant/50 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-widest">Password</label>
+                        <input type="password" id="logPass" required class="w-full bg-surface-container-low border border-outline-variant/50 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <button type="submit" id="btnSubmitLogin" class="w-full bg-primary hover:bg-primary-fixed-variant text-on-primary font-bold py-3.5 rounded-xl transition mt-4 shadow-lg text-base">Akses Sistem</button>
+                    <div class="pt-6 border-t border-outline-variant/20 mt-6">
+                        <button type="button" onclick="emergencyInitFirebase()" class="w-full bg-surface-container hover:bg-surface-dim text-on-surface-variant text-xs font-extrabold py-3 rounded-xl transition flex items-center justify-center uppercase tracking-widest"><span class="material-symbols-outlined text-sm mr-2">database</span> SETUP AKUN ADMIN AWAL</button>
+                    </div>
+                </form>
+            </div>
+            
         </div>
     </div>
 
@@ -777,6 +828,17 @@
         function debounce(func, wait) { let timeout; return function(...args) { const later = () => { clearTimeout(timeout); func(...args); }; clearTimeout(timeout); timeout = setTimeout(later, wait); }; }
         function toggleBtnState(btnId, isLoading) { const btn = document.getElementById(btnId); if(!btn) return; if(isLoading) { btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); } else { btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); } }
 
+        async function fetchAPI(action, payload = {}) {
+            try {
+                const controller = new AbortController(); 
+                const timeoutId = setTimeout(() => controller.abort(), 90000); 
+                const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: action, data: payload }), signal: controller.signal });
+                clearTimeout(timeoutId); return await response.json();
+            } catch (error) {
+                console.error("Fetch Error:", error); return { success: false, message: "Koneksi ke server terputus/Timeout." };
+            }
+        }
+
         async function logAction(actionName, details) {
             if(!currentUser) return; const logId = 'LOG_' + Date.now();
             const logData = { id: logId, timestamp: new Date().toISOString(), user: currentUser.username, nama: currentUser.nama, action: actionName, details: details };
@@ -808,8 +870,8 @@
 
         function checkSession() {
             const saved = localStorage.getItem('erp_session');
-            if (saved) { currentUser = JSON.parse(saved); applyRoleAccess(); renderAuthBtn(true); router('stock'); } 
-            else { renderAuthBtn(false); applyRoleAccess(); router('stock'); }
+            if (saved) { currentUser = JSON.parse(saved); applyRoleAccess(); renderAuthBtn(true); router('dashboard'); } 
+            else { renderAuthBtn(false); applyRoleAccess(); router('dashboard'); }
         }
 
         function renderAuthBtn(isLoggedIn) {
@@ -817,12 +879,15 @@
             if (isLoggedIn) {
                 const roleColor = currentUser.role === 'SuperAdmin' ? 'text-error' : 'text-primary';
                 const roleBg = currentUser.role === 'SuperAdmin' ? 'bg-error-container' : 'bg-primary-fixed';
-                dUser.innerHTML = `<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined text-on-surface-variant">person</span></div><div class="hidden lg:block"><p class="text-sm font-bold text-on-surface">${currentUser.nama}</p><p class="text-[10px] ${roleColor} uppercase tracking-widest font-bold">${currentUser.role}</p></div>`; dUser.classList.remove('hide');
-                dAuth.innerHTML = `<button onclick="logout()" class="w-full flex items-center justify-center px-4 py-3 bg-white/5 hover:bg-white/10 rounded-xl text-on-primary-container transition text-sm font-bold"><span class="material-symbols-outlined mr-2">logout</span> Keluar Sistem</button>`; dAuth.classList.remove('hide');
+                dUser.innerHTML = `<div class="hidden lg:block text-right"><p class="text-sm font-extrabold text-on-surface leading-tight">${currentUser.nama}</p><p class="text-[10px] ${roleColor} uppercase tracking-widest font-bold">${currentUser.role}</p></div><div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container border border-outline-variant/50 flex items-center justify-center"><span class="material-symbols-outlined text-on-surface-variant">person</span></div>`; 
+                dUser.classList.remove('hide');
+                dAuth.innerHTML = `<button onclick="logout()" class="text-error hover:bg-error-container/50 p-2 rounded-full transition flex items-center justify-center" title="Keluar"><span class="material-symbols-outlined">logout</span></button>`; 
+                dAuth.classList.remove('hide');
                 mMenu.innerHTML = `<div class="bg-surface-container-lowest p-6 rounded-2xl mb-4 text-center border border-outline-variant/20 shadow-sm"><span class="material-symbols-outlined text-4xl ${roleColor} mb-2 p-3 ${roleBg} rounded-full inline-block">shield_person</span><p class="text-on-surface font-extrabold text-lg mt-2">${currentUser.nama}</p><p class="text-xs ${roleColor} font-bold uppercase tracking-widest mt-1">${currentUser.role}</p></div><button onclick="logout()" class="w-full flex items-center justify-center px-4 py-3 bg-surface-container hover:bg-surface-dim rounded-xl text-error font-bold transition text-sm"><span class="material-symbols-outlined mr-2">logout</span> Keluar Sistem</button>`;
             } else {
                 dUser.classList.add('hide');
-                dAuth.innerHTML = `<button onclick="openModal('modalLogin')" class="w-full flex items-center justify-center px-4 py-3 bg-secondary hover:bg-on-secondary-fixed-variant rounded-xl text-on-secondary font-bold transition shadow-lg text-sm"><span class="material-symbols-outlined mr-2">lock</span> SECURE LOGIN</button>`; dAuth.classList.remove('hide');
+                dAuth.innerHTML = `<button onclick="openModal('modalLogin')" class="flex items-center justify-center px-6 py-2 bg-primary hover:bg-primary-fixed-variant rounded-full text-on-primary font-bold transition shadow-sm text-sm"><span class="material-symbols-outlined mr-2 text-[18px]">lock</span> LOGIN</button>`; 
+                dAuth.classList.remove('hide');
                 mMenu.innerHTML = `<div class="bg-surface-container-lowest p-6 rounded-2xl mb-4 text-center border border-outline-variant/20"><span class="material-symbols-outlined text-4xl text-on-surface-variant mb-2">lock_person</span><p class="text-on-surface-variant text-sm mt-2 font-medium">Anda belum login</p></div><button onclick="openModal('modalLogin')" class="w-full flex items-center justify-center px-4 py-3 bg-primary hover:bg-primary-fixed-variant rounded-xl text-on-primary font-bold transition shadow-md text-sm"><span class="material-symbols-outlined mr-2">lock</span> LOGIN SEKARANG</button>`;
             }
         }
@@ -847,7 +912,7 @@
                 } else { notif('error', 'Akses Ditolak', 'Username atau Password tidak valid.'); }
             } catch (err) { notif('error', 'Sistem Error', 'Gagal memverifikasi ke Cloud.'); } finally { toggleBtnState(btnId, false); showLoading(false); }
         }
-        function logout() { if(currentUser) logAction('LOGOUT', 'User logged out'); localStorage.removeItem('erp_session'); currentUser = null; applyRoleAccess(); renderAuthBtn(false); closeModal('modalMobileMenu'); router('stock'); notif('info', 'Sesi Berakhir', 'Anda telah keluar.'); }
+        function logout() { if(currentUser) logAction('LOGOUT', 'User logged out'); localStorage.removeItem('erp_session'); currentUser = null; applyRoleAccess(); renderAuthBtn(false); closeModal('modalMobileMenu'); router('dashboard'); notif('info', 'Sesi Berakhir', 'Anda telah keluar.'); openModal('modalLogin'); }
 
         // --- 4. NAVIGATION & VIEWS ---
         const viewTitles = { 'dashboard': 'Dashboard Analitik', 'po': 'Status Order & PO', 'tracking': 'Logistik Tracking', 'stock': 'Master Inventory', 'master': 'System Administration' };
@@ -856,14 +921,22 @@
             ['view-dashboard', 'view-po', 'view-tracking', 'view-stock', 'view-master'].forEach(id => {
                 const section = document.getElementById(id);
                 if(section) { section.style.display = 'none'; section.classList.add('hide'); section.classList.remove('animate-fade-slide'); }
-                const navD = document.getElementById('navD-' + id.split('-')[1]); const navM = document.getElementById('navM-' + id.split('-')[1]);
-                if(navD) navD.classList.remove('nav-desktop-active'); if(navM) navM.classList.remove('nav-mobile-active');
+                
+                const navD = document.getElementById('navD-' + id.split('-')[1]); 
+                if(navD) { navD.classList.remove('nav-desktop-active'); navD.classList.add('nav-desktop-inactive'); }
+                
+                const navM = document.getElementById('navM-' + id.split('-')[1]);
+                if(navM) navM.classList.remove('nav-mobile-active');
             });
+            
             const activeSec = document.getElementById('view-' + viewId);
             if(activeSec) { activeSec.style.display = 'block'; activeSec.classList.remove('hide'); activeSec.classList.add('animate-fade-slide'); }
             
-            const aNavD = document.getElementById('navD-' + viewId); const aNavM = document.getElementById('navM-' + viewId);
-            if(aNavD) aNavD.classList.add('nav-desktop-active'); if(aNavM) aNavM.classList.add('nav-mobile-active');
+            const aNavD = document.getElementById('navD-' + viewId); 
+            if(aNavD) { aNavD.classList.add('nav-desktop-active'); aNavD.classList.remove('nav-desktop-inactive'); }
+            
+            const aNavM = document.getElementById('navM-' + viewId);
+            if(aNavM) aNavM.classList.add('nav-mobile-active');
             
             const headerTitle = document.getElementById('topNavTitle'); if(headerTitle) headerTitle.innerText = viewTitles[viewId];
             if(viewId === 'master') switchAdminTab('DataMaster'); closeModal('modalMobileMenu'); 
@@ -886,7 +959,8 @@
         function initFirebaseListeners() {
             if (isFirebaseListening) return; isFirebaseListening = true; showLoading(true, "Mengambil Data Cloud...");
 
-            // Accurate PO Sync Listener
+            const initTimeout = setTimeout(() => { showLoading(false); }, 12000);
+
             fbRoot.child('accurate_po').on('value', (snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.val(); appData.accuratePO = data.records || []; appData.accuratePOLastUpdate = data.last_update || ''; appData.accuratePOUser = data.user_upload || '';
@@ -894,23 +968,29 @@
                 if(!document.getElementById('view-po').classList.contains('hide')) renderPOTable();
             });
 
-            // General Settings
             fbRoot.child('settings').on('value', (snapshot) => { if(snapshot.exists()) applySettings(snapshot.val()); });
             
-            // Core Master Listeners
             fbRoot.child('parts').on('value', (snapshot) => { 
-                appData.parts = snapshot.exists() ? Object.values(snapshot.val()) : []; 
-                populateSelects(); 
-                renderStockTable(); 
-                renderDashboard();
-                showLoading(false); 
+                try {
+                    appData.parts = snapshot.exists() ? Object.values(snapshot.val()) : []; 
+                    populateSelects(); renderStockTable(); renderDashboard();
+                } catch(e) { console.error("Parts error:", e); } 
+                finally { clearTimeout(initTimeout); showLoading(false); }
             });
             
             fbRoot.child('users').on('value', (snapshot) => { appData.users = snapshot.exists() ? Object.values(snapshot.val()) : []; });
             fbRoot.child('depts').on('value', (snapshot) => { appData.depts = snapshot.exists() ? Object.values(snapshot.val()) : []; populateSelects(); });
             fbRoot.child('units').on('value', (snapshot) => { appData.units = snapshot.exists() ? Object.values(snapshot.val()) : []; populateSelects(); });
-            const handleTxUpdate = () => { fbRoot.once('value', (snap) => { const data = snap.val() || {}; const normalizedIn = Object.values(data.txsIn || {}).map(t => ({...t, tx_flow: 'IN'})); const normalizedOut = Object.values(data.txsOut || {}).map(t => ({...t, tx_flow: 'OUT'})); appData.txs = [...normalizedIn, ...normalizedOut].sort((a,b) => new Date(b.timestamp||b.date) - new Date(a.timestamp||a.date)); renderTrackingTable(); renderDashboard(); }); };
-            fbRoot.child('txsIn').on('value', handleTxUpdate); fbRoot.child('txsOut').on('value', handleTxUpdate);
+            
+            let rawTxsIn = {}; let rawTxsOut = {};
+            const mergeTxs = () => { 
+                const normalizedIn = Object.values(rawTxsIn || {}).map(t => ({...t, tx_flow: 'IN'})); 
+                const normalizedOut = Object.values(rawTxsOut || {}).map(t => ({...t, tx_flow: 'OUT'})); 
+                appData.txs = [...normalizedIn, ...normalizedOut].sort((a,b) => new Date(b.timestamp||b.date) - new Date(a.timestamp||a.date)); 
+                renderTrackingTable(); renderDashboard(); 
+            };
+            fbRoot.child('txsIn').on('value', (snap) => { rawTxsIn = snap.val() || {}; mergeTxs(); }); 
+            fbRoot.child('txsOut').on('value', (snap) => { rawTxsOut = snap.val() || {}; mergeTxs(); });
         }
 
         // --- DASHBOARD RENDER FUNCTIONS ---
@@ -928,31 +1008,64 @@
         }
 
         function renderDashboard() {
-            const sStr = document.getElementById('dashStartDate').value; const eStr = document.getElementById('dashEndDate').value;
-            if(!sStr || !eStr) return; 
-            const startDt = new Date(sStr); startDt.setHours(0,0,0,0); const endDt = new Date(eStr); endDt.setHours(23,59,59,999);
-            const txOuts = appData.txs.filter(t => t.tx_flow === 'OUT' && new Date(t.date) >= startDt && new Date(t.date) <= endDt);
+            if(typeof echarts === 'undefined' || typeof Chart === 'undefined') return;
+            try {
+                const sStr = document.getElementById('dashStartDate').value; const eStr = document.getElementById('dashEndDate').value;
+                if(!sStr || !eStr) return; 
+                const startDt = new Date(sStr); startDt.setHours(0,0,0,0); const endDt = new Date(eStr); endDt.setHours(23,59,59,999);
+                const txOuts = appData.txs.filter(t => t.tx_flow === 'OUT' && new Date(t.date) >= startDt && new Date(t.date) <= endDt);
 
-            dashAnalysisData = appData.parts.filter(p => p.stock_current <= p.stock_min);
-            dashCurrentPage = 1; renderDashAnalysisTable();
+                dashAnalysisData = appData.parts.filter(p => p.stock_current <= p.stock_min);
+                dashCurrentPage = 1; renderDashAnalysisTable();
 
-            Chart.defaults.color = '#747781'; Chart.defaults.borderColor = 'rgba(196, 198, 210, 0.3)'; Chart.defaults.font.family = 'Inter';
-            const dates = []; let cD = new Date(startDt); while(cD <= endDt) { dates.push(new Date(cD)); cD.setDate(cD.getDate()+1); }
-            const labelsMap = dates.map(d => ({ raw: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`, display: d.toLocaleDateString('id-ID',{day:'2-digit',month:'short'}) }));
+                const dates = []; let cD = new Date(startDt); while(cD <= endDt) { dates.push(new Date(cD)); cD.setDate(cD.getDate()+1); }
+                const labelsMap = dates.map(d => ({ raw: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`, display: d.toLocaleDateString('id-ID',{day:'2-digit',month:'short'}) }));
 
-            const dataNormal = new Array(dates.length).fill(0); const dataService = new Array(dates.length).fill(0);
-            txOuts.forEach(t => {
-                const txDtStr = `${new Date(t.date).getFullYear()}-${String(new Date(t.date).getMonth()+1).padStart(2,'0')}-${String(new Date(t.date).getDate()).padStart(2,'0')}`;
-                const idx = labelsMap.findIndex(l => l.raw === txDtStr);
-                if(idx !== -1) { if((t.jenis_tx || 'Normal') === 'Normal') dataNormal[idx] += t.qty; if((t.jenis_tx || 'Normal') === 'Service') dataService[idx] += t.qty; }
-            });
+                const dataNormal = new Array(dates.length).fill(0); const dataService = new Array(dates.length).fill(0);
+                txOuts.forEach(t => {
+                    const txDtStr = `${new Date(t.date).getFullYear()}-${String(new Date(t.date).getMonth()+1).padStart(2,'0')}-${String(new Date(t.date).getDate()).padStart(2,'0')}`;
+                    const idx = labelsMap.findIndex(l => l.raw === txDtStr);
+                    if(idx !== -1) { if((t.jenis_tx || 'Normal') === 'Normal') dataNormal[idx] += t.qty; if((t.jenis_tx || 'Normal') === 'Service') dataService[idx] += t.qty; }
+                });
 
-            const labelsDept = appData.depts.map(d => d.nama_dept); const dataDept = new Array(appData.depts.length).fill(0);
-            txOuts.filter(t => (t.jenis_tx||'Normal') === 'Normal').forEach(t => { const dIdx = appData.depts.findIndex(d => d.id === t.dept_id); if(dIdx !== -1) dataDept[dIdx] += t.qty; });
+                // ECHARTS Implementation for Main Chart
+                const chartDom = document.getElementById('chartSparepart');
+                if(chartDom) {
+                    let myChart = echarts.getInstanceByDom(chartDom);
+                    if (!myChart) myChart = echarts.init(chartDom);
+                    
+                    let option = {
+                        tooltip: { trigger: 'axis', position: function (pt) { return [pt[0], '10%']; } },
+                        toolbox: { feature: { dataZoom: { yAxisIndex: 'none' }, restore: {}, saveAsImage: {} } },
+                        xAxis: { type: 'category', boundaryGap: false, data: labelsMap.map(l=>l.display) },
+                        yAxis: { type: 'value', boundaryGap: [0, '100%'] },
+                        dataZoom: [ { type: 'inside', start: 0, end: 100 }, { start: 0, end: 100 } ],
+                        series: [
+                            {
+                                name: 'Qty Keluar', type: 'line', symbol: 'none', sampling: 'lttb',
+                                itemStyle: { color: 'rgb(0, 27, 68)' },
+                                areaStyle: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                        { offset: 0, color: 'rgba(174, 198, 255, 0.8)' },
+                                        { offset: 1, color: 'rgba(0, 27, 68, 0.1)' }
+                                    ])
+                                },
+                                data: dataNormal
+                            }
+                        ]
+                    };
+                    myChart.setOption(option);
+                    window.addEventListener('resize', function() { myChart.resize(); });
+                }
 
-            if(charts.c1) charts.c1.destroy(); charts.c1 = new Chart(document.getElementById('chartSparepart').getContext('2d'), { type: 'line', data: { labels: labelsMap.map(l=>l.display), datasets: [{ label: 'Pengeluaran Normal', data: dataNormal, borderColor: '#001b44', backgroundColor: 'rgba(0, 27, 68, 0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#001b44' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-            if(charts.c2) charts.c2.destroy(); charts.c2 = new Chart(document.getElementById('chartService').getContext('2d'), { type: 'bar', data: { labels: labelsMap.map(l=>l.display), datasets: [{ label: 'Service/Repair', data: dataService, backgroundColor: '#c39100', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-            if(charts.c3) charts.c3.destroy(); const colors = ['#002f6c','#224583','#aec6ff','#006d43','#75f8b3','#c39100']; charts.c3 = new Chart(document.getElementById('chartDept').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: labelsDept, datasets: [{ label: 'Qty', data: dataDept, backgroundColor: labelsDept.map((_,i)=>colors[i%colors.length]), borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+                // CHART.JS Implementation for Sub Charts
+                Chart.defaults.color = '#747781'; Chart.defaults.borderColor = 'rgba(196, 198, 210, 0.3)'; Chart.defaults.font.family = 'Inter';
+                const labelsDept = appData.depts.map(d => d.nama_dept); const dataDept = new Array(appData.depts.length).fill(0);
+                txOuts.filter(t => (t.jenis_tx||'Normal') === 'Normal').forEach(t => { const dIdx = appData.depts.findIndex(d => d.id === t.dept_id); if(dIdx !== -1) dataDept[dIdx] += t.qty; });
+
+                if(charts.c2) charts.c2.destroy(); charts.c2 = new Chart(document.getElementById('chartService').getContext('2d'), { type: 'bar', data: { labels: labelsMap.map(l=>l.display), datasets: [{ label: 'Service/Repair', data: dataService, backgroundColor: '#c39100', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+                if(charts.c3) charts.c3.destroy(); const colors = ['#002f6c','#224583','#aec6ff','#006d43','#75f8b3','#c39100']; charts.c3 = new Chart(document.getElementById('chartDept').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: labelsDept, datasets: [{ label: 'Qty', data: dataDept, backgroundColor: labelsDept.map((_,i)=>colors[i%colors.length]), borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            } catch(e) { console.error("Dashboard Render Error:", e); }
         }
 
         // --- ACCURATE PO PARSER & UPLOAD LOGIC ---
@@ -1084,7 +1197,7 @@
 
                 return `<tr class="hover:bg-primary-fixed/20 transition-colors border-b border-outline-variant/10">
                     <td class="px-6 py-4"><div class="font-extrabold text-primary text-sm">${p.po_no || 'TIDAK ADA PO'}</div><div class="text-[10px] font-medium text-on-surface-variant mt-0.5">PO Date: ${p.po_date || '-'}</div><div class="mt-1.5 text-[9px] bg-surface-container-high text-on-surface font-bold px-1.5 py-0.5 rounded inline-block border border-outline-variant/50">PR: ${p.pr_no || '-'}</div></td>
-                    <td class="px-6 py-4"><div class="font-extrabold text-on-surface text-xs tracking-wide">${p.part_no || '-'}</div><div class="text-[11px] font-medium text-on-surface-variant mt-1 max-w-[250px] whitespace-normal leading-tight">${p.item_name || '-'}</div></td>
+                    <td class="px-6 py-4"><div class="font-extrabold text-on-surface text-xs tracking-wide">${p.part_no || '-'}</div><div class="text-[11px] font-medium text-on-surface-variant mt-1 max-w-[250px] whitespace-normal break-words leading-tight">${p.item_name || '-'}</div></td>
                     <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="flex-1 bg-surface-variant h-1.5 rounded-full overflow-hidden w-24"><div class="${barColor} h-full" style="width: ${progressPct}%"></div></div><span class="text-xs font-bold text-on-surface w-8">${progressPct}%</span></div><div class="text-[10px] text-on-surface-variant mt-1 font-medium">Order: <span class="font-bold text-primary">${p.qty_po}</span> | Rcv: <span class="font-bold text-secondary">${p.qty_rcv}</span></div></td>
                     <td class="px-6 py-4 text-center"><div class="text-error font-extrabold text-xl">${p.qty_out}</div></td>
                     <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${stClass} border inline-block tracking-wider">${stTxt}</span></td>
@@ -1318,9 +1431,9 @@
                     <td class="px-6 py-4"><div class="font-extrabold text-primary text-sm">${t.part_number}</div><div class="text-[11px] font-medium text-on-surface-variant mt-0.5 whitespace-normal break-words max-w-xs">${t.item_name}</div>${t.no_wo ? `<div class="mt-1.5 text-[10px] bg-surface-container-high text-on-surface font-bold px-1.5 py-0.5 rounded inline-block border border-outline-variant/50">WO: ${t.no_wo}</div>` : ''}</td>
                     <td class="px-6 py-4 text-center"><div class="${colorC} font-extrabold text-xl">${sign}${t.qty}</div></td>
                     <td class="px-6 py-4 w-1/4">${relasi}</td>
-                    <td class="px-6 py-4 text-right">
+                    <td class="px-6 py-4 text-right whitespace-nowrap">
                         <button onclick="printTransaction('${t.id}', '${t.tx_flow}')" class="text-primary hover:text-primary-container p-2 bg-primary-fixed/30 rounded-full hover:bg-primary-fixed transition mr-1" title="Cetak Dokumen"><span class="material-symbols-outlined text-[18px]">print</span></button>
-                        <button onclick="deleteTx('${t.id}', '${t.tx_flow}', '${t.part_id}', ${t.qty}, '${t.part_number}')" class="text-error hover:text-on-error-container p-2 bg-error-container/30 rounded-full hover:bg-error-container transition superadmin-only hide" title="Hapus Log"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                        <button onclick="deleteTx('${t.id}', '${t.tx_flow}', '${t.part_id}', ${t.qty}, '${t.part_number}')" class="text-error hover:text-on-error-container p-2 bg-error-container/30 rounded-full hover:bg-error-container transition admin-only hide" title="Hapus Log"><span class="material-symbols-outlined text-[18px]">delete</span></button>
                     </td>
                 </tr>`;
             }).join('');
@@ -1420,13 +1533,29 @@
         // --- ADMIN, SETTINGS & MIGRATIONS ---
         function applySettings(config) {
             const appName = config.appName || "ERP WAREHOUSE";
-            document.getElementById('desktopAppName').innerText = appName; document.getElementById('mobileAppName').innerText = appName; document.getElementById('docTitle').innerText = appName + " - Enterprise";
-            if(document.getElementById('setAppName')) document.getElementById('setAppName').value = config.appName || ''; if(document.getElementById('setAppLogo')) document.getElementById('setAppLogo').value = config.logoUrl || '';
-            const dLogoCont = document.getElementById('desktopLogoContainer'); const dDefLogo = document.getElementById('defaultLogo'); const mDefLogo = document.getElementById('mobileDefaultLogo'); const mImgLogo = document.getElementById('mobileImgLogo');
+            
+            // Ubah ID sesuai struktur HTML yang baru: desktopAppName dan mobileAppName disatukan ke appNameDisplay
+            const appNameDisplay = document.getElementById('appNameDisplay');
+            if(appNameDisplay) appNameDisplay.innerText = appName;
+            
+            const docTitle = document.getElementById('docTitle');
+            if(docTitle) docTitle.innerText = appName + " - Enterprise";
+            
+            if(document.getElementById('setAppName')) document.getElementById('setAppName').value = config.appName || ''; 
+            if(document.getElementById('setAppLogo')) document.getElementById('setAppLogo').value = config.logoUrl || '';
+            
+            const defaultLogo = document.getElementById('defaultLogo'); 
+            const imgLogo = document.getElementById('imgLogo');
+            
             if(config.logoUrl) {
-                dDefLogo.classList.add('hide'); mDefLogo.classList.add('hide'); let imgD = dLogoCont.querySelector('img'); if(!imgD) { imgD = document.createElement('img'); imgD.className = 'w-full h-full object-cover'; dLogoCont.appendChild(imgD); } imgD.src = config.logoUrl; mImgLogo.src = config.logoUrl; mImgLogo.classList.remove('hide');
+                if(defaultLogo) defaultLogo.classList.add('hide'); 
+                if(imgLogo) {
+                    imgLogo.src = config.logoUrl;
+                    imgLogo.classList.remove('hide');
+                }
             } else {
-                dDefLogo.classList.remove('hide'); mDefLogo.classList.remove('hide'); let imgD = dLogoCont.querySelector('img'); if(imgD) imgD.remove(); mImgLogo.classList.add('hide');
+                if(defaultLogo) defaultLogo.classList.remove('hide'); 
+                if(imgLogo) imgLogo.classList.add('hide');
             }
         }
 
@@ -1447,27 +1576,53 @@
         async function triggerMigrateFromSheets() {
             const confirm = await Swal.fire({ title: 'Tarik Data dari Sheets?', text: "Proses ini akan mereplikasi data Sheets ke Firebase Cloud.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#fbbc00', confirmButtonText: 'Ya, Migrasikan!', background: '#fbf9f8', color: '#1b1c1c' });
             if(!confirm.isConfirmed) return;
-            showLoading(true, "Membaca Google Sheets..."); const res = await fetchAPI('getAllData'); if(!res.success) { showLoading(false); return notif('error', 'Gagal Baca Sheets', res.message); }
-            showLoading(true, "Memproses Data & Push ke Cloud...");
+            
             try {
+                showLoading(true, "Membaca Google Sheets (Membutuhkan waktu)..."); 
+                const res = await fetchAPI('getAllData'); 
+                if(!res.success) throw new Error(res.message);
+                
+                showLoading(true, "Memproses Data & Push ke Cloud...");
                 const updates = {};
                 (res.data.parts || []).forEach(p => { const cleanId = String(p.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `PRT_${Date.now()}`; if(cleanId) updates[`parts/${cleanId}`] = p; });
                 (res.data.txsIn || []).forEach(t => { const cleanId = String(t.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `TIN_${Date.now()}`; if(cleanId) updates[`txsIn/${cleanId}`] = t; });
                 (res.data.txsOut || []).forEach(t => { const cleanId = String(t.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_") || `TOU_${Date.now()}`; if(cleanId) updates[`txsOut/${cleanId}`] = t; });
                 (res.data.depts || []).forEach(d => { if(d.id) updates[`depts/${String(d.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_")}`] = d; });
                 (res.data.units || []).forEach(u => { if(u.id) updates[`units/${String(u.id).trim().replace(/[\.\#\$\/\[\]\s]/g, "_")}`] = u; });
-                await fbRoot.update(updates); logAction('MIGRATE_PULL', 'User pulled data from Google Sheets'); showLoading(false); notif('success', 'Migrasi Berhasil', 'Data Sheets telah diimpor.');
-            } catch (err) { showLoading(false); notif('error', 'Migrasi Cloud Gagal', err.message); }
+                
+                await fbRoot.update(updates); 
+                logAction('MIGRATE_PULL', 'User pulled data from Google Sheets'); 
+                notif('success', 'Migrasi Berhasil', 'Data Sheets telah diimpor.');
+            } catch (err) { 
+                notif('error', 'Migrasi Cloud Gagal', err.message); 
+            } finally {
+                showLoading(false); 
+            }
         }
 
         async function triggerBackupToSheets() {
             const confirm = await Swal.fire({ title: 'Backup ke Sheets?', text: "Proses ini mengirim database Cloud saat ini ke Google Sheets.", icon: 'info', showCancelButton: true, confirmButtonColor: '#001b44', confirmButtonText: 'Mulai Backup', background: '#fbf9f8', color: '#1b1c1c' });
-            if(!confirm.isConfirmed) return; showLoading(true, "Menyiapkan Data Cloud...");
+            if(!confirm.isConfirmed) return; 
+            
             try {
-                const snap = await fbRoot.once('value'); const firebaseData = snap.val() || {}; showLoading(true, "Menulis Data ke Google Sheets...");
-                const res = await fetchAPI('runFullBackup', firebaseData); showLoading(false);
-                if(res.success) { logAction('MIGRATE_PUSH', 'User pushed backup to Google Sheets'); notif('success', 'Backup Selesai', res.message); } else { notif('error', 'Gagal Backup', res.message); }
-            } catch(err) { showLoading(false); notif('error', 'Sistem Error', err.message); }
+                showLoading(true, "Menyiapkan Data Cloud...");
+                const snap = await fbRoot.once('value'); 
+                const firebaseData = snap.val() || {}; 
+                
+                showLoading(true, "Menulis Data ke Google Sheets (Bisa memakan waktu)...");
+                const res = await fetchAPI('runFullBackup', firebaseData); 
+                
+                if(res.success) { 
+                    logAction('MIGRATE_PUSH', 'User pushed backup to Google Sheets'); 
+                    notif('success', 'Backup Selesai', res.message); 
+                } else { 
+                    throw new Error(res.message); 
+                }
+            } catch(err) { 
+                notif('error', 'Sistem Error', err.message); 
+            } finally {
+                showLoading(false);
+            }
         }
 
         function renderUserTable() {
@@ -1531,8 +1686,15 @@
         function populateSelects() {
             if(selectSearchIn) selectSearchIn.destroy(); if(selectSearchOut) selectSearchOut.destroy();
             const partOptions = `<option value="">Ketik untuk mencari (ID/Part/Nama)...</option>` + appData.parts.map(p => `<option value="${p.id}">[${p.part_number}] ${p.item_name} - Stok: ${p.stock_current} ${p.satuan||''}</option>`).join('');
-            document.getElementById('txInPart').innerHTML = partOptions; document.getElementById('txOutPart').innerHTML = partOptions;
-            const tsConfig = { create: false, maxOptions: null, sortField: {field: "text", direction: "asc"} }; selectSearchIn = new TomSelect("#txInPart", tsConfig); selectSearchOut = new TomSelect("#txOutPart", tsConfig);
+            
+            const elIn = document.getElementById('txInPart'); const elOut = document.getElementById('txOutPart');
+            if(elIn) elIn.innerHTML = partOptions; 
+            if(elOut) elOut.innerHTML = partOptions;
+            
+            const tsConfig = { create: false, maxOptions: null, sortField: {field: "text", direction: "asc"} }; 
+            if(elIn) selectSearchIn = new TomSelect("#txInPart", tsConfig); 
+            if(elOut) selectSearchOut = new TomSelect("#txOutPart", tsConfig);
+            
             document.getElementById('txOutDept').innerHTML = appData.depts.map(d => `<option value="${d.id}">${d.nama_dept}</option>`).join(''); document.getElementById('txOutUnit').innerHTML = appData.units.map(u => `<option value="${u.id}">${u.nama_unit}</option>`).join('');
             document.getElementById('deptList').innerHTML = appData.depts.map(d => `<li class="border-b border-outline-variant/20 pb-2 flex justify-between"><span>${d.nama_dept}</span> <span class="text-xs text-on-surface-variant font-mono font-medium">${d.id}</span></li>`).join(''); document.getElementById('unitList').innerHTML = appData.units.map(u => `<li class="border-b border-outline-variant/20 pb-2 flex justify-between"><span>${u.nama_unit}</span> <span class="text-xs text-on-surface-variant font-mono font-medium">${u.id}</span></li>`).join('');
         }
