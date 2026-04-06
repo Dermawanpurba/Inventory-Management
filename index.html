@@ -214,7 +214,7 @@
         
         <nav class="flex-1 flex flex-col gap-2 px-3" id="desktopNavLinks">
             <a href="#" onclick="router('dashboard')" id="navD-dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm nav-desktop-inactive">
-                <span class="material-symbols-outlined text-[20px]">dashboard</span> Analitik
+                <span class="material-symbols-outlined text-[20px]">dashboard</span> Dashboard
             </a>
             <a href="#" onclick="router('po')" id="navD-po" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm nav-desktop-inactive">
                 <span class="material-symbols-outlined text-[20px]">local_shipping</span> Status Order & PO
@@ -406,8 +406,8 @@
             <section id="view-dashboard" class="space-y-6 hide animate-fade-slide">
                 <div class="flex flex-col lg:flex-row justify-between lg:items-end space-y-4 lg:space-y-0">
                     <div>
-                        <h2 class="text-2xl font-extrabold text-on-surface mb-1">Dashboard Analitik</h2>
-                        <p class="text-sm text-on-surface-variant">Monitoring pergerakan logistik internal real-time.</p>
+                        <h2 class="text-2xl font-extrabold text-on-surface mb-1">Executive Dashboard</h2>
+                        <p class="text-sm text-on-surface-variant">Monitoring intelijen logistik dan performa aset secara real-time.</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2 bg-surface-container-lowest p-2 rounded-2xl border border-outline-variant/20 shadow-sm w-full lg:w-auto">
                         <input type="date" id="dashStartDate" class="bg-surface-container-low border-none text-on-surface text-xs rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-primary/20 flex-grow lg:flex-grow-0 font-medium">
@@ -418,10 +418,37 @@
                     </div>
                 </div>
 
-                <!-- UPDATE UI UX CHART ECHARTS AREA -->
-                <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20 w-full">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/20 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary shrink-0"><span class="material-symbols-outlined">category</span></div>
+                        <div><p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Total SKU Aktif</p><h4 class="text-2xl font-extrabold text-on-surface" id="kpiTotalSKU">0</h4></div>
+                    </div>
+                    <div class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/20 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-secondary shrink-0"><span class="material-symbols-outlined">inventory</span></div>
+                        <div><p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Total Fisik Unit</p><h4 class="text-2xl font-extrabold text-on-surface" id="kpiTotalStock">0</h4></div>
+                    </div>
+                    <div class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/20 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary shrink-0"><span class="material-symbols-outlined">hourglass_empty</span></div>
+                        <div><p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Dead Stock Item</p><h4 class="text-2xl font-extrabold text-on-surface" id="kpiTotalDead">0</h4></div>
+                    </div>
+                    <div class="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/20 shadow-sm flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-error-container flex items-center justify-center text-error shrink-0"><span class="material-symbols-outlined">warning</span></div>
+                        <div><p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Status Kritis</p><h4 class="text-2xl font-extrabold text-error" id="kpiTotalKritis">0</h4></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20">
                     <div class="flex items-center mb-4 text-sm font-extrabold text-primary"><span class="material-symbols-outlined mr-2">trending_up</span> Trend Pengeluaran Normal (Qty)</div>
-                    <div class="h-80 relative w-full"><canvas id="chartSparepart"></canvas></div>
+        
+                     <div class="h-80 relative w-full"><canvas id="chartSparepart"></canvas></div>
+        
+                    </div>
+                    <div class="lg:col-span-1 bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20 flex flex-col h-[380px] lg:h-auto">
+                        <div class="flex items-center mb-4 text-sm font-extrabold text-secondary shrink-0"><span class="material-symbols-outlined mr-2">local_fire_department</span> Top 5 Fast Moving (Keluar)</div>
+                        <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3" id="topFastMovingContainer">
+                            </div>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -437,7 +464,7 @@
 
                 <div class="mt-8 bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20" id="pdfTargetArea">
                     <div class="flex justify-between items-center mb-4">
-                        <div class="flex items-center text-error text-lg font-extrabold"><span class="material-symbols-outlined mr-2 filled">warning</span> Status Kritis Stok</div>
+                        <div class="flex items-center text-error text-lg font-extrabold"><span class="material-symbols-outlined mr-2 filled">warning</span> Rincian Status Kritis Stok</div>
                         <select id="dashKritisFilter" onchange="renderDashAnalysisTable()" class="bg-surface-container-low border-none rounded-xl text-xs font-bold text-on-surface focus:ring-2 focus:ring-primary shadow-inner">
                             <option value="">Semua Kategori</option>
                             <option value="SPAREPART">Sparepart</option>
@@ -671,24 +698,25 @@
 
     <!-- Modal Form Masuk (IN) -->
     <div id="modalTxIn" class="fixed inset-0 bg-inverse-surface/60 z-[70] flex justify-center items-center hide backdrop-blur-sm p-4 overflow-y-auto">
-        <div class="bg-surface-container-lowest p-8 rounded-2xl w-full max-w-lg border-t-8 border-t-secondary shadow-2xl my-8">
+        <div class="bg-surface-container-lowest p-8 rounded-2xl w-full max-w-2xl border-t-8 border-t-secondary shadow-2xl my-8">
             <div class="flex items-center justify-between mb-6"><div class="flex items-center text-on-surface"><span class="material-symbols-outlined mr-2 text-secondary text-3xl">call_received</span><h3 class="text-xl font-extrabold">Form Masuk (IN)</h3></div><button type="button" onclick="closeModal('modalTxIn')" class="text-on-surface-variant hover:text-error bg-surface-container-low p-2 rounded-full"><span class="material-symbols-outlined">close</span></button></div>
-            <form id="formTxIn" onsubmit="saveTransaction(event, 'IN')" class="space-y-5">
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Jenis Transaksi</label><select id="txInJenis" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"><option value="Normal">Barang Baru (Normal)</option><option value="Retur">Retur Masuk (Pengembalian)</option><option value="Service">Selesai Service Luar</option></select></div>
-                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Tanggal</label><input type="date" id="txInDate" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
+            <form id="formTxIn" onsubmit="saveTransactionIn(event)" class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-b border-outline-variant/20 pb-4">
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Jenis Transaksi</label><select id="txInJenis" required class="w-full bg-surface-container-low border-none rounded-xl p-2 text-on-surface text-sm focus:ring-2 focus:ring-secondary"><option value="Normal">Barang Baru (Normal)</option><option value="Retur">Retur Masuk (Pengembalian)</option><option value="Service">Selesai Service Luar</option></select></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Tanggal</label><input type="date" id="txInDate" required class="w-full bg-surface-container-low border-none rounded-xl p-2 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Vendor / Supplier</label><input type="text" id="txInVendor" class="w-full bg-surface-container-low border-none rounded-xl p-2 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
+                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. PO / Bukti</label><input type="text" id="txInPO" class="w-full bg-surface-container-low border-none rounded-xl p-2 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
+                    <div class="md:col-span-2"><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. Surat Jalan (SJ) <span class="text-outline text-[10px] lowercase normal-case font-normal">*Opsional</span></label><input type="text" id="txInWO" class="w-full bg-surface-container-low border-none rounded-xl p-2 text-on-surface text-sm focus:ring-2 focus:ring-secondary" placeholder="Contoh: SJ-2026-001"></div>
                 </div>
-                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Cari Item Master</label><select id="txInPart" required placeholder="Ketik nama / part..."></select></div>
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="col-span-1"><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Qty</label><input type="number" id="txInQty" min="1" required class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-xl font-extrabold focus:ring-2 focus:ring-secondary"></div>
-                    <div class="col-span-2"><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Lokasi Gudang</label><input type="text" id="txInLoc" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
+
+                <div class="pt-2">
+                    <label class="block text-xs font-bold text-secondary mb-2 uppercase tracking-wider">Daftar Barang Masuk</label>
+                    <div id="txInItemsContainer" class="space-y-3 mb-4 max-h-[35vh] overflow-y-auto custom-scrollbar p-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl">
+                        </div>
+                    <button type="button" onclick="addTxInRow()" class="text-xs font-bold text-secondary bg-secondary-container/50 hover:bg-secondary-container transition px-4 py-2 rounded-xl border border-secondary/20">+ Tambah Barang Lain</button>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">Vendor / Supplier</label><input type="text" id="txInVendor" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
-                    <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. PO / Bukti</label><input type="text" id="txInPO" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary"></div>
-                </div>
-                <div><label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-wider">No. Surat Jalan <span class="text-outline text-[10px] lowercase normal-case font-normal">*Opsional</span></label><input type="text" id="txInWO" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-on-surface text-sm focus:ring-2 focus:ring-secondary" placeholder="Contoh: SJ-2026-001"></div>
-                <div class="flex justify-end pt-4 mt-2"><button type="submit" id="btnSubmitIn" class="px-8 py-3 bg-secondary hover:bg-on-secondary-fixed-variant rounded-xl text-on-secondary font-bold transition w-full shadow-md text-base">Eksekusi Data Masuk</button></div>
+
+                <div class="flex justify-end pt-4 mt-2 border-t border-outline-variant/20"><button type="submit" id="btnSubmitIn" class="px-8 py-3 bg-secondary hover:bg-on-secondary-fixed-variant rounded-xl text-on-secondary font-bold transition w-full shadow-md text-base">Eksekusi Data Masuk</button></div>
             </form>
         </div>
     </div>
@@ -933,7 +961,7 @@
         function logout() { if(currentUser) logAction('LOGOUT', 'User logged out'); localStorage.removeItem('erp_session'); currentUser = null; applyRoleAccess(); renderAuthBtn(false); closeModal('modalMobileMenu'); router('dashboard'); notif('info', 'Sesi Berakhir', 'Anda telah keluar.'); openModal('modalLogin'); }
 
         // --- 4. NAVIGATION & VIEWS ---
-        const viewTitles = { 'dashboard': 'Dashboard Analitik', 'po': 'Status Order & PO', 'tracking': 'Logistik Tracking', 'stock': 'Master Inventory', 'master': 'System Administration' };
+        const viewTitles = { 'dashboard': 'Executive Dashboard', 'po': 'Status Order & PO', 'tracking': 'Logistik Tracking', 'stock': 'Master Inventory', 'master': 'System Config' };
 
         function router(viewId) {
             ['view-dashboard', 'view-po', 'view-tracking', 'view-stock', 'view-master'].forEach(id => {
@@ -1020,8 +1048,21 @@
         // --- DASHBOARD RENDER FUNCTIONS ---
         function changeDashPage(page) { dashCurrentPage = page; renderDashAnalysisTable(); }
         function renderDashAnalysisTable() {
+            // 1. Ambil nilai filter saat ini secara dinamis
+            const dashKritisFilterVal = document.getElementById('dashKritisFilter') ? document.getElementById('dashKritisFilter').value.toUpperCase() : '';
+            
+            // 2. Lakukan filter ulang dari data mentah
+            let baseData = appData.parts.filter(p => p.stock_current <= p.stock_min);
+            if (dashKritisFilterVal) {
+                baseData = baseData.filter(p => (p.kategori || '').toUpperCase().includes(dashKritisFilterVal));
+            }
+            dashAnalysisData = baseData; // Timpa state global
+
+            // 3. Render tabel dengan data yang sudah difilter
             const totalItems = dashAnalysisData.length; const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
             if (dashCurrentPage > totalPages) dashCurrentPage = totalPages;
+            if (dashCurrentPage < 1) dashCurrentPage = 1;
+            
             const start = (dashCurrentPage - 1) * rowsPerPage; const paginated = dashAnalysisData.slice(start, start + rowsPerPage);
             document.getElementById('stockAnalysisTableBody').innerHTML = paginated.map(p => {
                 let stClass = p.stock_current == 0 ? 'text-on-error-container bg-error-container border border-error/20' : 'text-on-tertiary-container bg-tertiary-fixed border border-tertiary/20'; let stTxt = p.stock_current == 0 ? 'HABIS' : 'KRITIS';
@@ -1039,12 +1080,52 @@
                 const startDt = new Date(sStr); startDt.setHours(0,0,0,0); const endDt = new Date(eStr); endDt.setHours(23,59,59,999);
                 const txOuts = appData.txs.filter(t => t.tx_flow === 'OUT' && new Date(t.date) >= startDt && new Date(t.date) <= endDt);
 
-                // Update Status Kritis Filter based on selection
-                const dashKritisFilterVal = document.getElementById('dashKritisFilter') ? document.getElementById('dashKritisFilter').value : '';
-                dashAnalysisData = appData.parts.filter(p => p.stock_current <= p.stock_min);
-                if (dashKritisFilterVal) dashAnalysisData = dashAnalysisData.filter(p => p.kategori === dashKritisFilterVal);
+                // --- 1. CALCULATE KPI CARDS ---
+                let totalStock = 0; let totalDead = 0;
+                appData.parts.forEach(p => { 
+                    totalStock += parseInt(p.stock_current || 0); 
+                    if(p.pergerakan === 'DEAD') totalDead++; 
+                });
+                
+                if(document.getElementById('kpiTotalSKU')) document.getElementById('kpiTotalSKU').innerText = appData.parts.length.toLocaleString('id-ID');
+                if(document.getElementById('kpiTotalStock')) document.getElementById('kpiTotalStock').innerText = totalStock.toLocaleString('id-ID');
+                if(document.getElementById('kpiTotalDead')) document.getElementById('kpiTotalDead').innerText = totalDead.toLocaleString('id-ID');
+                if(document.getElementById('kpiTotalKritis')) document.getElementById('kpiTotalKritis').innerText = appData.parts.filter(p => p.stock_current <= p.stock_min).length.toLocaleString('id-ID');
+
+                // Render tabel kritis (Filternya sudah diurus otomatis di dalam fungsi ini)
                 dashCurrentPage = 1; renderDashAnalysisTable();
 
+                // --- 2. CALCULATE TOP 5 FAST MOVING ---
+                let itemUsage = {};
+                txOuts.forEach(t => {
+                    if(!itemUsage[t.part_id]) itemUsage[t.part_id] = { id: t.part_id, part_number: t.part_number, item_name: t.item_name, totalOut: 0 };
+                    itemUsage[t.part_id].totalOut += t.qty;
+                });
+                const top5 = Object.values(itemUsage).sort((a,b) => b.totalOut - a.totalOut).slice(0, 5);
+                
+                const top5Container = document.getElementById('topFastMovingContainer');
+                if(top5Container) {
+                    if(top5.length === 0) {
+                        top5Container.innerHTML = `<div class="p-4 text-center text-xs text-on-surface-variant bg-surface-container-low rounded-xl">Belum ada data barang keluar pada periode ini.</div>`;
+                    } else {
+                        top5Container.innerHTML = top5.map((t, idx) => `
+                            <div class="flex items-center justify-between p-3 bg-surface-container hover:bg-surface-dim transition rounded-xl border border-outline-variant/10">
+                                <div class="flex items-center gap-3 overflow-hidden">
+                                    <div class="w-8 h-8 rounded-lg bg-surface-container-lowest border border-outline-variant/20 flex items-center justify-center text-xs font-black text-on-surface-variant shrink-0">#${idx+1}</div>
+                                    <div class="truncate">
+                                        <p class="text-xs font-extrabold text-primary truncate">${t.part_number}</p>
+                                        <p class="text-[10px] text-on-surface-variant font-medium truncate">${t.item_name}</p>
+                                    </div>
+                                </div>
+                                <div class="text-right shrink-0 ml-2">
+                                    <span class="bg-secondary-container/50 text-secondary font-extrabold text-xs px-2.5 py-1 rounded-full border border-secondary/20 inline-block">${t.totalOut} Out</span>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+
+                // --- 3. CHARTS DATA PREP ---
                 const dates = []; let cD = new Date(startDt); while(cD <= endDt) { dates.push(new Date(cD)); cD.setDate(cD.getDate()+1); }
                 const labelsMap = dates.map(d => ({ raw: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`, display: d.toLocaleDateString('id-ID',{day:'2-digit',month:'short'}) }));
 
@@ -1060,42 +1141,53 @@
 
                 Chart.defaults.color = '#747781'; Chart.defaults.borderColor = 'rgba(196, 198, 210, 0.3)'; Chart.defaults.font.family = 'Inter';
 
-                // CHART.JS Implementation for Main Chart (Replacing ECharts)
-                const ctxMain = document.getElementById('chartSparepart').getContext('2d');
-                let gradient = ctxMain.createLinearGradient(0, 0, 0, 400);
-                gradient.addColorStop(0, 'rgba(174, 198, 255, 0.8)');
-                gradient.addColorStop(1, 'rgba(0, 27, 68, 0.1)');
+                // --- 4. CHART.JS IMPLEMENTATION (MAIN CHART) ---
+                const chartCanvas = document.getElementById('chartSparepart');
+                if(chartCanvas && chartCanvas.tagName === 'CANVAS') {
+                    const ctxMain = chartCanvas.getContext('2d');
+                    let gradient = ctxMain.createLinearGradient(0, 0, 0, 400);
+                    gradient.addColorStop(0, 'rgba(174, 198, 255, 0.8)');
+                    gradient.addColorStop(1, 'rgba(0, 27, 68, 0.1)');
 
-                if(charts.c1) charts.c1.destroy();
-                charts.c1 = new Chart(ctxMain, {
-                    type: 'line',
-                    data: {
-                        labels: labelsMap.map(l=>l.display),
-                        datasets: [{
-                            label: 'Qty Keluar',
-                            data: dataNormal,
-                            borderColor: '#001b44',
-                            backgroundColor: gradient,
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: '#001b44',
-                            pointRadius: 3,
-                            pointHoverRadius: 6
-                        }]
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } }, 
-                        scales: { y: { beginAtZero: true } },
-                        interaction: { mode: 'nearest', axis: 'x', intersect: false }
-                    }
-                });
+                    if(charts.c1) charts.c1.destroy();
+                    charts.c1 = new Chart(ctxMain, {
+                        type: 'line',
+                        data: {
+                            labels: labelsMap.map(l=>l.display),
+                            datasets: [{
+                                label: 'Qty Keluar',
+                                data: dataNormal,
+                                borderColor: '#001b44',
+                                backgroundColor: gradient,
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: '#001b44',
+                                pointRadius: 3,
+                                pointHoverRadius: 6
+                            }]
+                        },
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false, 
+                            plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } }, 
+                            scales: { y: { beginAtZero: true } },
+                            interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                        }
+                    });
+                }
 
-                // CHART.JS Implementation for Sub Charts
-                if(charts.c2) charts.c2.destroy(); charts.c2 = new Chart(document.getElementById('chartService').getContext('2d'), { type: 'bar', data: { labels: labelsMap.map(l=>l.display), datasets: [{ label: 'Service/Repair', data: dataService, backgroundColor: '#c39100', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-                if(charts.c3) charts.c3.destroy(); const colors = ['#002f6c','#224583','#aec6ff','#006d43','#75f8b3','#c39100']; charts.c3 = new Chart(document.getElementById('chartDept').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: labelsDept, datasets: [{ label: 'Qty', data: dataDept, backgroundColor: labelsDept.map((_,i)=>colors[i%colors.length]), borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+                // --- 5. CHART.JS IMPLEMENTATION (SUB CHARTS) ---
+                if(document.getElementById('chartService')) {
+                    if(charts.c2) charts.c2.destroy(); 
+                    charts.c2 = new Chart(document.getElementById('chartService').getContext('2d'), { type: 'bar', data: { labels: labelsMap.map(l=>l.display), datasets: [{ label: 'Service/Repair', data: dataService, backgroundColor: '#c39100', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+                }
+                
+                if(document.getElementById('chartDept')) {
+                    if(charts.c3) charts.c3.destroy(); const colors = ['#002f6c','#224583','#aec6ff','#006d43','#75f8b3','#c39100']; 
+                    charts.c3 = new Chart(document.getElementById('chartDept').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: labelsDept, datasets: [{ label: 'Qty', data: dataDept, backgroundColor: labelsDept.map((_,i)=>colors[i%colors.length]), borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+                }
+                
             } catch(e) { console.error("Dashboard Render Error:", e); }
         }
 
@@ -1541,40 +1633,98 @@
                 addTxOutRow(); // Add 1 empty row back
             } catch (err) { notif('error', 'Gagal Menyimpan', err.message); }
             finally { showLoading(false); toggleBtnState('btnSubmitOut', false); }
+
         }
 
-        async function saveTransaction(e, type) {
-            e.preventDefault(); const btnId = type === 'IN' ? 'btnSubmitIn' : 'btnSubmitOut'; toggleBtnState(btnId, true);
-            const jenisTx = type === 'IN' ? document.getElementById('txInJenis').value : document.getElementById('txOutJenis').value;
-            const partId = type === 'IN' ? document.getElementById('txInPart').value : document.getElementById('txOutPart').value;
-            const qty = parseInt(type === 'IN' ? document.getElementById('txInQty').value : document.getElementById('txOutQty').value);
-            const noWo = type === 'IN' ? document.getElementById('txInWO').value : document.getElementById('txOutWO').value;
-            const txId = (type === 'IN' ? 'TIN' : 'TOU') + Date.now(); const isoDate = new Date().toISOString();
+        let txInRowCount = 0;
 
-            showLoading(true, "Mengeksekusi Transaksi Cloud...");
+        function addTxInRow() {
+            txInRowCount++;
+            const rowId = `txInRow_${txInRowCount}`;
+            const html = `
+                <div id="${rowId}" class="flex flex-wrap md:flex-nowrap gap-2 items-start bg-surface-container p-3 rounded-xl mb-2 border border-outline-variant/20">
+                    <div class="w-full md:flex-1">
+                        <label class="text-[10px] uppercase font-bold text-on-surface-variant mb-1 block tracking-wider">Pilih Part/Barang</label>
+                        <select class="txInPartSelect" required>${windowPartOptionsHTML}</select>
+                    </div>
+                    <div class="w-24 shrink-0">
+                        <label class="text-[10px] uppercase font-bold text-on-surface-variant mb-1 block tracking-wider">Qty Masuk</label>
+                        <input type="number" class="txInQtyInput w-full rounded-xl border-none text-secondary font-extrabold focus:ring-2 focus:ring-secondary" min="1" required>
+                    </div>
+                    <div class="w-full md:w-32 shrink-0">
+                        <label class="text-[10px] uppercase font-bold text-on-surface-variant mb-1 block tracking-wider">Lokasi Rak</label>
+                        <input type="text" class="txInLocInput w-full rounded-xl border-none text-sm text-on-surface focus:ring-2 focus:ring-secondary" placeholder="Rak A1">
+                    </div>
+                    <div class="pt-5 shrink-0 w-full md:w-auto text-right">
+                        <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-error p-2 hover:bg-error-container rounded-full mt-0.5"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('txInItemsContainer').insertAdjacentHTML('beforeend', html);
+            const newSelect = document.querySelector(`#${rowId} .txInPartSelect`);
+            new TomSelect(newSelect, { create: false, maxOptions: null, sortField: {field: "text", direction: "asc"} });
+        }
+
+        async function saveTransactionIn(e) {
+            e.preventDefault();
+            const rows = document.querySelectorAll('#txInItemsContainer > div');
+            if(rows.length === 0) return notif('warning', 'Kosong', 'Harap tambahkan minimal 1 barang terlebih dahulu.');
+
+            toggleBtnState('btnSubmitIn', true); showLoading(true, "Mengeksekusi Transaksi Cloud...");
+            
+            const jenisTx = document.getElementById('txInJenis').value;
+            const txDate = document.getElementById('txInDate').value;
+            const vendor = document.getElementById('txInVendor').value.trim();
+            const noPo = document.getElementById('txInPO').value.trim();
+            const noWo = document.getElementById('txInWO').value.trim();
+            const isoDate = new Date().toISOString();
+
+            let batchUpdates = {}; let errors = [];
+            let tempStock = {}; 
+            appData.parts.forEach(p => tempStock[p.id] = parseInt(p.stock_current || 0));
+
+            const txsToProcess = [];
+
+            // Validation Pass
+            for(let i=0; i<rows.length; i++) {
+                const selectEl = rows[i].querySelector('.txInPartSelect');
+                const qtyEl = rows[i].querySelector('.txInQtyInput');
+                const locEl = rows[i].querySelector('.txInLocInput');
+                const partId = selectEl.value;
+                const qty = parseInt(qtyEl.value);
+                const loc = locEl.value.trim();
+                
+                if(!partId || qty <= 0) { errors.push(`Baris ${i+1}: Data tidak valid.`); continue; }
+                const part = appData.parts.find(p => p.id === partId);
+                if(!part) continue;
+
+                tempStock[partId] += qty;
+                const txId = 'TIN' + Date.now() + '_' + i;
+                txsToProcess.push({ txId: txId, part: part, qty: qty, loc: loc });
+            }
+
+            if(errors.length > 0) {
+                showLoading(false); toggleBtnState('btnSubmitIn', false);
+                return Swal.fire({ title: 'Transaksi Ditolak', html: `<div class="text-left text-xs max-h-32 overflow-y-auto text-error font-mono bg-error-container p-3 rounded">${errors.join('<br>')}</div>`, icon: 'error', background: '#fbf9f8', color: '#1b1c1c', confirmButtonColor: '#001b44' });
+            }
+
+            // Execution Pass
+            txsToProcess.forEach(t => {
+                const txData = { id: t.txId, part_id: t.part.id, qty: t.qty, date: txDate, jenis_tx: jenisTx, vendor: vendor, no_po: noPo, no_wo: noWo, lokasi_gudang: t.loc, user_id: currentUser.username, timestamp: isoDate, part_number: t.part.part_number, item_name: t.part.item_name };
+                batchUpdates[`txsIn/${t.txId}`] = txData;
+                batchUpdates[`parts/${t.part.id}/stock_current`] = tempStock[t.part.id];
+                if(t.loc) batchUpdates[`parts/${t.part.id}/lokasi_gudang`] = t.loc;
+            });
+
             try {
-                const partRef = fbRoot.child('parts').child(partId); const partSnap = await partRef.once('value');
-                if (!partSnap.exists()) throw new Error("ID Master Item tidak valid.");
-                
-                const partData = partSnap.val(); let newStock = parseInt(partData.stock_current || 0);
-                if (type === 'OUT') { if (jenisTx !== 'Retur' && newStock < qty) throw new Error("Sisa Stok Fisik tidak mencukupi!"); newStock -= qty; } else { newStock += qty; }
-
-                let txData = { id: txId, part_id: partId, qty: qty, date: type === 'IN' ? document.getElementById('txInDate').value : document.getElementById('txOutDate').value, jenis_tx: jenisTx, no_wo: noWo, user_id: currentUser.username, timestamp: isoDate, part_number: partData.part_number, item_name: partData.item_name };
-                if (type === 'IN') { txData.vendor = document.getElementById('txInVendor').value; txData.no_po = document.getElementById('txInPO').value; txData.lokasi_gudang = document.getElementById('txInLoc').value; } 
-                else { txData.dept_id = document.getElementById('txOutDept').value; txData.unit_id = document.getElementById('txOutUnit').value; }
-
-                let updates = {}; updates[`parts/${partId}/stock_current`] = newStock;
-                if (type === 'IN' && txData.lokasi_gudang) updates[`parts/${partId}/lokasi_gudang`] = txData.lokasi_gudang;
-                updates[`${type === 'IN' ? 'txsIn' : 'txsOut'}/${txId}`] = txData;
-
-                await fbRoot.update(updates);
-                logAction(`TX_${type}`, `${jenisTx} ${qty}x [${partData.part_number}] ${partData.item_name}. WO: ${noWo||'-'}`);
-                
-                closeModal(type === 'IN' ? 'modalTxIn' : 'modalTxOut'); notif('success', 'Berhasil', 'Sirkulasi Logistik terekam ke Cloud.');
-                document.getElementById(type === 'IN' ? 'formTxIn' : 'formTxOut').reset();
-                if(selectSearchIn) selectSearchIn.clear();
-            } catch (err) { notif('error', 'Transaksi Ditolak', err.message); } 
-            finally { showLoading(false); toggleBtnState(btnId, false); }
+                await fbRoot.update(batchUpdates);
+                logAction('TX_IN_BATCH', `${jenisTx} SJ: ${noWo||noPo} (${txsToProcess.length} items)`);
+                closeModal('modalTxIn'); notif('success', 'Berhasil', 'Seluruh barang masuk terekam ke Cloud.');
+                document.getElementById('formTxIn').reset();
+                document.getElementById('txInItemsContainer').innerHTML = '';
+                addTxInRow(); 
+            } catch (err) { notif('error', 'Gagal Menyimpan', err.message); }
+            finally { showLoading(false); toggleBtnState('btnSubmitIn', false); }
         }
 
         async function saveStock(e) {
@@ -1733,6 +1883,7 @@
             document.getElementById(id).classList.remove('hide'); 
             // Initialize multi-item for OUT if opened
             if (id === 'modalTxOut') { document.getElementById('txOutItemsContainer').innerHTML = ''; addTxOutRow(); }
+            if (id === 'modalTxIn') { document.getElementById('txInItemsContainer').innerHTML = ''; addTxInRow(); }
         } 
         function closeModal(id) { document.getElementById(id).classList.add('hide'); }
         
