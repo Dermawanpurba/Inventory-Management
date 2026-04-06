@@ -91,11 +91,11 @@
 
         .hide { display: none !important; }
         
-        /* Top Nav Styling */
-        .nav-desktop-active { border-bottom-color: #001b44 !important; color: #001b44 !important; background-color: rgba(0, 27, 68, 0.03); }
-        .nav-desktop-active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
-        .nav-desktop-inactive { border-bottom-color: transparent !important; color: #747781 !important; }
-        .nav-desktop-inactive:hover { background-color: rgba(0, 27, 68, 0.05); color: #001b44 !important; }
+        /* Sidebar Nav Styling */
+        .nav-desktop-active { background-color: rgba(255, 255, 255, 0.08) !important; color: #ffffff !important; border-right: 3px solid #75f8b3; }
+        .nav-desktop-active .material-symbols-outlined { font-variation-settings: 'FILL' 1; color: #75f8b3; }
+        .nav-desktop-inactive { border-right: 3px solid transparent; color: #9ca3af !important; }
+        .nav-desktop-inactive:hover { background-color: rgba(255, 255, 255, 0.05); color: #ffffff !important; }
         
         /* Mobile Nav Styling */
         .nav-mobile-active { color: #001b44; font-weight: 600; }
@@ -201,17 +201,43 @@
     </div>
 
     <!-- THIN DARK SIDEBAR (KOSONGAN SEPERTI REFERENSI) -->
-    <aside class="hidden lg:flex w-[72px] bg-[#0a0f1c] flex-col items-center py-6 border-r border-gray-800 shrink-0 z-50">
-        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white mb-8 shadow-lg cursor-pointer hover:bg-primary-fixed-variant transition">
-            <span class="material-symbols-outlined text-[20px] filled">inventory_2</span>
-        </div>
-        <div class="flex-1 flex flex-col gap-6">
-            <div class="w-10 h-10 rounded-full bg-[#1a2133] flex items-center justify-center text-primary-fixed-dim cursor-pointer hover:text-white transition" title="Home">
-                <span class="material-symbols-outlined text-[20px]">home</span>
+    <aside class="hidden lg:flex w-64 bg-[#0a0f1c] flex-col py-6 border-r border-gray-800 shrink-0 z-50 shadow-2xl">
+        <div class="flex items-center gap-3 px-6 mb-10 cursor-pointer">
+            <div class="w-10 h-10 bg-primary-fixed rounded-xl flex items-center justify-center text-[#0a0f1c] shadow-lg shrink-0">
+                <span class="material-symbols-outlined text-[24px] filled">inventory_2</span>
+            </div>
+            <div class="overflow-hidden">
+                <h1 class="text-white font-extrabold tracking-tight truncate text-base" id="appNameDisplay">ERP WAREHOUSE</h1>
+                <p class="text-[9px] text-secondary-fixed font-bold uppercase tracking-widest">Mining Edition</p>
             </div>
         </div>
-        <div class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:text-white cursor-pointer transition">
-            <span class="material-symbols-outlined text-[20px]">settings</span>
+        
+        <nav class="flex-1 flex flex-col gap-2 px-3" id="desktopNavLinks">
+            <a href="#" onclick="router('dashboard')" id="navD-dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm nav-desktop-inactive">
+                <span class="material-symbols-outlined text-[20px]">dashboard</span> Analitik
+            </a>
+            <a href="#" onclick="router('po')" id="navD-po" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm nav-desktop-inactive">
+                <span class="material-symbols-outlined text-[20px]">local_shipping</span> Status Order & PO
+            </a>
+            <a href="#" onclick="router('tracking')" id="navD-tracking" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm nav-desktop-inactive">
+                <span class="material-symbols-outlined text-[20px]">timeline</span> Logistik Track
+            </a>
+            <a href="#" onclick="router('stock')" id="navD-stock" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm nav-desktop-inactive">
+                <span class="material-symbols-outlined text-[20px]">search_insights</span> Master Inventory
+            </a>
+            <div class="border-t border-white/10 my-2 mx-2 admin-only hide"></div>
+            <a href="#" onclick="router('master')" id="navD-master" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm admin-only hide nav-desktop-inactive">
+                <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span> System Config
+            </a>
+        </nav>
+        
+        <div class="px-5 mt-auto">
+            <div class="p-4 bg-white/5 rounded-2xl border border-white/10 text-center">
+                <span class="material-symbols-outlined text-gray-400 mb-1">support_agent</span>
+                <p class="text-xs text-gray-300 font-bold mb-1">Pusat Bantuan</p>
+                <p class="text-[9px] text-gray-500 mb-3 leading-tight">Hubungi tim IT Support jika ada kendala.</p>
+                <button class="w-full py-2 bg-primary/20 hover:bg-primary/40 text-primary-fixed-dim text-xs font-bold rounded-lg transition border border-primary/30">Kontak IT</button>
+            </div>
         </div>
     </aside>
 
@@ -222,45 +248,35 @@
         <header class="flex h-[72px] bg-surface-container-lowest items-center justify-between px-4 lg:px-8 border-b border-outline-variant/20 shrink-0 z-40 shadow-sm relative">
             <div class="flex items-center h-full">
                 
-                <!-- Branding / Logo -->
                 <div class="flex items-center gap-3 mr-8 lg:ml-0">
                     <div class="lg:hidden w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center overflow-hidden">
                         <span class="material-symbols-outlined text-on-primary-container filled text-2xl" id="defaultLogoMobile">inventory_2</span>
                     </div>
-                    <img id="imgLogo" class="brand-logo hide" src="" alt="Logo">
-                    <div>
-                        <h1 class="text-lg font-extrabold tracking-tight truncate w-32 md:w-auto text-primary" id="appNameDisplay">ERP WAREHOUSE</h1>
-                        <p class="hidden md:block text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Mining Edition</p>
+                    <img id="imgLogo" class="brand-logo hide lg:hidden" src="" alt="Logo">
+                    
+                    <div class="lg:hidden">
+                        <h1 class="text-lg font-extrabold tracking-tight truncate w-32 text-primary">ERP APP</h1>
                     </div>
-                    <!-- Cloud Status Indicator (Mobile) -->
-                    <div class="lg:hidden flex items-center text-[10px] text-secondary-fixed bg-secondary-container/20 px-2 py-1 rounded-full border border-secondary-fixed/30 font-bold ml-2">
-                        <div class="w-1.5 h-1.5 bg-secondary-fixed rounded-full mr-1.5 animate-pulse"></div> DB
+                    
+                    <div class="hidden lg:flex items-center">
+                        <span class="material-symbols-outlined text-on-surface-variant mr-3">view_kanban</span>
+                        <h1 class="text-xl font-extrabold text-primary tracking-tight" id="topNavTitle">Dashboard Analitik</h1>
+                    </div>
+                    
+                    <div class="flex items-center text-[10px] text-secondary-fixed bg-secondary-container/20 px-2 py-1 rounded-full border border-secondary-fixed/30 font-bold ml-3">
+                        <div class="w-1.5 h-1.5 bg-secondary-fixed rounded-full mr-1.5 animate-pulse"></div> DB Sync
                     </div>
                 </div>
 
-                <!-- Desktop Nav Links -->
-                <nav class="hidden lg:flex items-center h-full gap-1" id="desktopNavLinks">
-                    <a href="#" onclick="router('dashboard')" id="navD-dashboard" class="h-full flex items-center gap-2 px-4 border-b-[3px] nav-desktop-inactive transition-all font-bold text-sm">
-                        <span class="material-symbols-outlined text-[20px]">dashboard</span> Analitik
-                    </a>
-                    <a href="#" onclick="router('po')" id="navD-po" class="h-full flex items-center gap-2 px-4 border-b-[3px] nav-desktop-inactive transition-all font-bold text-sm">
-                        <span class="material-symbols-outlined text-[20px]">local_shipping</span> Status Order & PO
-                    </a>
-                    <a href="#" onclick="router('tracking')" id="navD-tracking" class="h-full flex items-center gap-2 px-4 border-b-[3px] nav-desktop-inactive transition-all font-bold text-sm">
-                        <span class="material-symbols-outlined text-[20px]">timeline</span> Logistik
-                    </a>
-                    <a href="#" onclick="router('stock')" id="navD-stock" class="h-full flex items-center gap-2 px-4 border-b-[3px] nav-desktop-inactive transition-all font-bold text-sm">
-                        <span class="material-symbols-outlined text-[20px]">search_insights</span> Inventory
-                    </a>
-                    <a href="#" onclick="router('master')" id="navD-master" class="h-full flex items-center gap-2 px-4 border-b-[3px] nav-desktop-inactive transition-all font-bold text-sm admin-only hide">
-                        <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span> System
-                    </a>
-                </nav>
             </div>
 
-            <!-- Right Side: User Profile & Actions -->
             <div class="flex items-center gap-4 h-full">
-                <div id="desktopUserInfo" class="flex items-center gap-3 border-l border-outline-variant/30 pl-6 h-full"></div>
+                <div class="hidden md:flex items-center bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/30 focus-within:border-primary/50 transition">
+                    <span class="material-symbols-outlined text-on-surface-variant text-sm mr-2">search</span>
+                    <input type="text" placeholder="Pencarian cepat..." class="bg-transparent border-none text-xs w-48 focus:outline-none focus:ring-0 text-on-surface p-0">
+                </div>
+                
+                <div id="desktopUserInfo" class="flex items-center gap-3 border-l border-outline-variant/30 pl-5 h-full"></div>
                 <div id="desktopAuthBtn"></div>
             </div>
         </header>
@@ -405,7 +421,7 @@
                 <!-- UPDATE UI UX CHART ECHARTS AREA -->
                 <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/20 w-full">
                     <div class="flex items-center mb-4 text-sm font-extrabold text-primary"><span class="material-symbols-outlined mr-2">trending_up</span> Trend Pengeluaran Normal (Qty)</div>
-                    <div id="chartSparepart" class="h-80 w-full relative"></div>
+                    <div class="h-80 relative w-full"><canvas id="chartSparepart"></canvas></div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -425,7 +441,7 @@
                         <select id="dashKritisFilter" onchange="renderDashAnalysisTable()" class="bg-surface-container-low border-none rounded-xl text-xs font-bold text-on-surface focus:ring-2 focus:ring-primary shadow-inner">
                             <option value="">Semua Kategori</option>
                             <option value="SPAREPART">Sparepart</option>
-                            <option value="LUBRICATE">Lubricate / Oli</option>
+                            <option value="LUBRICATE">Lubricate</option>
                             <option value="CONSUMABLE">Consumable</option>
                             <option value="FILTER">Filter</option>
                             <option value="GET">GET</option>
@@ -512,7 +528,7 @@
                         </div>
                         <div class="flex w-full lg:w-1/2 gap-3">
                             <select id="filterKategori" onchange="handleSearchStock()" class="w-1/2 bg-surface-container-low border-none rounded-xl text-on-surface text-sm px-4 py-2.5 focus:ring-2 focus:ring-primary/20 font-medium cursor-pointer shadow-inner">
-                                <option value="">Semua Kategori</option><option value="SPAREPART">Sparepart</option><option value="LUBRICATE">Lubricate / Oli</option><option value="CONSUMABLE">Consumable</option><option value="FILTER">Filter</option><option value="GET">GET</option><option value="TYRE">Tyre / Ban</option>
+                                <option value="">Semua Kategori</option><option value="SPAREPART">Sparepart</option><option value="LUBRICATE">Lubricate</option><option value="CONSUMABLE">Consumable</option><option value="FILTER">Filter</option><option value="GET">GET</option><option value="TYRE">Tyre / Ban</option>
                             </select>
                             <select id="filterPergerakan" onchange="handleSearchStock()" class="w-1/2 bg-surface-container-low border-none rounded-xl text-on-surface text-sm px-4 py-2.5 focus:ring-2 focus:ring-primary/20 font-medium cursor-pointer shadow-inner">
                                 <option value="">Semua Pergerakan</option><option value="FAST">Fast Moving</option><option value="SLOW">Slow Moving</option><option value="DEAD">Dead Stock</option>
@@ -724,7 +740,7 @@
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-surface-container rounded-2xl p-4 border border-outline-variant/30">
                     <div><label class="block text-[10px] font-extrabold text-on-surface-variant mb-1.5 uppercase tracking-widest">Tipe Unit</label><select id="stkUnitType" required class="w-full bg-surface-container-lowest border-none rounded-lg p-2 text-on-surface text-xs font-medium focus:ring-2 focus:ring-primary"><option value="ALL">ALL / Umum</option><option value="KOMATSU">Komatsu</option><option value="CATERPILLAR">Caterpillar</option><option value="HITACHI">Hitachi</option><option value="HINO">Hino</option><option value="MAN">MAN</option><option value="SCANIA">Scania</option><option value="VOLVO">Volvo</option></select></div>
-                    <div><label class="block text-[10px] font-extrabold text-on-surface-variant mb-1.5 uppercase tracking-widest">Kategori</label><select id="stkType" required class="w-full bg-surface-container-lowest border-none rounded-lg p-2 text-on-surface text-xs font-medium focus:ring-2 focus:ring-primary"><option value="SPAREPART">Sparepart</option><option value="FILTER">Filter</option><option value="GET">GET</option><option value="LUBRICATE">Lubricate / Oli</option><option value="CONSUMABLE">Consumable</option><option value="TYRE">Tyre / Ban</option></select></div>
+                    <div><label class="block text-[10px] font-extrabold text-on-surface-variant mb-1.5 uppercase tracking-widest">Kategori</label><select id="stkType" required class="w-full bg-surface-container-lowest border-none rounded-lg p-2 text-on-surface text-xs font-medium focus:ring-2 focus:ring-primary"><option value="SPAREPART">Sparepart</option><option value="FILTER">Filter</option><option value="GET">GET</option><option value="LUBRICATE">Lubricate</option><option value="CONSUMABLE">Consumable</option><option value="TYRE">Tyre / Ban</option></select></div>
                     <div><label class="block text-[10px] font-extrabold text-on-surface-variant mb-1.5 uppercase tracking-widest">Pergerakan</label><select id="stkMove" required class="w-full bg-surface-container-lowest border-none rounded-lg p-2 text-on-surface text-xs font-medium focus:ring-2 focus:ring-primary"><option value="FAST">Fast Moving</option><option value="SLOW">Slow Moving</option><option value="DEAD">Dead Stock</option></select></div>
                     <div><label class="block text-[10px] font-extrabold text-on-surface-variant mb-1.5 uppercase tracking-widest">Satuan</label><select id="stkUnit" required class="w-full bg-surface-container-lowest border-none rounded-lg p-2 text-on-surface text-xs font-medium focus:ring-2 focus:ring-primary"><option value="pcs">Pcs</option><option value="set">Set</option><option value="drum">Drum</option><option value="pail">Pail</option><option value="botol">Botol</option><option value="kotak">Kotak</option><option value="pack">Pack</option><option value="meter">Liter</option><option value="roll">Roll</option></select></div>
                 </div>
@@ -757,40 +773,36 @@
 
     <!-- Modal Login dengan Latar Belakang Penuh -->
     <div id="modalLogin" class="fixed inset-0 z-[100] flex hide">
-        <!-- Background Image dengan Overlay Gelap -->
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://lh3.googleusercontent.com/d/1krgACTjDbcUSIPZ5WcRQ3xzSjueV-GGz');">
-            <div class="absolute inset-0 bg-primary/80 mix-blend-multiply"></div>
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat animate-[pulse_8s_ease-in-out_infinite]" style="background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000&auto=format&fit=crop');">
+            <div class="absolute inset-0 bg-primary/70 mix-blend-multiply"></div>
         </div>
         
-        <!-- Area Konten Login -->
         <div class="relative z-10 w-full h-full flex flex-col lg:flex-row items-center justify-center lg:justify-evenly p-6 overflow-y-auto">
             
-            <!-- Teks Sambutan (Kiri) -->
             <div class="text-white text-center lg:text-left max-w-lg mb-10 lg:mb-0 mt-8 lg:mt-0 px-4">
-                <span class="material-symbols-outlined text-6xl mb-4 opacity-90">inventory_2</span>
-                <h1 class="text-4xl lg:text-5xl font-extrabold mb-4 tracking-tight leading-tight drop-shadow-lg">Warehouse ERP <br><span class="text-primary-fixed">Enterprise Edition</span></h1>
-                <p class="text-lg text-white/90 font-medium drop-shadow-md">Sistem manajemen logistik terintegrasi. Pantau sirkulasi barang, pengadaan, dan inventaris secara real-time.</p>
+                <span class="material-symbols-outlined text-6xl mb-4 opacity-100 drop-shadow-md">inventory_2</span>
+                <h1 class="text-4xl lg:text-5xl font-extrabold mb-4 tracking-tight leading-tight drop-shadow-xl">Warehouse ERP <br><span class="text-secondary-fixed">Enterprise Edition</span></h1>
+                <p class="text-lg text-white/95 font-medium drop-shadow-lg">Sistem manajemen logistik terintegrasi. Pantau sirkulasi barang, pengadaan, dan inventaris secara real-time.</p>
             </div>
             
-            <!-- Kotak Login (Kanan) -->
-            <div class="bg-surface-container-lowest p-10 rounded-[2rem] w-full max-w-md shadow-2xl shrink-0">
+            <div class="bg-white/20 backdrop-blur-xl border border-white/30 p-10 rounded-[2rem] w-full max-w-md shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] shrink-0">
                 <div class="text-center mb-8">
-                    <span class="material-symbols-outlined text-5xl text-primary mx-auto mb-4 p-4 bg-primary-fixed rounded-full inline-block">fingerprint</span>
-                    <h2 class="text-2xl font-extrabold text-on-surface tracking-wide">SECURE LOGIN</h2>
-                    <p class="text-sm text-on-surface-variant mt-2">Masuk untuk mengakses sistem</p>
+                    <span class="material-symbols-outlined text-5xl text-primary-container mx-auto mb-4 p-4 bg-white/50 backdrop-blur-md rounded-full inline-block shadow-sm">fingerprint</span>
+                    <h2 class="text-2xl font-extrabold text-white tracking-wide drop-shadow-md">SECURE LOGIN</h2>
+                    <p class="text-sm text-white/90 mt-2 font-medium drop-shadow-sm">Masuk untuk mengakses sistem</p>
                 </div>
                 <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
                     <div>
-                        <label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-widest">Username</label>
-                        <input type="text" id="logUser" required class="w-full bg-surface-container-low border border-outline-variant/50 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <label class="block text-xs font-bold text-white mb-1.5 uppercase tracking-widest drop-shadow-md">Username</label>
+                        <input type="text" id="logUser" required class="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-primary-container placeholder-primary-container/70 font-bold focus:outline-none focus:ring-2 focus:ring-white focus:bg-white/70 transition-all shadow-inner">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-on-surface-variant mb-1.5 uppercase tracking-widest">Password</label>
-                        <input type="password" id="logPass" required class="w-full bg-surface-container-low border border-outline-variant/50 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <label class="block text-xs font-bold text-white mb-1.5 uppercase tracking-widest drop-shadow-md">Password</label>
+                        <input type="password" id="logPass" required class="w-full bg-white/40 backdrop-blur-md border border-white/50 rounded-xl px-4 py-3 text-primary-container placeholder-primary-container/70 font-bold focus:outline-none focus:ring-2 focus:ring-white focus:bg-white/70 transition-all shadow-inner">
                     </div>
-                    <button type="submit" id="btnSubmitLogin" class="w-full bg-primary hover:bg-primary-fixed-variant text-on-primary font-bold py-3.5 rounded-xl transition mt-4 shadow-lg text-base">Akses Sistem</button>
-                    <div class="pt-6 border-t border-outline-variant/20 mt-6">
-                        <button type="button" onclick="emergencyInitFirebase()" class="w-full bg-surface-container hover:bg-surface-dim text-on-surface-variant text-xs font-extrabold py-3 rounded-xl transition flex items-center justify-center uppercase tracking-widest"><span class="material-symbols-outlined text-sm mr-2">database</span> SETUP AKUN ADMIN AWAL</button>
+                    <button type="submit" id="btnSubmitLogin" class="w-full bg-primary hover:bg-primary-fixed-variant text-on-primary font-bold py-3.5 rounded-xl transition mt-4 shadow-lg text-base border border-primary/50 hover:shadow-xl">Akses Sistem</button>
+                    <div class="pt-6 border-t border-white/30 mt-6 text-center">
+                        <p class="text-white text-xs font-extrabold flex items-center justify-center uppercase tracking-widest drop-shadow-md"><span class="material-symbols-outlined text-sm mr-2">dashboard</span> DASHBOARD LOGISTIK</p>
                     </div>
                 </form>
             </div>
@@ -877,7 +889,7 @@
         function checkSession() {
             const saved = localStorage.getItem('erp_session');
             if (saved) { currentUser = JSON.parse(saved); applyRoleAccess(); renderAuthBtn(true); router('dashboard'); } 
-            else { renderAuthBtn(false); applyRoleAccess(); router('dashboard'); }
+            else { renderAuthBtn(false); applyRoleAccess(); openModal('modalLogin'); }
         }
 
         function renderAuthBtn(isLoggedIn) {
@@ -988,6 +1000,12 @@
             fbRoot.child('depts').on('value', (snapshot) => { appData.depts = snapshot.exists() ? Object.values(snapshot.val()) : []; populateSelects(); });
             fbRoot.child('units').on('value', (snapshot) => { appData.units = snapshot.exists() ? Object.values(snapshot.val()) : []; populateSelects(); });
             
+            // Perbaikan Temuan 3: Menarik dan menyortir data logs dari Firebase Cloud
+            fbRoot.child('logs').on('value', (snapshot) => {
+                appData.logs = snapshot.exists() ? Object.values(snapshot.val()).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)) : [];
+                if(!document.getElementById('view-master').classList.contains('hide')) renderLogsTable();
+            });
+            
             let rawTxsIn = {}; let rawTxsOut = {};
             const mergeTxs = () => { 
                 const normalizedIn = Object.values(rawTxsIn || {}).map(t => ({...t, tx_flow: 'IN'})); 
@@ -1014,7 +1032,7 @@
         }
 
         function renderDashboard() {
-            if(typeof echarts === 'undefined' || typeof Chart === 'undefined') return;
+            if(typeof Chart === 'undefined') return;
             try {
                 const sStr = document.getElementById('dashStartDate').value; const eStr = document.getElementById('dashEndDate').value;
                 if(!sStr || !eStr) return; 
@@ -1040,39 +1058,42 @@
                 const labelsDept = appData.depts.map(d => d.nama_dept); const dataDept = new Array(appData.depts.length).fill(0);
                 txOuts.filter(t => (t.jenis_tx||'Normal') === 'Normal').forEach(t => { const dIdx = appData.depts.findIndex(d => d.id === t.dept_id); if(dIdx !== -1) dataDept[dIdx] += t.qty; });
 
-                // ECHARTS Implementation for Main Chart
-                const chartDom = document.getElementById('chartSparepart');
-                if(chartDom) {
-                    let myChart = echarts.getInstanceByDom(chartDom);
-                    if (!myChart) myChart = echarts.init(chartDom);
-                    
-                    let option = {
-                        tooltip: { trigger: 'axis', position: function (pt) { return [pt[0], '10%']; } },
-                        toolbox: { feature: { dataZoom: { yAxisIndex: 'none' }, restore: {}, saveAsImage: {} } },
-                        xAxis: { type: 'category', boundaryGap: false, data: labelsMap.map(l=>l.display) },
-                        yAxis: { type: 'value', boundaryGap: [0, '100%'] },
-                        dataZoom: [ { type: 'inside', start: 0, end: 100 }, { start: 0, end: 100 } ],
-                        series: [
-                            {
-                                name: 'Qty Keluar', type: 'line', symbol: 'none', sampling: 'lttb',
-                                itemStyle: { color: 'rgb(0, 27, 68)' },
-                                areaStyle: {
-                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                        { offset: 0, color: 'rgba(174, 198, 255, 0.8)' },
-                                        { offset: 1, color: 'rgba(0, 27, 68, 0.1)' }
-                                    ])
-                                },
-                                data: dataNormal
-                            }
-                        ]
-                    };
-                    myChart.setOption(option);
-                    window.addEventListener('resize', function() { myChart.resize(); });
-                }
+                Chart.defaults.color = '#747781'; Chart.defaults.borderColor = 'rgba(196, 198, 210, 0.3)'; Chart.defaults.font.family = 'Inter';
+
+                // CHART.JS Implementation for Main Chart (Replacing ECharts)
+                const ctxMain = document.getElementById('chartSparepart').getContext('2d');
+                let gradient = ctxMain.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(174, 198, 255, 0.8)');
+                gradient.addColorStop(1, 'rgba(0, 27, 68, 0.1)');
+
+                if(charts.c1) charts.c1.destroy();
+                charts.c1 = new Chart(ctxMain, {
+                    type: 'line',
+                    data: {
+                        labels: labelsMap.map(l=>l.display),
+                        datasets: [{
+                            label: 'Qty Keluar',
+                            data: dataNormal,
+                            borderColor: '#001b44',
+                            backgroundColor: gradient,
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#001b44',
+                            pointRadius: 3,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } }, 
+                        scales: { y: { beginAtZero: true } },
+                        interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                    }
+                });
 
                 // CHART.JS Implementation for Sub Charts
-                Chart.defaults.color = '#747781'; Chart.defaults.borderColor = 'rgba(196, 198, 210, 0.3)'; Chart.defaults.font.family = 'Inter';
-                
                 if(charts.c2) charts.c2.destroy(); charts.c2 = new Chart(document.getElementById('chartService').getContext('2d'), { type: 'bar', data: { labels: labelsMap.map(l=>l.display), datasets: [{ label: 'Service/Repair', data: dataService, backgroundColor: '#c39100', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
                 if(charts.c3) charts.c3.destroy(); const colors = ['#002f6c','#224583','#aec6ff','#006d43','#75f8b3','#c39100']; charts.c3 = new Chart(document.getElementById('chartDept').getContext('2d'), { type: 'bar', indexAxis: 'y', data: { labels: labelsDept, datasets: [{ label: 'Qty', data: dataDept, backgroundColor: labelsDept.map((_,i)=>colors[i%colors.length]), borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
             } catch(e) { console.error("Dashboard Render Error:", e); }
