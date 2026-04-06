@@ -1551,7 +1551,7 @@
                 
                 closeModal(type === 'IN' ? 'modalTxIn' : 'modalTxOut'); notif('success', 'Berhasil', 'Sirkulasi Logistik terekam ke Cloud.');
                 document.getElementById(type === 'IN' ? 'formTxIn' : 'formTxOut').reset();
-                if(selectSearchIn) selectSearchIn.clear(); if(selectSearchOut) selectSearchOut.clear();
+                if(selectSearchIn) selectSearchIn.clear();
             } catch (err) { notif('error', 'Transaksi Ditolak', err.message); } 
             finally { showLoading(false); toggleBtnState(btnId, false); }
         }
@@ -1616,13 +1616,16 @@
             const appNameDisplay = document.getElementById('appNameDisplay'); if(appNameDisplay) appNameDisplay.innerText = appName;
             const docTitle = document.getElementById('docTitle'); if(docTitle) docTitle.innerText = appName + " - Enterprise";
             if(document.getElementById('setAppName')) document.getElementById('setAppName').value = config.appName || ''; if(document.getElementById('setAppLogo')) document.getElementById('setAppLogo').value = config.logoUrl || '';
-            const dLogoCont = document.getElementById('desktopLogoContainer'); const dDefLogo = document.getElementById('defaultLogo'); const mDefLogo = document.getElementById('mobileDefaultLogo'); const mImgLogo = document.getElementById('mobileImgLogo');
+            
+            const defLogoMobile = document.getElementById('defaultLogoMobile');
+            const imgLogoElement = document.getElementById('imgLogo');
+            
             if(config.logoUrl) {
-                if(defaultLogo) defaultLogo.classList.add('hide'); 
-                if(imgLogo) { imgLogo.src = config.logoUrl; imgLogo.classList.remove('hide'); }
+                if(defLogoMobile) defLogoMobile.closest('.w-10').classList.add('hide'); 
+                if(imgLogoElement) { imgLogoElement.src = config.logoUrl; imgLogoElement.classList.remove('hide'); }
             } else {
-                if(defaultLogo) defaultLogo.classList.remove('hide'); 
-                if(imgLogo) imgLogo.classList.add('hide');
+                if(defLogoMobile) defLogoMobile.closest('.w-10').classList.remove('hide'); 
+                if(imgLogoElement) imgLogoElement.classList.add('hide');
             }
         }
 
