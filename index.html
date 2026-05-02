@@ -317,7 +317,59 @@
         .nav-btn-sidebar.active i {
             @apply opacity-100;
         }
+
+        /* Sidebar Accordion Styles */
+        .sidebar-section-title {
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .sidebar-section-title:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .sidebar-section-title i.chevron {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-left: auto;
+            opacity: 0.5;
+        }
+
+        .sidebar-section-title.collapsed i.chevron {
+            transform: rotate(-90deg);
+        }
+
+        .sidebar-group-items {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 1000px;
+            opacity: 1;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-group-items.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+            pointer-events: none;
+        }
+
+        /* Smartphone Optimization */
+        @media (max-width: 768px) {
+            .nav-btn-sidebar {
+                padding: 10px 14px;
+                font-size: 12px;
+            }
+            .sidebar-section-title {
+                padding-top: 16px;
+                padding-bottom: 4px;
+            }
+        }
     </style>
+
 
 </head>
 
@@ -442,56 +494,73 @@
         </div>
 
         <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar bg-transparent">
-            <div class="sidebar-section-title">Overview</div>
-            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn-sidebar active">
-                <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Monitoring Plant
-            </button>
-            <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn-sidebar inactive">
-                <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Dashboard Analitik
-            </button>
+            <div class="sidebar-section-title" onclick="toggleSidebarGroup(this)">
+                Overview <i data-lucide="chevron-down" class="w-3 h-3 chevron"></i>
+            </div>
+            <div class="sidebar-group-items">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn-sidebar active">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Monitoring Plant
+                </button>
+                <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn-sidebar inactive">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Dashboard Analitik
+                </button>
+            </div>
 
-            <div class="sidebar-section-title">Procurement</div>
-            <button onclick="switchTab('form')" id="nav-form" class="nav-btn-sidebar inactive">
-                <i data-lucide="file-plus-2" class="w-5 h-5"></i> Buat Request
-            </button>
-            <button onclick="switchTab('prosesmr')" id="nav-prosesmr" class="nav-btn-sidebar inactive">
-                <i data-lucide="refresh-ccw" class="w-5 h-5"></i> Proses MR
-            </button>
-            <button onclick="switchTab('prcash')" id="nav-prcash" class="nav-btn-sidebar inactive">
-                <i data-lucide="banknote" class="w-5 h-5"></i> PR Cash Log
-            </button>
-            <button onclick="switchTab('upload')" id="nav-upload" class="nav-btn-sidebar inactive">
-                <i data-lucide="file-up" class="w-5 h-5"></i> Parse Accurate
-            </button>
+            <div class="sidebar-section-title" onclick="toggleSidebarGroup(this)">
+                Procurement <i data-lucide="chevron-down" class="w-3 h-3 chevron"></i>
+            </div>
+            <div class="sidebar-group-items">
+                <button onclick="switchTab('form')" id="nav-form" class="nav-btn-sidebar inactive">
+                    <i data-lucide="file-plus-2" class="w-5 h-5"></i> Buat Request
+                </button>
+                <button onclick="switchTab('prosesmr')" id="nav-prosesmr" class="nav-btn-sidebar inactive">
+                    <i data-lucide="refresh-ccw" class="w-5 h-5"></i> Proses MR
+                </button>
+                <button onclick="switchTab('prcash')" id="nav-prcash" class="nav-btn-sidebar inactive">
+                    <i data-lucide="banknote" class="w-5 h-5"></i> PR Cash Log
+                </button>
+                <button onclick="switchTab('upload')" id="nav-upload" class="nav-btn-sidebar inactive">
+                    <i data-lucide="file-up" class="w-5 h-5"></i> Parse Accurate
+                </button>
+            </div>
 
-            <div class="sidebar-section-title">Inventory</div>
-            <button onclick="switchTab('stock')" id="nav-stock" class="nav-btn-sidebar inactive">
-                <i data-lucide="package" class="w-5 h-5"></i> Stok Gudang
-            </button>
-            <button onclick="switchTab('inbound')" id="nav-inbound" class="nav-btn-sidebar inactive">
-                <i data-lucide="log-in" class="w-5 h-5"></i> Barang Masuk
-            </button>
-            <button onclick="switchTab('outbound')" id="nav-outbound" class="nav-btn-sidebar inactive">
-                <i data-lucide="log-out" class="w-5 h-5"></i> Barang Keluar
-            </button>
-            <button onclick="switchTab('critical')" id="nav-critical" class="nav-btn-sidebar inactive">
-                <i data-lucide="alert-triangle" class="w-5 h-5"></i> Stok Critical
-            </button>
+            <div class="sidebar-section-title" onclick="toggleSidebarGroup(this)">
+                Inventory <i data-lucide="chevron-down" class="w-3 h-3 chevron"></i>
+            </div>
+            <div class="sidebar-group-items">
+                <button onclick="switchTab('stock')" id="nav-stock" class="nav-btn-sidebar inactive">
+                    <i data-lucide="package" class="w-5 h-5"></i> Stok Gudang
+                </button>
+                <button onclick="switchTab('inbound')" id="nav-inbound" class="nav-btn-sidebar inactive">
+                    <i data-lucide="log-in" class="w-5 h-5"></i> Barang Masuk
+                </button>
+                <button onclick="switchTab('outbound')" id="nav-outbound" class="nav-btn-sidebar inactive">
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Barang Keluar
+                </button>
+                <button onclick="switchTab('critical')" id="nav-critical" class="nav-btn-sidebar inactive">
+                    <i data-lucide="alert-triangle" class="w-5 h-5"></i> Stok Critical
+                </button>
+            </div>
 
-            <div class="sidebar-section-title">Administration</div>
-            <button onclick="switchTab('master')" id="nav-master" class="nav-btn-sidebar inactive">
-                <i data-lucide="database" class="w-5 h-5"></i> Master Data
-            </button>
-            <button onclick="switchTab('compare')" id="nav-compare" class="nav-btn-sidebar inactive">
-                <i data-lucide="scale" class="w-5 h-5"></i> Komparasi Data
-            </button>
-            <button onclick="switchTab('logs')" id="nav-logs" class="nav-btn-sidebar inactive">
-                <i data-lucide="history" class="w-5 h-5"></i> Log Aktivitas
-            </button>
-            <button onclick="switchTab('config')" id="nav-config" class="nav-btn-sidebar inactive">
-                <i data-lucide="settings-2" class="w-5 h-5"></i> Konfigurasi
-            </button>
+            <div class="sidebar-section-title" onclick="toggleSidebarGroup(this)">
+                Administration <i data-lucide="chevron-down" class="w-3 h-3 chevron"></i>
+            </div>
+            <div class="sidebar-group-items">
+                <button onclick="switchTab('master')" id="nav-master" class="nav-btn-sidebar inactive">
+                    <i data-lucide="database" class="w-5 h-5"></i> Master Data
+                </button>
+                <button onclick="switchTab('compare')" id="nav-compare" class="nav-btn-sidebar inactive">
+                    <i data-lucide="scale" class="w-5 h-5"></i> Komparasi Data
+                </button>
+                <button onclick="switchTab('logs')" id="nav-logs" class="nav-btn-sidebar inactive">
+                    <i data-lucide="history" class="w-5 h-5"></i> Log Aktivitas
+                </button>
+                <button onclick="switchTab('config')" id="nav-config" class="nav-btn-sidebar inactive">
+                    <i data-lucide="settings-2" class="w-5 h-5"></i> Konfigurasi
+                </button>
+            </div>
         </nav>
+
 
         <div class="p-6 bg-black border-t border-white/5">
             <div class="flex items-center p-4 rounded-2xl bg-white/5 border border-white/10 mb-4">
@@ -2681,6 +2750,19 @@
         function safeRenderIcons() { if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons(); }
         function showLoading(s, msg = "MEMPROSES DATA...") { document.getElementById('loadingText').innerText = msg; document.getElementById('loadingOverlay').style.display = s ? 'flex' : 'none'; }
 
+        function toggleSidebarGroup(el) {
+            const items = el.nextElementSibling;
+            if (!items || !items.classList.contains('sidebar-group-items')) return;
+            const isCollapsed = items.classList.contains('collapsed');
+            if (isCollapsed) {
+                items.classList.remove('collapsed');
+                el.classList.remove('collapsed');
+            } else {
+                items.classList.add('collapsed');
+                el.classList.add('collapsed');
+            }
+        }
+
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const ov = document.getElementById('sidebarOverlay');
@@ -2726,7 +2808,16 @@
                 el.classList.remove('active'); el.classList.add('inactive');
             });
             const activeBtn = document.getElementById('nav-' + t);
-            if (activeBtn) { activeBtn.classList.remove('inactive'); activeBtn.classList.add('active'); }
+            if (activeBtn) {
+                activeBtn.classList.remove('inactive');
+                activeBtn.classList.add('active');
+                // Auto-expand group
+                const group = activeBtn.closest('.sidebar-group-items');
+                if (group) {
+                    group.classList.remove('collapsed');
+                    if (group.previousElementSibling) group.previousElementSibling.classList.remove('collapsed');
+                }
+            }
 
             if (window.innerWidth < 768) {
                 document.getElementById('sidebar').classList.add('-translate-x-full');
@@ -5446,6 +5537,13 @@
             checkAuth();
             const today = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
             document.querySelectorAll('.date-today').forEach(el => el.innerText = today);
+
+            // Smartphone: Collapse all groups by default
+            if (window.innerWidth < 768) {
+                document.querySelectorAll('.sidebar-group-items').forEach(g => g.classList.add('collapsed'));
+                document.querySelectorAll('.sidebar-section-title').forEach(t => t.classList.add('collapsed'));
+            }
+
             google.script.run.withSuccessHandler(c => {
                 if (c) updateConfigUI(c);
                 loadSignatures();
