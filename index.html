@@ -368,6 +368,110 @@
                 padding-bottom: 4px;
             }
         }
+
+        /* Sidebar Collapse System */
+        #sidebar {
+            width: 16rem; /* Default width (256px) */
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            overflow: hidden; /* Prevent horizontal scrollbars or wrapping overflow */
+        }
+
+        #sidebar .nav-btn-sidebar,
+        #sidebar .sidebar-profile-info,
+        #sidebar #sidebar_app_name {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        /* Unified Sidebar Left Alignment Grid */
+        #sidebar .sidebar-footer {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+            transition: padding 0.3s ease;
+        }
+
+        #sidebar .logout-btn {
+            justify-content: flex-start !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+        }
+
+        @media (min-width: 768px) {
+            #sidebar.collapsed:not(:hover) {
+                width: 72px; /* Collapsed width when not hovered */
+            }
+            
+            #sidebar.collapsed:not(:hover) nav {
+                overflow-y: hidden !important;
+            }
+            
+            /* Hide text elements when collapsed and not hovered */
+            #sidebar.collapsed:not(:hover) .sidebar-text,
+            #sidebar.collapsed:not(:hover) #sidebar_app_name,
+            #sidebar.collapsed:not(:hover) .sidebar-header-divider,
+            #sidebar.collapsed:not(:hover) .sidebar-profile-info {
+                display: none !important;
+            }
+            
+            /* Header adjustments when collapsed and not hovered */
+            #sidebar.collapsed:not(:hover) .sidebar-header {
+                padding: 16px 8px !important;
+            }
+            #sidebar.collapsed:not(:hover) .logo-container {
+                width: 2.5rem !important; /* Shrink logo container from w-16 to w-10 */
+                height: 2.5rem !important;
+                padding: 2px !important;
+            }
+            #sidebar.collapsed:not(:hover) #top_logo_text {
+                font-size: 1.1rem !important; /* Smaller logo text */
+            }
+            
+            /* Navigation adjustments when collapsed and not hovered - keeps icons perfectly stationary! */
+            #sidebar.collapsed:not(:hover) .nav-btn-sidebar {
+                justify-content: flex-start !important;
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+                gap: 0 !important;
+                border-radius: 10px !important;
+            }
+            #sidebar.collapsed:not(:hover) .nav-btn-sidebar i {
+                margin: 0 !important;
+            }
+            
+            /* Footer & Profile adjustments when collapsed and not hovered */
+            #sidebar.collapsed:not(:hover) .sidebar-footer {
+                padding-top: 16px !important;
+                padding-bottom: 16px !important;
+                background-color: transparent !important;
+            }
+            #sidebar.collapsed:not(:hover) .sidebar-profile {
+                padding: 0 !important;
+                background: transparent !important;
+                border: none !important;
+                justify-content: center !important;
+                margin-bottom: 12px !important;
+            }
+            #sidebar.collapsed:not(:hover) .sidebar-profile #ui_avatar {
+                margin-right: 0 !important;
+            }
+            #sidebar.collapsed:not(:hover) .logout-btn {
+                justify-content: flex-start !important;
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+                border-radius: 10px !important;
+            }
+            #sidebar.collapsed:not(:hover) .logout-btn i {
+                margin-right: 0 !important;
+            }
+        }
+
+        /* Floating Sidebar Toggle Button */
+        #sidebar-toggle {
+            transition: all 0.2s ease;
+        }
+        #sidebar.collapsed #sidebar-toggle i {
+            transform: rotate(180deg);
+        }
     </style>
 
 
@@ -471,7 +575,13 @@
 
     <aside id="sidebar"
         class="w-64 bg-gray-950 flex-shrink-0 flex flex-col no-print z-50 shadow-2xl fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 border-r border-white/10">
-        <div class="p-8 border-b border-white/5 relative flex flex-col items-center shrink-0 bg-white/5">
+        
+        <!-- Floating desktop toggle button -->
+        <button id="sidebar-toggle" onclick="toggleSidebarCollapse()" class="hidden md:flex absolute -right-3 top-24 w-6 h-6 bg-white border border-gray-200 text-gray-600 rounded-full items-center justify-center shadow-md hover:bg-gray-100 hover:text-gray-900 transition-all z-[60] cursor-pointer">
+            <i data-lucide="chevron-left" class="w-3.5 h-3.5 transition-transform duration-300"></i>
+        </button>
+
+        <div class="sidebar-header p-8 border-b border-white/5 relative flex flex-col items-center shrink-0 bg-white/5">
             <button onclick="toggleSidebar()" class="md:hidden absolute top-4 right-4 text-white/50 hover:text-white">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
@@ -480,7 +590,7 @@
                     class="absolute -inset-1 bg-gradient-to-r from-red-600 to-rose-400 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200">
                 </div>
                 <div
-                    class="relative w-16 h-16 bg-white rounded-full shadow-xl flex items-center justify-center p-1 border border-slate-100">
+                    class="logo-container relative w-16 h-16 bg-white rounded-full shadow-xl flex items-center justify-center p-1 border border-slate-100">
                     <span id="top_logo_text"
                         class="text-pertamina-red font-black text-2xl tracking-tighter italic">DSS</span>
                     <img id="sidebar_logo_img" src="" class="hidden w-full h-full object-contain rounded-full"
@@ -490,83 +600,59 @@
             <div id="sidebar_app_name"
                 class="text-white/40 font-black text-center text-[9px] tracking-[0.2em] uppercase mt-4 opacity-80">
                 Management System</div>
-            <div class="mt-1 h-1 w-8 bg-red-600 rounded-full opacity-40"></div>
+            <div class="sidebar-header-divider mt-1 h-1 w-8 bg-red-600 rounded-full opacity-40"></div>
         </div>
 
         <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar bg-transparent">
-            <div class="sidebar-section-title" onclick="toggleSidebarGroup(this)">
-                Overview <i data-lucide="chevron-down" class="w-3 h-3 chevron"></i>
-            </div>
-            <div class="sidebar-group-items">
-                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn-sidebar active">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Monitoring Plant
-                </button>
-                <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn-sidebar inactive">
-                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Dashboard Analitik
-                </button>
-            </div>
-
-            <div class="sidebar-section-title" onclick="toggleSidebarGroup(this)">
-                Procurement <i data-lucide="chevron-down" class="w-3 h-3 chevron"></i>
-            </div>
-            <div class="sidebar-group-items">
-                <button onclick="switchTab('form')" id="nav-form" class="nav-btn-sidebar inactive">
-                    <i data-lucide="file-plus-2" class="w-5 h-5"></i> Buat Request
-                </button>
-                <button onclick="switchTab('prosesmr')" id="nav-prosesmr" class="nav-btn-sidebar inactive">
-                    <i data-lucide="refresh-ccw" class="w-5 h-5"></i> Proses MR
-                </button>
-                <button onclick="switchTab('prcash')" id="nav-prcash" class="nav-btn-sidebar inactive">
-                    <i data-lucide="banknote" class="w-5 h-5"></i> PR Cash Log
-                </button>
-                <button onclick="switchTab('upload')" id="nav-upload" class="nav-btn-sidebar inactive">
-                    <i data-lucide="file-up" class="w-5 h-5"></i> Parse Accurate
-                </button>
-            </div>
-
-            <div class="sidebar-section-title" onclick="toggleSidebarGroup(this)">
-                Inventory <i data-lucide="chevron-down" class="w-3 h-3 chevron"></i>
-            </div>
-            <div class="sidebar-group-items">
-                <button onclick="switchTab('stock')" id="nav-stock" class="nav-btn-sidebar inactive">
-                    <i data-lucide="package" class="w-5 h-5"></i> Stok Gudang
-                </button>
-                <button onclick="switchTab('inbound')" id="nav-inbound" class="nav-btn-sidebar inactive">
-                    <i data-lucide="log-in" class="w-5 h-5"></i> Barang Masuk
-                </button>
-                <button onclick="switchTab('outbound')" id="nav-outbound" class="nav-btn-sidebar inactive">
-                    <i data-lucide="log-out" class="w-5 h-5"></i> Barang Keluar
-                </button>
-                <button onclick="switchTab('critical')" id="nav-critical" class="nav-btn-sidebar inactive">
-                    <i data-lucide="alert-triangle" class="w-5 h-5"></i> Stok Critical
-                </button>
-            </div>
-
-            <div class="sidebar-section-title" onclick="toggleSidebarGroup(this)">
-                Administration <i data-lucide="chevron-down" class="w-3 h-3 chevron"></i>
-            </div>
-            <div class="sidebar-group-items">
-                <button onclick="switchTab('master')" id="nav-master" class="nav-btn-sidebar inactive">
-                    <i data-lucide="database" class="w-5 h-5"></i> Master Data
-                </button>
-                <button onclick="switchTab('compare')" id="nav-compare" class="nav-btn-sidebar inactive">
-                    <i data-lucide="scale" class="w-5 h-5"></i> Komparasi Data
-                </button>
-                <button onclick="switchTab('logs')" id="nav-logs" class="nav-btn-sidebar inactive">
-                    <i data-lucide="history" class="w-5 h-5"></i> Log Aktivitas
-                </button>
-                <button onclick="switchTab('config')" id="nav-config" class="nav-btn-sidebar inactive">
-                    <i data-lucide="settings-2" class="w-5 h-5"></i> Konfigurasi
-                </button>
-            </div>
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn-sidebar active">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i> <span class="sidebar-text">Monitoring Plant</span>
+            </button>
+            <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn-sidebar inactive">
+                <i data-lucide="bar-chart-3" class="w-5 h-5"></i> <span class="sidebar-text">Dashboard Analitik</span>
+            </button>
+            <button onclick="switchTab('form')" id="nav-form" class="nav-btn-sidebar inactive">
+                <i data-lucide="file-plus-2" class="w-5 h-5"></i> <span class="sidebar-text">Buat Request</span>
+            </button>
+            <button onclick="switchTab('prosesmr')" id="nav-prosesmr" class="nav-btn-sidebar inactive">
+                <i data-lucide="refresh-ccw" class="w-5 h-5"></i> <span class="sidebar-text">Proses MR</span>
+            </button>
+            <button onclick="switchTab('prcash')" id="nav-prcash" class="nav-btn-sidebar inactive">
+                <i data-lucide="banknote" class="w-5 h-5"></i> <span class="sidebar-text">PR Cash Log</span>
+            </button>
+            <button onclick="switchTab('upload')" id="nav-upload" class="nav-btn-sidebar inactive">
+                <i data-lucide="file-up" class="w-5 h-5"></i> <span class="sidebar-text">Parse Accurate</span>
+            </button>
+            <button onclick="switchTab('stock')" id="nav-stock" class="nav-btn-sidebar inactive">
+                <i data-lucide="package" class="w-5 h-5"></i> <span class="sidebar-text">Stok Gudang</span>
+            </button>
+            <button onclick="switchTab('inbound')" id="nav-inbound" class="nav-btn-sidebar inactive">
+                <i data-lucide="log-in" class="w-5 h-5"></i> <span class="sidebar-text">Barang Masuk</span>
+            </button>
+            <button onclick="switchTab('outbound')" id="nav-outbound" class="nav-btn-sidebar inactive">
+                <i data-lucide="log-out" class="w-5 h-5"></i> <span class="sidebar-text">Barang Keluar</span>
+            </button>
+            <button onclick="switchTab('critical')" id="nav-critical" class="nav-btn-sidebar inactive">
+                <i data-lucide="alert-triangle" class="w-5 h-5"></i> <span class="sidebar-text">Stok Critical</span>
+            </button>
+            <button onclick="switchTab('master')" id="nav-master" class="nav-btn-sidebar inactive">
+                <i data-lucide="database" class="w-5 h-5"></i> <span class="sidebar-text">Master Data</span>
+            </button>
+            <button onclick="switchTab('compare')" id="nav-compare" class="nav-btn-sidebar inactive">
+                <i data-lucide="scale" class="w-5 h-5"></i> <span class="sidebar-text">Komparasi Data</span>
+            </button>
+            <button onclick="switchTab('logs')" id="nav-logs" class="nav-btn-sidebar inactive">
+                <i data-lucide="history" class="w-5 h-5"></i> <span class="sidebar-text">Log Aktivitas</span>
+            </button>
+            <button onclick="switchTab('config')" id="nav-config" class="nav-btn-sidebar inactive">
+                <i data-lucide="settings-2" class="w-5 h-5"></i> <span class="sidebar-text">Konfigurasi</span>
+            </button>
         </nav>
 
-
-        <div class="p-6 bg-black border-t border-white/5">
-            <div class="flex items-center p-4 rounded-2xl bg-white/5 border border-white/10 mb-4">
+        <div class="sidebar-footer p-6 bg-black border-t border-white/5">
+            <div class="sidebar-profile flex items-center p-4 rounded-2xl bg-white/5 border border-white/10 mb-4">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center text-white font-black text-sm mr-3 shadow-lg shadow-red-500/20"
                     id="ui_avatar">U</div>
-                <div class="overflow-hidden">
+                <div class="sidebar-profile-info overflow-hidden">
                     <div class="text-[12px] font-black text-white truncate" id="ui_logged_name">Loading...</div>
                     <div class="text-[9px] font-bold text-red-500 uppercase tracking-widest opacity-90"
                         id="ui_logged_role">Role
@@ -574,9 +660,9 @@
                 </div>
             </div>
             <button onclick="logout()"
-                class="w-full flex items-center justify-center py-3 text-[11px] font-black text-white/50 hover:text-white hover:bg-red-600 rounded-xl transition-all border border-white/10 hover:border-red-600 hover:shadow-lg hover:shadow-red-600/20 group">
+                class="logout-btn w-full flex items-center justify-center py-3 text-[11px] font-black text-white/50 hover:text-white hover:bg-red-600 rounded-xl transition-all border border-white/10 hover:border-red-600 hover:shadow-lg hover:shadow-red-600/20 group">
                 <i data-lucide="log-out" class="w-4 h-4 mr-2 opacity-50 group-hover:opacity-100 transition-opacity"></i>
-                LOGOUT SYSTEM
+                <span class="sidebar-text">LOGOUT SYSTEM</span>
             </button>
         </div>
     </aside>
@@ -2753,19 +2839,6 @@
         function safeRenderIcons() { if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons(); }
         function showLoading(s, msg = "MEMPROSES DATA...") { document.getElementById('loadingText').innerText = msg; document.getElementById('loadingOverlay').style.display = s ? 'flex' : 'none'; }
 
-        function toggleSidebarGroup(el) {
-            const items = el.nextElementSibling;
-            if (!items || !items.classList.contains('sidebar-group-items')) return;
-            const isCollapsed = items.classList.contains('collapsed');
-            if (isCollapsed) {
-                items.classList.remove('collapsed');
-                el.classList.remove('collapsed');
-            } else {
-                items.classList.add('collapsed');
-                el.classList.add('collapsed');
-            }
-        }
-
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const ov = document.getElementById('sidebarOverlay');
@@ -2776,6 +2849,16 @@
                 sb.classList.add('-translate-x-full');
                 ov.classList.add('hidden');
             }
+        }
+
+        function toggleSidebarCollapse() {
+            const sb = document.getElementById('sidebar');
+            sb.classList.toggle('collapsed');
+            const isCollapsed = sb.classList.contains('collapsed');
+            localStorage.setItem('sidebar_collapsed', isCollapsed ? 'true' : 'false');
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 300);
         }
 
         function switchTab(t) {
@@ -5579,10 +5662,12 @@
             const today = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
             document.querySelectorAll('.date-today').forEach(el => el.innerText = today);
 
-            // Smartphone: Collapse all groups by default
-            if (window.innerWidth < 768) {
-                document.querySelectorAll('.sidebar-group-items').forEach(g => g.classList.add('collapsed'));
-                document.querySelectorAll('.sidebar-section-title').forEach(t => t.classList.add('collapsed'));
+            // Restore sidebar collapse state on desktop
+            if (window.innerWidth >= 768) {
+                const isCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+                if (isCollapsed) {
+                    document.getElementById('sidebar').classList.add('collapsed');
+                }
             }
 
             google.script.run.withSuccessHandler(c => {
